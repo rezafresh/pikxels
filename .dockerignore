@@ -1,0 +1,6 @@
+.ruff_cache
+.vscode
+.docs
+.logs
+.tests
+.env
