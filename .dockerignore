@@ -1,6 +1,6 @@
 .ruff_cache
 .vscode
-.docs
-.logs
-.tests
+/docs
+/logs
+/tests
 .env

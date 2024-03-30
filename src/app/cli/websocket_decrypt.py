@@ -1,7 +1,7 @@
 import argparse
 from datetime import datetime
 
-from app.strategies.websocket import get_land_websocket
+from ..strategies.websocket import get_land_websocket
 
 
 def parse_args():

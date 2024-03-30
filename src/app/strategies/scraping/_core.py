@@ -44,7 +44,7 @@ def get_land_state(land_number: int) -> dict:
     return state
 
 
-def extract_tree_data(state: dict) -> list[dict]:
+def parse_tree_data(state: dict) -> list[dict]:
     entities: dict = state["entities"]
     results = []
 

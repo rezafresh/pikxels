@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from app.strategies.scraping import get_land_state
+from ..strategies.scraping import get_land_state
 
 
 def parse_args():

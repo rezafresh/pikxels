@@ -2,8 +2,8 @@ from cachetools import TTLCache, cached
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from ..strategies.scraping import extract_tree_data
 from ..strategies.scraping import get_land_state as _get_land_state
+from ..strategies.scraping import parse_tree_data
 
 app = FastAPI()
 app.add_middleware(
@@ -30,5 +30,5 @@ def get_trees_route(land_number: int):
     state = get_land_state(land_number)
     return {
         "is_blocked": state["permissions"]["use"][0] != "ANY",
-        "trees": extract_tree_data(state),
+        "trees": parse_tree_data(state),
     }

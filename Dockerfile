@@ -4,6 +4,5 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
-ENV PYTHONPATH=src
-CMD [ "uvicorn", "app.api.asgi:app", "--host", "0.0.0.0", "--port", "9000" ]
+ENTRYPOINT [ "sh", "scripts/docker-entrypoint.sh" ]
 EXPOSE 9000
