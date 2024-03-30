@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "serve",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "src.app.api.asgi:app",
+                "--port", "9000",
+                "--reload"
+            ],
+            "jinja": true
+        },
+        {
+            "name": "fetch-land-state",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "scripts/fetch-land-state.py",
+            "args": [
+                "--land",
+                "4182"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -1,0 +1,3125 @@
+{
+    "mid": "6372b1d6b2ce789bce26f7ba",
+    "id": "pixelsNFTFarm-4186",
+    "name": "Farm Land #4186",
+    "guild": "",
+    "type": "pixelsNFTFarm",
+    "world": 0,
+    "conditions": {
+        "canWarp": false,
+        "maxSoils": 60,
+        "maxIndustries": 4
+    },
+    "labels": [
+        "land",
+        "exterior"
+    ],
+    "ownerAddress": "0xf5829368a91db7f794038caddc087c86c71bc877",
+    "nft": {
+        "tokenId": "4186",
+        "image": "https://hang.mypinata.cloud/ipfs/QmRJSjDZqQu5yoUbBtMXhLp4T9czmpUmfpBg6ntLzbjMUV/4186.png",
+        "name": "Farm Land #4186",
+        "traits": {
+            "environment": "land",
+            "house": "large",
+            "land": "standard",
+            "size": "large",
+            "treeDensity": "dense"
+        }
+    },
+    "createdAt": 1656029704998,
+    "templateName": "landNFTLargeTemplate",
+    "restrictions": {
+        "allowedAddresses": [],
+        "allowedNFTs": []
+    },
+    "ownership": {
+        "forSale": false,
+        "forRent": false,
+        "rented": false,
+        "notUsableUntil": 0,
+        "lastClaim": 1711736976263
+    },
+    "permissions": {
+        "accessHouse": [
+            "Manager",
+            "Builder",
+            "Visitor"
+        ],
+        "surplusAccess": [
+            "OWNER",
+            "Manager"
+        ],
+        "upgradeEntity": [],
+        "build": [
+            "OWNER",
+            "Manager",
+            "Builder"
+        ],
+        "use": [
+            "ANY"
+        ],
+        "remove": [
+            "OWNER",
+            "Manager"
+        ],
+        "editFarmConfig": [
+            "Manager"
+        ],
+        "editMapMembers": [
+            "Manager"
+        ],
+        "sendFarmInvite": [
+            "Manager",
+            "Builder"
+        ],
+        "banPlayer": [
+            "Manager",
+            "Builder"
+        ],
+        "storageAccess": [
+            "OWNER"
+        ],
+        "addDiscoverability": [
+            "ANY"
+        ]
+    },
+    "members": [
+        {
+            "mid": "65d10ce82bfe4fdd6ea73946",
+            "createdAt": 1708199110248,
+            "map": "6372b1d6b2ce789bce26f7ba",
+            "mapId": "pixelsNFTFarm-4186",
+            "member": "62c778d88674cbaa3e9ed841",
+            "roles": [
+                "Manager"
+            ]
+        }
+    ],
+    "chatMessages": [
+        {
+            "creator_id": "660247ffca1af871f159e8c8",
+            "createdAt": 1711712896806,
+            "message": "1-1",
+            "creatorName": "DinHei"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718080057,
+            "message": "need na magpalit nakilala na tayong illegal loggers hahahha",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718098611,
+            "message": "energy burn kasi lag",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718108153,
+            "message": "sad",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718110526,
+            "message": "kainis pag gantong oras daming nag n netdlix",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718113655,
+            "message": "may nakukuha ka naman ba",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718118274,
+            "message": "ahahahaha",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718126220,
+            "message": "palit password sa wifi",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718128966,
+            "message": "sanaol",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718129933,
+            "message": "wala eh maliit lang tag 16 woods",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718144983,
+            "message": "sana allllllllllllll",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718145386,
+            "message": "bibili ako ng sarili kong router ",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718152239,
+            "message": "nu gamit mo",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718156508,
+            "message": "pc ka rin?",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718161148,
+            "message": "oo",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718162552,
+            "message": "ipad",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718163730,
+            "message": "bakit?",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718174377,
+            "message": "mas mabilis ba sa cp?",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718178107,
+            "message": "click hanggang sa masira mouse hahahhaha",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718186080,
+            "message": "oo madali sa pc ganyarn",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718191241,
+            "message": "oo nga e",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718196106,
+            "message": "sa ipad din",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718208748,
+            "message": "cp",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718210713,
+            "message": "sira na nga eh isang click ko lang dalawag beses nag c click",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718226801,
+            "message": "tagal naman",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718227219,
+            "message": "436 na par",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718230225,
+            "message": "wood",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718231775,
+            "message": "depende padin sa network kung ma bagal wala talagang sayo",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718243292,
+            "message": "920",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718247522,
+            "message": "time",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718262819,
+            "message": "tas andito pa kayo edi wala ng aken ",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718265137,
+            "message": "char",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718269854,
+            "message": "hahahahhah",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718273248,
+            "message": "nyahahahahha",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718283430,
+            "message": "pamputol mo kasi ung sword",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718285492,
+            "message": "bigyan mo nalang akong kahoy meyang ",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65d7f965eec72343abbce83e",
+            "createdAt": 1711718289245,
+            "message": "Dami hanash",
+            "creatorName": "Byeol."
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718295432,
+            "message": "utut",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718301493,
+            "message": "HAHHAHAHAHA ",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65d7f965eec72343abbce83e",
+            "createdAt": 1711718302112,
+            "message": "Mo green",
+            "creatorName": "Byeol."
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718309149,
+            "message": "mama mo",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718315488,
+            "message": "mama naten hahahahhaha",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d7f965eec72343abbce83e",
+            "createdAt": 1711718315714,
+            "message": "Hawak ka na palakol",
+            "creatorName": "Byeol."
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718331096,
+            "message": "iisang mama lang kayo eh ",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65e2bf9febdfdac278ea99a5",
+            "createdAt": 1711718338954,
+            "message": "omsim",
+            "creatorName": "meyangg"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718347391,
+            "message": "ayan na sila ",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65d5fe2deec72343abe4688d",
+            "createdAt": 1711718378697,
+            "message": "cp gamit nyo?",
+            "creatorName": "firefroxy"
+        },
+        {
+            "creator_id": "65f0bafeca1af871f14bdf69",
+            "createdAt": 1711718611463,
+            "message": "Lemme take some pls",
+            "creatorName": "Danixboo7"
+        },
+        {
+            "creator_id": "65deca87b8f8646a60fb52a3",
+            "createdAt": 1711718612629,
+            "message": "ubus",
+            "creatorName": "THE BEEKEEPER 🐝🍯"
+        },
+        {
+            "creator_id": "65edbd9eca1af871f179a9b2",
+            "createdAt": 1711738987432,
+            "message": "no",
+            "creatorName": "ErDeimos"
+        },
+        {
+            "creator_id": "65edbd9eca1af871f179a9b2",
+            "createdAt": 1711738989157,
+            "message": "NO",
+            "creatorName": "ErDeimos"
+        },
+        {
+            "creator_id": "65d2a899eec72343ab99cf2e",
+            "createdAt": 1711744571813,
+            "message": "off mo cheat mo gago",
+            "creatorName": "Tron | BCH"
+        }
+    ],
+    "players": {
+        "x7eDMi82U": {
+            "mid": "x7eDMi82U",
+            "isGuest": true,
+            "position": {
+                "x": 3320,
+                "y": 3324
+            },
+            "velocity": {
+                "x": 0,
+                "y": 0
+            },
+            "username": "Guest-the-traveling-tourist",
+            "currentAvatar": {
+                "id": "players",
+                "pieces": "{}"
+            },
+            "playerAvatar": "{}",
+            "typingTimestamp": 0,
+            "memberships": {},
+            "modifiers": [],
+            "trustScore": 0
+        },
+        "DepeiW0gT": {
+            "mid": "DepeiW0gT",
+            "isGuest": true,
+            "position": {
+                "x": 3320,
+                "y": 3324
+            },
+            "velocity": {
+                "x": 0,
+                "y": 0
+            },
+            "username": "Guest-the-traveling-tourist",
+            "currentAvatar": {
+                "id": "players",
+                "pieces": "{}"
+            },
+            "playerAvatar": "{}",
+            "typingTimestamp": 0,
+            "memberships": {},
+            "modifiers": [],
+            "trustScore": 0
+        },
+        "GIr1KdtfJ": {
+            "mid": "GIr1KdtfJ",
+            "isGuest": true,
+            "position": {
+                "x": 3320,
+                "y": 3324
+            },
+            "velocity": {
+                "x": 0,
+                "y": 0
+            },
+            "username": "Guest-the-traveling-tourist",
+            "currentAvatar": {
+                "id": "players",
+                "pieces": "{}"
+            },
+            "playerAvatar": "{}",
+            "typingTimestamp": 0,
+            "memberships": {},
+            "modifiers": [],
+            "trustScore": 0
+        },
+        "PlEby3aY7": {
+            "mid": "PlEby3aY7",
+            "isGuest": true,
+            "position": {
+                "x": 3320,
+                "y": 3324
+            },
+            "velocity": {
+                "x": 0,
+                "y": 0
+            },
+            "username": "Guest-the-traveling-tourist",
+            "currentAvatar": {
+                "id": "players",
+                "pieces": "{}"
+            },
+            "playerAvatar": "{}",
+            "typingTimestamp": 0,
+            "memberships": {},
+            "modifiers": [],
+            "trustScore": 0
+        },
+        "GZbHQxxfg": {
+            "mid": "GZbHQxxfg",
+            "isGuest": true,
+            "position": {
+                "x": 3320,
+                "y": 3324
+            },
+            "velocity": {
+                "x": 0,
+                "y": 0
+            },
+            "username": "Guest-the-traveling-tourist",
+            "currentAvatar": {
+                "id": "players",
+                "pieces": "{}"
+            },
+            "playerAvatar": "{}",
+            "typingTimestamp": 0,
+            "memberships": {},
+            "modifiers": [],
+            "trustScore": 0
+        }
+    },
+    "entities": {
+        "6372b1c0b2ce789bce26bc3a": {
+            "position": {
+                "x": 3448,
+                "y": 3008
+            },
+            "mid": "6372b1c0b2ce789bce26bc3a",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc3e": {
+            "position": {
+                "x": 3352,
+                "y": 3040
+            },
+            "mid": "6372b1c0b2ce789bce26bc3e",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc44": {
+            "position": {
+                "x": 3416,
+                "y": 3072
+            },
+            "mid": "6372b1c0b2ce789bce26bc44",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc17": {
+            "position": {
+                "x": 2792,
+                "y": 2640
+            },
+            "mid": "6372b1c0b2ce789bce26bc17",
+            "entity": "ent_treeLand1v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752694993,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745494993"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744594993"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc20": {
+            "position": {
+                "x": 2904,
+                "y": 2864
+            },
+            "mid": "6372b1c0b2ce789bce26bc20",
+            "entity": "ent_treeLand2v2",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711755597802,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711737597802"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711729497802"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc3c": {
+            "position": {
+                "x": 3352,
+                "y": 3008
+            },
+            "mid": "6372b1c0b2ce789bce26bc3c",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc46": {
+            "position": {
+                "x": 3320,
+                "y": 3072
+            },
+            "mid": "6372b1c0b2ce789bce26bc46",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc29": {
+            "position": {
+                "x": 3728,
+                "y": 2960
+            },
+            "mid": "6372b1c0b2ce789bce26bc29",
+            "entity": "ent_treeLand3v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752793901,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745593901"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744693901"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc37": {
+            "position": {
+                "x": 2856,
+                "y": 2744
+            },
+            "mid": "6372b1c0b2ce789bce26bc37",
+            "entity": "ent_treeLand4v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752688105,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745488105"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744588105"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc38": {
+            "position": {
+                "x": 3384,
+                "y": 3008
+            },
+            "mid": "6372b1c0b2ce789bce26bc38",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc45": {
+            "position": {
+                "x": 3416,
+                "y": 3104
+            },
+            "mid": "6372b1c0b2ce789bce26bc45",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc47": {
+            "position": {
+                "x": 3320,
+                "y": 3104
+            },
+            "mid": "6372b1c0b2ce789bce26bc47",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc18": {
+            "position": {
+                "x": 3048,
+                "y": 2752
+            },
+            "mid": "6372b1c0b2ce789bce26bc18",
+            "entity": "ent_treeLand1v2",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711762661707,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711744661707"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711736561707"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc1f": {
+            "position": {
+                "x": 2752,
+                "y": 3000
+            },
+            "mid": "6372b1c0b2ce789bce26bc1f",
+            "entity": "ent_treeLand2v1",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711755473323,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711737473323"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711729373323"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc22": {
+            "position": {
+                "x": 3088,
+                "y": 2944
+            },
+            "mid": "6372b1c0b2ce789bce26bc22",
+            "entity": "ent_treeLand2v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752754036,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745554036"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744654036"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc26": {
+            "position": {
+                "x": 3616,
+                "y": 2976
+            },
+            "mid": "6372b1c0b2ce789bce26bc26",
+            "entity": "ent_treeLand3v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752763575,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745563575"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744663575"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc2a": {
+            "position": {
+                "x": 3680,
+                "y": 3008
+            },
+            "mid": "6372b1c0b2ce789bce26bc2a",
+            "entity": "ent_treeLand3v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752782823,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745582823"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744682823"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc33": {
+            "position": {
+                "x": 2744,
+                "y": 2792
+            },
+            "mid": "6372b1c0b2ce789bce26bc33",
+            "entity": "ent_treeLand4v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752681675,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745481675"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744581675"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc39": {
+            "position": {
+                "x": 3416,
+                "y": 3008
+            },
+            "mid": "6372b1c0b2ce789bce26bc39",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc3b": {
+            "position": {
+                "x": 3416,
+                "y": 3040
+            },
+            "mid": "6372b1c0b2ce789bce26bc3b",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc42": {
+            "position": {
+                "x": 3352,
+                "y": 3072
+            },
+            "mid": "6372b1c0b2ce789bce26bc42",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc12": {
+            "position": {
+                "x": 3152,
+                "y": 3324
+            },
+            "mid": "6372b1c0b2ce789bce26bc12",
+            "entity": "ent_leftroad",
+            "label": "left",
+            "generic": {
+                "current": 0,
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "farm",
+                        "value": "0"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc15": {
+            "position": {
+                "x": 3152,
+                "y": 2768
+            },
+            "mid": "6372b1c0b2ce789bce26bc15",
+            "entity": "ent_treeLand1v1",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711762641303,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711744641303"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711736541303"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc2e": {
+            "position": {
+                "x": 3648,
+                "y": 2864
+            },
+            "mid": "6372b1c0b2ce789bce26bc2e",
+            "entity": "ent_treeLand3v3",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711765128924,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711747128924"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711739028924"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc34": {
+            "position": {
+                "x": 3048,
+                "y": 2848
+            },
+            "mid": "6372b1c0b2ce789bce26bc34",
+            "entity": "ent_treeLand4v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752717384,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745517384"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744617384"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc36": {
+            "position": {
+                "x": 2840,
+                "y": 3008
+            },
+            "mid": "6372b1c0b2ce789bce26bc36",
+            "entity": "ent_treeLand4v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752652198,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745452198"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744552198"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc3f": {
+            "position": {
+                "x": 3384,
+                "y": 3040
+            },
+            "mid": "6372b1c0b2ce789bce26bc3f",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc19": {
+            "position": {
+                "x": 3160,
+                "y": 2656
+            },
+            "mid": "6372b1c0b2ce789bce26bc19",
+            "entity": "ent_treeLand1v2",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711762668240,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711744668240"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711736568240"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc14": {
+            "position": {
+                "x": 3000,
+                "y": 2648
+            },
+            "mid": "6372b1c0b2ce789bce26bc14",
+            "entity": "ent_treeLand1v1",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711762682186,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711744682186"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711736582185"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc1c": {
+            "position": {
+                "x": 2976,
+                "y": 3032
+            },
+            "mid": "6372b1c0b2ce789bce26bc1c",
+            "entity": "ent_treeLand1v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752640317,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745440317"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744540316"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc4a": {
+            "position": {
+                "x": 3448,
+                "y": 3104
+            },
+            "mid": "6372b1c0b2ce789bce26bc4a",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc2d": {
+            "position": {
+                "x": 3664,
+                "y": 2968
+            },
+            "mid": "6372b1c0b2ce789bce26bc2d",
+            "entity": "ent_treeLand3v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752778415,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745578415"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744678415"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc41": {
+            "position": {
+                "x": 3320,
+                "y": 3008
+            },
+            "mid": "6372b1c0b2ce789bce26bc41",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc1b": {
+            "position": {
+                "x": 2736,
+                "y": 2864
+            },
+            "mid": "6372b1c0b2ce789bce26bc1b",
+            "entity": "ent_treeLand1v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752675232,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745475232"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744575232"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc21": {
+            "position": {
+                "x": 2976,
+                "y": 2816
+            },
+            "mid": "6372b1c0b2ce789bce26bc21",
+            "entity": "ent_treeLand2v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752747199,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745547199"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744647199"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc2c": {
+            "position": {
+                "x": 3704,
+                "y": 2896
+            },
+            "mid": "6372b1c0b2ce789bce26bc2c",
+            "entity": "ent_treeLand3v3",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711765137216,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711747137216"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711739037216"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc32": {
+            "position": {
+                "x": 3048,
+                "y": 2656
+            },
+            "mid": "6372b1c0b2ce789bce26bc32",
+            "entity": "ent_treeLand4v2",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711762655319,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711744655319"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711736555319"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc0f": {
+            "position": {
+                "x": 3432,
+                "y": 2549
+            },
+            "mid": "6372b1c0b2ce789bce26bc0f",
+            "entity": "ent_largeHouse",
+            "label": "house",
+            "generic": {
+                "current": 0,
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": []
+            }
+        },
+        "6372b1c0b2ce789bce26bc16": {
+            "position": {
+                "x": 2832,
+                "y": 2784
+            },
+            "mid": "6372b1c0b2ce789bce26bc16",
+            "entity": "ent_treeLand1v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752665723,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745465723"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744565723"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc48": {
+            "position": {
+                "x": 3352,
+                "y": 3104
+            },
+            "mid": "6372b1c0b2ce789bce26bc48",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc49": {
+            "position": {
+                "x": 3384,
+                "y": 3104
+            },
+            "mid": "6372b1c0b2ce789bce26bc49",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc4b": {
+            "position": {
+                "x": 3448,
+                "y": 3072
+            },
+            "mid": "6372b1c0b2ce789bce26bc4b",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc11": {
+            "position": {
+                "x": 3248,
+                "y": 3176
+            },
+            "mid": "6372b1c0b2ce789bce26bc11",
+            "entity": "ent_gate",
+            "generic": {
+                "current": 0,
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": []
+            }
+        },
+        "6372b1c0b2ce789bce26bc1e": {
+            "position": {
+                "x": 3112,
+                "y": 2648
+            },
+            "mid": "6372b1c0b2ce789bce26bc1e",
+            "entity": "ent_treeLand2v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752725756,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745525756"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744625756"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc2b": {
+            "position": {
+                "x": 3632,
+                "y": 3024
+            },
+            "mid": "6372b1c0b2ce789bce26bc2b",
+            "entity": "ent_treeLand3v2",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752788081,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745588081"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744688081"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc10": {
+            "position": {
+                "x": 3848,
+                "y": 2568
+            },
+            "mid": "6372b1c0b2ce789bce26bc10",
+            "entity": "ent_quonsethut",
+            "generic": {
+                "current": 0,
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": []
+            }
+        },
+        "6372b1c0b2ce789bce26bc13": {
+            "position": {
+                "x": 3472,
+                "y": 3316
+            },
+            "mid": "6372b1c0b2ce789bce26bc13",
+            "entity": "ent_rightroad",
+            "label": "right",
+            "generic": {
+                "current": 0,
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "farm",
+                        "value": "0"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc1a": {
+            "position": {
+                "x": 2680,
+                "y": 2680
+            },
+            "mid": "6372b1c0b2ce789bce26bc1a",
+            "entity": "ent_treeLand1v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752701649,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745501649"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744601649"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc28": {
+            "position": {
+                "x": 3560,
+                "y": 2944
+            },
+            "mid": "6372b1c0b2ce789bce26bc28",
+            "entity": "ent_treeLand3v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752769817,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745569817"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744669817"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc23": {
+            "position": {
+                "x": 2976,
+                "y": 2944
+            },
+            "mid": "6372b1c0b2ce789bce26bc23",
+            "entity": "ent_treeLand2v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752646936,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745446936"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744546936"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc24": {
+            "position": {
+                "x": 2920,
+                "y": 2648
+            },
+            "mid": "6372b1c0b2ce789bce26bc24",
+            "entity": "ent_treeLand2v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752709264,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745509264"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744609264"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc30": {
+            "position": {
+                "x": 2928,
+                "y": 2736
+            },
+            "mid": "6372b1c0b2ce789bce26bc30",
+            "entity": "ent_treeLand4v1",
+            "generic": {
+                "current": 4,
+                "state": "sapling1",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711762675248,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711744675248"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711736575248"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc35": {
+            "position": {
+                "x": 2856,
+                "y": 2896
+            },
+            "mid": "6372b1c0b2ce789bce26bc35",
+            "entity": "ent_treeLand4v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752658189,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745458189"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744558189"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc40": {
+            "position": {
+                "x": 3448,
+                "y": 3040
+            },
+            "mid": "6372b1c0b2ce789bce26bc40",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc25": {
+            "position": {
+                "x": 3208,
+                "y": 2656
+            },
+            "mid": "6372b1c0b2ce789bce26bc25",
+            "entity": "ent_treeLand2v3",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752731438,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745531438"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744631438"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc27": {
+            "position": {
+                "x": 3608,
+                "y": 2936
+            },
+            "mid": "6372b1c0b2ce789bce26bc27",
+            "entity": "ent_treeLand3v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752774209,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745574209"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744674209"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc3d": {
+            "position": {
+                "x": 3320,
+                "y": 3040
+            },
+            "mid": "6372b1c0b2ce789bce26bc3d",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6372b1c0b2ce789bce26bc1d": {
+            "position": {
+                "x": 3296,
+                "y": 2648
+            },
+            "mid": "6372b1c0b2ce789bce26bc1d",
+            "entity": "ent_treeLand2v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752737033,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745537033"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744637033"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc2f": {
+            "position": {
+                "x": 3144,
+                "y": 2944
+            },
+            "mid": "6372b1c0b2ce789bce26bc2f",
+            "entity": "ent_treeLand4v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752628506,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745428506"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744528506"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc31": {
+            "position": {
+                "x": 3040,
+                "y": 3032
+            },
+            "mid": "6372b1c0b2ce789bce26bc31",
+            "entity": "ent_treeLand4v1",
+            "generic": {
+                "current": 3,
+                "state": "sprout",
+                "displayInfo": {
+                    "format": "",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "utcRefresh": 1711752633976,
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "chops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1711745433976"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "lastChop",
+                        "value": "1711744533976"
+                    }
+                ]
+            }
+        },
+        "6372b1c0b2ce789bce26bc43": {
+            "position": {
+                "x": 3384,
+                "y": 3072
+            },
+            "mid": "6372b1c0b2ce789bce26bc43",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "63b2e70a51d80be9e0273c82": {
+            "position": {
+                "x": 3480,
+                "y": 3104
+            },
+            "mid": "63b2e70a51d80be9e0273c82",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "6525c0aaf519f58048d82f9d": {
+            "position": {
+                "x": 3283.5,
+                "y": 3381
+            },
+            "mid": "6525c0aaf519f58048d82f9d",
+            "entity": "ent_roadtv",
+            "generic": {
+                "current": 0,
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": []
+            }
+        },
+        "6556bc24d443cea74ebf5c1a": {
+            "position": {
+                "x": 3480,
+                "y": 3072
+            },
+            "mid": "6556bc24d443cea74ebf5c1a",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dc78ae9da64780e8e8d": {
+            "position": {
+                "x": 3384,
+                "y": 3136
+            },
+            "mid": "659d6dc78ae9da64780e8e8d",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dc48ae9da64780e8e01": {
+            "position": {
+                "x": 3352,
+                "y": 3136
+            },
+            "mid": "659d6dc48ae9da64780e8e01",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dc08ae9da64780e8cf9": {
+            "position": {
+                "x": 3320,
+                "y": 3136
+            },
+            "mid": "659d6dc08ae9da64780e8cf9",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dcd8ae9da64780e8fe4": {
+            "position": {
+                "x": 3448,
+                "y": 3136
+            },
+            "mid": "659d6dcd8ae9da64780e8fe4",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dc98ae9da64780e8f21": {
+            "position": {
+                "x": 3416,
+                "y": 3136
+            },
+            "mid": "659d6dc98ae9da64780e8f21",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dd18ae9da64780e90d4": {
+            "position": {
+                "x": 3480,
+                "y": 3040
+            },
+            "mid": "659d6dd18ae9da64780e90d4",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dce8ae9da64780e9046": {
+            "position": {
+                "x": 3480,
+                "y": 3136
+            },
+            "mid": "659d6dce8ae9da64780e9046",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dd78ae9da64780e92a7": {
+            "position": {
+                "x": 3480,
+                "y": 2976
+            },
+            "mid": "659d6dd78ae9da64780e92a7",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6dd48ae9da64780e9159": {
+            "position": {
+                "x": 3480,
+                "y": 3008
+            },
+            "mid": "659d6dd48ae9da64780e9159",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6ddd8ae9da64780e94dd": {
+            "position": {
+                "x": 3448,
+                "y": 2976
+            },
+            "mid": "659d6ddd8ae9da64780e94dd",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e078ae9da64780ea119": {
+            "position": {
+                "x": 3352,
+                "y": 2976
+            },
+            "mid": "659d6e078ae9da64780ea119",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e038ae9da64780e9ff3": {
+            "position": {
+                "x": 3416,
+                "y": 2976
+            },
+            "mid": "659d6e038ae9da64780e9ff3",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e068ae9da64780ea09e": {
+            "position": {
+                "x": 3384,
+                "y": 2976
+            },
+            "mid": "659d6e068ae9da64780ea09e",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e0d8ae9da64780ea267": {
+            "position": {
+                "x": 3320,
+                "y": 2976
+            },
+            "mid": "659d6e0d8ae9da64780ea267",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e598ae9da64780eb87e": {
+            "position": {
+                "x": 3416,
+                "y": 2944
+            },
+            "mid": "659d6e598ae9da64780eb87e",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e108ae9da64780ea2f7": {
+            "position": {
+                "x": 3320,
+                "y": 2944
+            },
+            "mid": "659d6e108ae9da64780ea2f7",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e138ae9da64780ea3ff": {
+            "position": {
+                "x": 3384,
+                "y": 2944
+            },
+            "mid": "659d6e138ae9da64780ea3ff",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e118ae9da64780ea387": {
+            "position": {
+                "x": 3352,
+                "y": 2944
+            },
+            "mid": "659d6e118ae9da64780ea387",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e5c8ae9da64780eb935": {
+            "position": {
+                "x": 3480,
+                "y": 2944
+            },
+            "mid": "659d6e5c8ae9da64780eb935",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e748ae9da64780ebff9": {
+            "position": {
+                "x": 3512,
+                "y": 3072
+            },
+            "mid": "659d6e748ae9da64780ebff9",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e738ae9da64780ebf85": {
+            "position": {
+                "x": 3512,
+                "y": 3040
+            },
+            "mid": "659d6e738ae9da64780ebf85",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e6e8ae9da64780ebe06": {
+            "position": {
+                "x": 3512,
+                "y": 2944
+            },
+            "mid": "659d6e6e8ae9da64780ebe06",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e718ae9da64780ebf22": {
+            "position": {
+                "x": 3512,
+                "y": 3008
+            },
+            "mid": "659d6e718ae9da64780ebf22",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e768ae9da64780ec080": {
+            "position": {
+                "x": 3512,
+                "y": 3104
+            },
+            "mid": "659d6e768ae9da64780ec080",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e5b8ae9da64780eb8de": {
+            "position": {
+                "x": 3448,
+                "y": 2944
+            },
+            "mid": "659d6e5b8ae9da64780eb8de",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e6f8ae9da64780ebeb7": {
+            "position": {
+                "x": 3512,
+                "y": 2976
+            },
+            "mid": "659d6e6f8ae9da64780ebeb7",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e878ae9da64780ec658": {
+            "position": {
+                "x": 3448,
+                "y": 2912
+            },
+            "mid": "659d6e878ae9da64780ec658",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e788ae9da64780ec152": {
+            "position": {
+                "x": 3512,
+                "y": 3136
+            },
+            "mid": "659d6e788ae9da64780ec152",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e838ae9da64780ec50c": {
+            "position": {
+                "x": 3512,
+                "y": 2912
+            },
+            "mid": "659d6e838ae9da64780ec50c",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e858ae9da64780ec5ce": {
+            "position": {
+                "x": 3480,
+                "y": 2912
+            },
+            "mid": "659d6e858ae9da64780ec5ce",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6ea28ae9da64780ed095": {
+            "position": {
+                "x": 3320,
+                "y": 2880
+            },
+            "mid": "659d6ea28ae9da64780ed095",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e8b8ae9da64780ec7c3": {
+            "position": {
+                "x": 3352,
+                "y": 2912
+            },
+            "mid": "659d6e8b8ae9da64780ec7c3",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e8a8ae9da64780ec726": {
+            "position": {
+                "x": 3384,
+                "y": 2912
+            },
+            "mid": "659d6e8a8ae9da64780ec726",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e888ae9da64780ec6ae": {
+            "position": {
+                "x": 3416,
+                "y": 2912
+            },
+            "mid": "659d6e888ae9da64780ec6ae",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6e8e8ae9da64780ec8ca": {
+            "position": {
+                "x": 3320,
+                "y": 2912
+            },
+            "mid": "659d6e8e8ae9da64780ec8ca",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6ea48ae9da64780ed102": {
+            "position": {
+                "x": 3352,
+                "y": 2880
+            },
+            "mid": "659d6ea48ae9da64780ed102",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6ea78ae9da64780ed1aa": {
+            "position": {
+                "x": 3416,
+                "y": 2880
+            },
+            "mid": "659d6ea78ae9da64780ed1aa",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d6ea58ae9da64780ed143": {
+            "position": {
+                "x": 3384,
+                "y": 2880
+            },
+            "mid": "659d6ea58ae9da64780ed143",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_soil",
+            "soil": {
+                "state": "normal"
+            }
+        },
+        "659d71858ae9da64780fb3f4": {
+            "position": {
+                "x": 3552,
+                "y": 3086
+            },
+            "mid": "659d71858ae9da64780fb3f4",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_sluggery",
+            "generic": {
+                "current": 0,
+                "state": "empty",
+                "displayInfo": {
+                    "format": "Silk Slug Required",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "trackers": [
+                    {
+                        "numeric": true,
+                        "name": "lastTimer",
+                        "value": "1704817029763"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "item",
+                        "value": ""
+                    },
+                    {
+                        "numeric": true,
+                        "name": "qty",
+                        "value": "1"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "xp",
+                        "value": "1"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "silked",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "bonusitem",
+                        "value": ""
+                    },
+                    {
+                        "numeric": true,
+                        "name": "bonusqty",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "drops",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "deathdrops",
+                        "value": "0"
+                    }
+                ],
+                "statics": []
+            }
+        },
+        "659d71b48ae9da64780fc1f0": {
+            "position": {
+                "x": 3552,
+                "y": 2961
+            },
+            "mid": "659d71b48ae9da64780fc1f0",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_textile",
+            "generic": {
+                "current": 1,
+                "state": "loaded",
+                "displayInfo": {
+                    "format": "Click to Sew",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "allowPublic",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "inUseBy",
+                        "value": ""
+                    },
+                    {
+                        "numeric": true,
+                        "name": "finishTime",
+                        "value": "0"
+                    }
+                ]
+            }
+        },
+        "659d72fe8ae9da6478102992": {
+            "position": {
+                "x": 3224,
+                "y": 2910
+            },
+            "mid": "659d72fe8ae9da6478102992",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_woodwork",
+            "generic": {
+                "current": 1,
+                "state": "loaded",
+                "displayInfo": {
+                    "format": "entity.workbenchactive",
+                    "values": [],
+                    "utcTarget": 0
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "allowPublic",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "inUseBy",
+                        "value": ""
+                    },
+                    {
+                        "numeric": true,
+                        "name": "finishTime",
+                        "value": "0"
+                    }
+                ]
+            }
+        },
+        "659d72308ae9da64780fe9e5": {
+            "position": {
+                "x": 3152,
+                "y": 3057
+            },
+            "mid": "659d72308ae9da64780fe9e5",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_kiln",
+            "generic": {
+                "current": 0,
+                "state": "empty",
+                "displayInfo": {
+                    "format": "entity.softwoodrequired",
+                    "values": [
+                        "6"
+                    ],
+                    "utcTarget": 0
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "allowPublic",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "inUseBy",
+                        "value": ""
+                    },
+                    {
+                        "numeric": true,
+                        "name": "finishTime",
+                        "value": "0"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "firedUntil",
+                        "value": "1711730688568"
+                    }
+                ]
+            }
+        },
+        "659e1b67560b512bab74e10f": {
+            "position": {
+                "x": 3312,
+                "y": 2752
+            },
+            "mid": "659e1b67560b512bab74e10f",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_puzzle_pixel",
+            "generic": {
+                "current": 0,
+                "state": "always",
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": false,
+                        "name": "fish1",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish2",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish3",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish4",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish5",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish6",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish7",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish8",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish9",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish10",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish11",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": false,
+                        "name": "fish12",
+                        "value": "visible"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "count",
+                        "value": "12"
+                    },
+                    {
+                        "numeric": true,
+                        "name": "fishes",
+                        "value": "0"
+                    }
+                ]
+            }
+        },
+        "65a1af0c785fb5d4f3c3175f": {
+            "position": {
+                "x": 3488,
+                "y": 3168
+            },
+            "mid": "65a1af0c785fb5d4f3c3175f",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_multiMushroom",
+            "generic": {
+                "current": 14,
+                "state": "state14",
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "current",
+                        "value": "14"
+                    }
+                ]
+            }
+        },
+        "65a1af0f785fb5d4f3c317c7": {
+            "position": {
+                "x": 3440,
+                "y": 3168
+            },
+            "mid": "65a1af0f785fb5d4f3c317c7",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_multiMushroom",
+            "generic": {
+                "current": 9,
+                "state": "state9",
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "current",
+                        "value": "9"
+                    }
+                ]
+            }
+        },
+        "65a1af11785fb5d4f3c31826": {
+            "position": {
+                "x": 3400,
+                "y": 3168
+            },
+            "mid": "65a1af11785fb5d4f3c31826",
+            "player": "63209d716467891bedff7958",
+            "entity": "ent_multiMushroom",
+            "generic": {
+                "current": 8,
+                "state": "state8",
+                "displayInfo": {
+                    "format": "",
+                    "values": []
+                },
+                "trackers": [],
+                "statics": [
+                    {
+                        "numeric": true,
+                        "name": "current",
+                        "value": "8"
+                    }
+                ]
+            }
+        },
+        "65d10cdf2bfe4fdd6ea738e5": {
+            "position": {
+                "x": 3392,
+                "y": 2704
+            },
+            "mid": "65d10cdf2bfe4fdd6ea738e5",
+            "player": "62c778d88674cbaa3e9ed841",
+            "entity": "ent_storageChest6Slot"
+        }
+    },
+    "levels": {
+        "farming": {
+            "level": 8,
+            "exp": 23155.899999991576,
+            "totalExp": 507055.90000007296
+        },
+        "forestry": {
+            "level": 3,
+            "exp": 15131,
+            "totalExp": 81231
+        },
+        "slugger": {
+            "level": 0,
+            "exp": 8068,
+            "totalExp": 8068
+        },
+        "woodwork": {
+            "level": 1,
+            "exp": 13379.19999999997,
+            "totalExp": 23379.200000000084
+        },
+        "ceramicist": {
+            "level": 3,
+            "exp": 19402,
+            "totalExp": 85502
+        },
+        "textiler": {
+            "level": 1,
+            "exp": 8504,
+            "totalExp": 18504
+        },
+        "petcare": {
+            "level": 0,
+            "exp": 6,
+            "totalExp": 6
+        }
+    },
+    "storage": {
+        "size": 18,
+        "removeOnly": true,
+        "slots": {
+            "0": {
+                "slot": 0,
+                "item": "itm_grumpkinSeeds",
+                "quantity": 10
+            },
+            "1": {
+                "slot": 1,
+                "item": "itm_wood",
+                "quantity": 248
+            },
+            "2": {
+                "slot": 2,
+                "item": "itm_scarrotFruit",
+                "quantity": 14
+            },
+            "3": {
+                "slot": 3,
+                "item": "itm_butterberry",
+                "quantity": 140
+            },
+            "4": {
+                "slot": 4,
+                "item": "itm_popberryFruit",
+                "quantity": 298
+            },
+            "5": {
+                "slot": 5,
+                "item": "itm_clover4LeafFruit",
+                "quantity": 5
+            },
+            "6": {
+                "slot": 6,
+                "item": "itm_gameticket",
+                "quantity": 11
+            },
+            "7": {
+                "slot": 7,
+                "item": "itm_hard_wood",
+                "quantity": 30
+            },
+            "8": {
+                "slot": 8,
+                "item": "itm_grumpkinFruit",
+                "quantity": 9
+            },
+            "10": {
+                "slot": 10,
+                "item": "itm_cloverFruit",
+                "quantity": 264
+            },
+            "11": {
+                "slot": 11,
+                "item": "itm_grainbow",
+                "quantity": 178
+            },
+            "13": {
+                "slot": 13,
+                "item": "itm_silkfiber",
+                "quantity": 3
+            },
+            "15": {
+                "slot": 15,
+                "item": "itm_silkslugslime",
+                "quantity": 2
+            }
+        }
+    },
+    "mpSell": 500,
+    "mpBuy": 500
+}
