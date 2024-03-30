@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from typing import cast
 
+import arrow
 from fastapi import HTTPException
 from playwright.sync_api import sync_playwright
 
@@ -62,14 +63,18 @@ def parse_tree_data(state: dict) -> list[dict]:
 
         try:
             next_respawn = datetime.fromtimestamp(item["generic"]["utcRefresh"] / 1000)
+            next_respawn_h = arrow.get(next_respawn).humanize(
+                datetime.now(), granularity=["hour", "minute", "second"]
+            )
         except Exception:
-            next_respawn = None
+            next_respawn, next_respawn_h = None
 
         results.append(
             {
                 "entity": item["entity"],
                 "position": item["position"],
                 "next_respawn": next_respawn,
+                "next_respawn_h": next_respawn_h,
                 "current_state": item["generic"]["state"],
             }
         )

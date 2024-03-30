@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "pixel-monitor-ext",
+    "version": "1.0.0",
+    "action": { "default_popup": "index.html" },
+    "host_permissions": [
+      "https://play.pixels.xyz/*"
+    ],
+    "permissions": [ "tabs" ]
+}
