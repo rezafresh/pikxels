@@ -21,11 +21,11 @@ git-push: lint create-requirements-file
 	@git push
 clear-logs:
 	@rm logs/*.log logs/*.json
-docker-up: create-requirements-file docker-down
+docker-up: docker-down create-requirements-file
 	@docker compose up --build -d
 docker-down:
 	@docker compose down
-browserless-up: create-requirements-file browserless-down
+browserless-up: browserless-down
 	@docker compose up browserless -d
 browserless-down:
 	@docker compose down browserless
