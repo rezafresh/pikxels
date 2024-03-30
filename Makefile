@@ -8,13 +8,13 @@ lint:
 start-browserless:
 	@-docker stop browserless 2> /dev/null
 	@docker run --rm -p 33000:3000 --name browserless \
-		-e "MAX_CONCURRENT_SESSIONS=2500" \
-		-e "MAX_QUEUE_LENGTH=2500" \
+		-e "MAX_CONCURRENT_SESSIONS=5" \
+		-e "MAX_QUEUE_LENGTH=5" \
 		-e "CONNECTION_TIMEOUT=-1" \
 		browserless/chrome
 fetch-land-state:
 	@poetry run dotenv run \
-		python scripts/fetch-land-state.py --land "$${land}" > logs/land-"$${land}"-state.json
+		python scripts/fetch_land_state.py --land "$${land}" > logs/land-"$${land}"-state.json
 serve:
 	@poetry run dotenv run \
 		uvicorn app.api.asgi:app --host 0.0.0.0 --port 9000 --reload
