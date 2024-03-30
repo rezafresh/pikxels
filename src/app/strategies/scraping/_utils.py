@@ -13,7 +13,7 @@ def retry_until_valid(*, tries: int = 3):
                     if result := f(*args, **kwargs):
                         break
                 except Exception:
-                    sleep(1)
+                    sleep(2)
                     _tries -= 1
             return result
 

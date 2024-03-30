@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import cast
 
 from fastapi import HTTPException
-from playwright.sync_api import ViewportSize, sync_playwright
+from playwright.sync_api import sync_playwright
 
 from ... import settings
 from ._utils import phaser_land_state_getter
@@ -22,8 +22,7 @@ def get_land_state(land_number: int) -> dict:
                 422, "An error has ocurred while connecting to the chrome instance"
             )
 
-        ctx = browser.new_context(viewport=ViewportSize(width=1920, height=1080))
-        page = ctx.new_page()
+        page = browser.new_page()
         page.set_default_navigation_timeout(DEFAULT_TIMEOUT)
         page.set_default_timeout(DEFAULT_TIMEOUT)
 
@@ -46,8 +45,7 @@ def get_land_state(land_number: int) -> dict:
                 raise HTTPException(422, "Could not parse land state data")
         finally:
             page.close()
-            ctx.close()
-            browser.close()
+            # browser.close()
 
     return state
 

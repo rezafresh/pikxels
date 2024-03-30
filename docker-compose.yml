@@ -3,14 +3,16 @@ services:
   browserless:
     image: browserless/chrome
     environment:
-      MAX_CONCURRENT_SESSIONS: 15
-      MAX_QUEUE_LENGTH: 4985
+      MAX_CONCURRENT_SESSIONS: 10
+      MAX_QUEUE_LENGTH: 4990
       CONNECTION_TIMEOUT: -1
+      PREBOOT_CHROME: true
+      KEEP_ALIVE: true
     ports:
       - 33000:3000
   api:
     build: .
     environment:
-      BROWSERLESS_URL: ws://browserless:3000/?stealth
+      BROWSERLESS_URL: ws://browserless:3000/?stealth&headless=true
     ports:
       - 9000:9000
