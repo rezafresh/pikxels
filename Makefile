@@ -15,9 +15,9 @@ ngrok:
 	@ssh -R 443:localhost:9000 v2@connect.ngrok-agent.com http
 create-requirements-file:
 	@poetry export -q --without=dev -o requirements.txt
-git-push: create-requirements-file lint
+git-push: lint create-requirements-file
 	@git add .
-	@git commit -m "wip"
+	@git commit -m "$${msg:-wip}"
 	@git push
 clear-logs:
 	@rm logs/*.log logs/*.json
