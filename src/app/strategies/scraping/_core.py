@@ -22,7 +22,8 @@ def get_land_state(land_number: int) -> dict:
                 422, "An error has ocurred while connecting to the chrome instance"
             )
 
-        page = browser.new_page()
+        context = browser.new_context()
+        page = context.new_page()
         page.set_default_navigation_timeout(DEFAULT_TIMEOUT)
         page.set_default_timeout(DEFAULT_TIMEOUT)
 
@@ -45,7 +46,8 @@ def get_land_state(land_number: int) -> dict:
                 raise HTTPException(422, "Could not parse land state data")
         finally:
             page.close()
-            # browser.close()
+            context.close()
+            browser.close()
 
     return state
 

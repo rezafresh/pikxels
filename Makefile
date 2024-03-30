@@ -22,11 +22,11 @@ git-push: lint create-requirements-file
 clear-logs:
 	@rm logs/*.log logs/*.json
 docker-up: docker-down create-requirements-file
-	@docker compose up --build -d
+	@docker compose up --build
 docker-down:
 	@docker compose down
 browserless-up: browserless-down
-	@docker compose up browserless -d
+	@docker compose up browserless
 browserless-down:
 	@docker compose down browserless
 start-load-test:
