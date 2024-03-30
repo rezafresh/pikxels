@@ -5,8 +5,10 @@ async function getLandState(landNumber) {
 
 async function main() {
     return await Promise.all(
-        Array.from({length: process.argv[2]}, (_, i) => i + 1).map( _ => getLandState(_))
+        Array.from({length: process.argv[2]}, (_, i) => i + 1).map(
+            _ => getLandState(_).then(console.log).catch(console.error)
+        )
     )
 }
 
-main().then(console.log).catch(console.error)
+main()

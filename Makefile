@@ -21,13 +21,13 @@ git-push: lint create-requirements-file
 	@git push
 clear-logs:
 	@rm logs/*.log logs/*.json
-docker-up: create-requirements-file
+docker-up: create-requirements-file docker-down
 	@docker compose up --build -d
 docker-down:
 	@docker compose down
-browserless-up: create-requirements-file
+browserless-up: create-requirements-file browserless-down
 	@docker compose up browserless -d
 browserless-down:
 	@docker compose down browserless
 start-load-test:
-	@node tests/load-test.js "$${load:-1}"
+	@node tests/load-test.js "$${load:-10}"
