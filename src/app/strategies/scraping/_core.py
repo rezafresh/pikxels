@@ -8,12 +8,20 @@ from playwright.sync_api import ViewportSize, sync_playwright
 from ... import settings
 from ._utils import phaser_land_state_getter
 
-DEFAULT_TIMEOUT = 60000 * 5  # 5 minutes
+DEFAULT_TIMEOUT = 60000 * 15  # 15 minutes
 
 
 def get_land_state(land_number: int) -> dict:
     with sync_playwright() as pw:
-        browser = pw.chromium.connect_over_cdp(settings.BROWSERLESS_URL)
+        try:
+            browser = pw.chromium.connect_over_cdp(
+                settings.BROWSERLESS_URL, timeout=DEFAULT_TIMEOUT
+            )
+        except Exception:
+            raise HTTPException(
+                422, "An error has ocurred while connecting to the chrome instance"
+            )
+
         ctx = browser.new_context(viewport=ViewportSize(width=1920, height=1080))
         page = ctx.new_page()
         page.set_default_navigation_timeout(DEFAULT_TIMEOUT)

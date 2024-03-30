@@ -5,28 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "serve",
+            "name": "fetch_land_state",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.app.cli.fetch_land_state",
+            "args": ["--land", "667"]
+        },
+        {
+            "name": "api",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
+            "envFile": "${workspaceFolder}/.env",
             "args": [
                 "src.app.api.asgi:app",
-                "--port", "9000",
+                "--port",
+                "9000",
                 "--reload"
             ],
             "jinja": true
-        },
-        {
-            "name": "fetch-land-state",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "scripts/fetch-land-state.py",
-            "args": [
-                "--land",
-                "4182"
-            ],
-            "envFile": "${workspaceFolder}/.env",
-            "console": "integratedTerminal"
         }
     ]
 }

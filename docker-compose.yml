@@ -3,8 +3,8 @@ services:
   browserless:
     image: browserless/chrome
     environment:
-      MAX_CONCURRENT_SESSIONS: 5
-      MAX_QUEUE_LENGTH: 5
+      MAX_CONCURRENT_SESSIONS: 15
+      MAX_QUEUE_LENGTH: 4985
       CONNECTION_TIMEOUT: -1
     ports:
       - 33000:3000

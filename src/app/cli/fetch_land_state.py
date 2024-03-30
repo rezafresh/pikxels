@@ -12,8 +12,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    result = json.dumps(get_land_state(args.land), indent=4)
-    print(result)
+    result = get_land_state(args.land)
+    print(json.dumps(result, indent=4))
 
 
 if __name__ == "__main__":

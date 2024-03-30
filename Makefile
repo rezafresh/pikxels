@@ -5,9 +5,6 @@ lint:
 	@poetry run black src
 	@poetry run isort --profile black src
 	@poetry run ruff check src
-start-browserless:
-	@docker compose down browserless
-	@docker compose up browserless -d
 fetch-land-state:
 	@poetry run dotenv run \
 		python -m src.app.cli.fetch_land_state --land "$${land}" > logs/land-"$${land}"-state.json
@@ -24,5 +21,13 @@ git-push: create-requirements-file lint
 	@git push
 clear-logs:
 	@rm logs/*.log logs/*.json
-start: create-requirements-file
+docker-up: create-requirements-file
 	@docker compose up --build -d
+docker-down:
+	@docker compose down
+browserless-up: create-requirements-file
+	@docker compose up browserless -d
+browserless-down:
+	@docker compose down browserless
+start-load-test:
+	@node tests/load-test.js "$${load:-1}"
