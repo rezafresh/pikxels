@@ -14,7 +14,7 @@ services:
       - 33000:3000
   redis:
     image: redis
-    command: redis-server --save 60 1 --loglevel warning
+    command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
     ports:
       - 6379:6379
     volumes:
@@ -23,7 +23,7 @@ services:
     build: .
     environment:
       REDIS_HOST: redis
-      REDIS_DEFAULT_TTL: -1
+      REDIS_DEFAULT_TTL: 10
       BROWSERLESS_URL: ws://browserless:3000
     command: [ "make", "start-rq-worker", "workers=8" ]
     depends_on:
@@ -32,7 +32,7 @@ services:
     build: .
     environment:
       REDIS_HOST: redis
-      REDIS_DEFAULT_TTL: -1
+      REDIS_DEFAULT_TTL: 10
       BROWSERLESS_URL: ws://browserless:3000
     command: [ "make", "start-api" ]
     ports:
