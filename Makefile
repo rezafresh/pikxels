@@ -41,4 +41,4 @@ redis-flushall:
 rq-queue-empty:
 	@poetry run rq empty default
 docker-standalone-worker: docker-down
-	docker compose up browserless worker
+	docker compose up browserless workers
