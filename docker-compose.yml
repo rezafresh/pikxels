@@ -35,6 +35,7 @@ services:
       REDIS_HOST: redis
       REDIS_DEFAULT_TTL: -1
       BROWSERLESS_URL: ws://browserless:3000
+    command: [ "make", "start-api" ]
     ports:
       - 9000:9000
     depends_on:
