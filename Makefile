@@ -30,7 +30,7 @@ start-worker:
 	@poetry run dotenv run rq worker-pool -n "$${workers:-1}" > logs/rq-worker.log
 redis-flushall:
 	@docker compose exec redis redis-cli flushall
-start-standalone-worker:
+docker-start-standalone-worker:
 	@docker compose down browserless worker
 	@docker compose up browserless worker
 docker-entry-api:

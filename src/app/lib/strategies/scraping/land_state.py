@@ -11,12 +11,12 @@ from playwright.async_api import Page, async_playwright
 from .... import settings
 from ._utils import retry_until_valid
 
-queue = rq.Queue(
-    connection=redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
-)
-
 
 class LandState:
+    queue = rq.Queue(
+        connection=redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+    )
+
     def __init__(self, land_number, state: dict) -> None:
         self._land_number = land_number
         self._state = state
@@ -110,7 +110,7 @@ class LandState:
 
     @classmethod
     def from_cache(cls, land_number: int) -> Union["LandState", None]:
-        if job := queue.fetch_job(f"app:land:{land_number}:state"):
+        if job := cls.queue.fetch_job(f"app:land:{land_number}:state"):
             if cached := job.result:
                 land_state = json.loads(cached)
                 return LandState(land_number, land_state)
@@ -133,7 +133,7 @@ class LandState:
 
     @classmethod
     def enqueue(cls, land_number: int) -> rq.job.Job:
-        return queue.enqueue(
+        return cls.queue.enqueue(
             worker,
             land_number,
             job_id=f"app:land:{land_number}:state",
