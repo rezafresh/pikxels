@@ -28,7 +28,6 @@ services:
     command: [ "make", "start-rq-worker", "workers=8" ]
     depends_on:
       - browserless
-      - redis
   api:
     build: .
     environment:
