@@ -1,15 +1,19 @@
+import asyncio
 import json
 from datetime import datetime
 from typing import Union, cast
 
+import redis
+import rq
 from fastapi import HTTPException
-from playwright.async_api import async_playwright
-from redis import Redis
+from playwright.async_api import Page, async_playwright
 
 from .... import settings
-from ._utils import phaser_land_state_getter
+from ._utils import retry_until_valid
 
-redis = Redis()
+queue = rq.Queue(
+    connection=redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+)
 
 
 class LandState:
@@ -31,13 +35,6 @@ class LandState:
             return self._parse_trees(self._state)
         except Exception:
             raise HTTPException(422, "Could not parse trees data")
-
-    def save_to_cache(self):
-        redis.set(
-            f"app:land:{self.land_number}:state",
-            json.dumps(self.state),
-            ex=settings.REDIS_DEFAULT_TTL,
-        )
 
     def _parse_trees(self, state: dict) -> list[dict]:
         entities: dict = state["entities"]
@@ -113,16 +110,44 @@ class LandState:
 
     @classmethod
     def from_cache(cls, land_number: int) -> Union["LandState", None]:
-        if serialized_state := redis.get(f"app:land:{land_number}:state"):
-            state = json.loads(serialized_state)
-            return LandState(land_number, state)
+        if job := queue.fetch_job(f"app:land:{land_number}:state"):
+            if cached := job.result:
+                land_state = json.loads(cached)
+                return LandState(land_number, land_state)
         return None
 
     @classmethod
-    async def get(cls, land_number: int):
+    def get(cls, land_number: int):
         if land_state := cls.from_cache(land_number):
             return land_state
 
-        land_state = await cls.from_browser(land_number)
-        land_state.save_to_cache()
-        return land_state
+        job = cls.enqueue(land_number)
+
+        while True:
+            if job.is_finished:
+                return cls.from_cache(land_number)
+            elif job.is_failed:
+                return None
+
+            continue
+
+    @classmethod
+    def enqueue(cls, land_number: int) -> rq.job.Job:
+        return queue.enqueue(
+            worker,
+            land_number,
+            job_id=f"app:land:{land_number}:state",
+            result_ttl=settings.REDIS_DEFAULT_TTL,
+        )
+
+
+@retry_until_valid(tries=10)
+async def phaser_land_state_getter(page: Page):
+    return await page.evaluate(
+        "JSON.stringify(Phaser.Display.Canvas.CanvasPool.pool[0].parent.game.scene.scenes[1].stateManager.room.state)",
+    )
+
+
+def worker(land_number: int):
+    land_state: LandState = asyncio.run(LandState.from_browser(land_number))
+    return json.dumps(land_state.state)

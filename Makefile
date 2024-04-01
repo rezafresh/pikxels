@@ -19,7 +19,7 @@ git-push: lint create-requirements-file
 	@git commit -m "$${msg:-wip}"
 	@git push
 clear-logs:
-	@rm logs/*.log logs/*.json
+	@rm logs/*.log
 docker-down:
 	@docker compose down
 docker-up: docker-down create-requirements-file
@@ -29,6 +29,10 @@ start-services: docker-down
 start-load-test:
 	@node tests/load-test.js "$${load:-10}"
 start-rq-worker:
-	@poetry run dotenv run rq worker
-start-redis-cli:
+	@poetry run dotenv run rq worker-pool -n "$${workers:-1}" > logs/rq-worker.log
+redis-cli:
 	@docker compose exec redis redis-cli
+redis-flushall:
+	@docker compose exec redis redis-cli flushall
+rq-queue-empty:
+	@poetry run rq empty default
