@@ -162,3 +162,4 @@ cython_debug/
 !/src/app/lib
 /logs/*
 /docker/*
+/.env.docker

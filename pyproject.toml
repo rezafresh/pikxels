@@ -20,6 +20,7 @@ black = "^24.3.0"
 isort = "^5.13.2"
 ruff = "^0.3.4"
 python-dotenv = "^1.0.1"
+rq-dashboard = "^0.6.7.2"
 
 [build-system]
 requires = ["poetry-core"]

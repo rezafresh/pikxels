@@ -3,7 +3,7 @@ services:
   browserless:
     image: browserless/chrome
     environment:
-      MAX_CONCURRENT_SESSIONS: 5
+      MAX_CONCURRENT_SESSIONS: 4
       CONNECTION_TIMEOUT: -1
       MAX_QUEUE_LENGTH: 4995
       PREBOOT_CHROME: true
@@ -14,28 +14,25 @@ services:
       - 33000:3000
   redis:
     image: redis
-    command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
+    command:
+      - redis-server
+      - --save 60 1
+      - --loglevel warning
     ports:
       - 6379:6379
     volumes:
       - "./docker/redis:/data"
-  workers:
+  worker:
     build: .
-    environment:
-      REDIS_HOST: redis
-      REDIS_DEFAULT_TTL: 10
-      BROWSERLESS_URL: ws://browserless:3000
-    command: [ "make", "start-rq-worker", "workers=8" ]
+    env_file: .env.docker
+    command: docker-entry-worker workers=4
     depends_on:
       - browserless
   api:
     build: .
-    environment:
-      REDIS_HOST: redis
-      REDIS_DEFAULT_TTL: 10
-      BROWSERLESS_URL: ws://browserless:3000
-    command: [ "make", "start-api" ]
+    env_file: .env.docker
+    command: docker-entry-api
     ports:
       - 9000:9000
     depends_on:
-      - workers
+      - worker
