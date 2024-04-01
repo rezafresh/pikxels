@@ -5,11 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "fetch_land_state",
+            "name": "tree_hunt",
             "type": "debugpy",
             "request": "launch",
-            "module": "src.app.cli.fetch_land_state",
-            "args": ["--land", "667"]
+            "module": "src.app.cli.tree_hunt",
         },
         {
             "name": "api",

@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/
 lib64/
 parts/
 sdist/
@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 /logs/*
-!/*/.gitkeep
+/docker/*

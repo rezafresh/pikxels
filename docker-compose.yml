@@ -3,15 +3,22 @@ services:
   browserless:
     image: browserless/chrome
     environment:
-      MAX_CONCURRENT_SESSIONS: 15
-      MAX_QUEUE_LENGTH: 4985
+      MAX_CONCURRENT_SESSIONS: 5
       CONNECTION_TIMEOUT: -1
+      MAX_QUEUE_LENGTH: 4995
       PREBOOT_CHROME: true
       KEEP_ALIVE: true
       DEFAULT_STEALTH: true
       DEFAULT_HEADLESS: true
     ports:
       - 33000:3000
+  redis:
+    image: redis
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - 6379:6379
+    volumes:
+      - "./docker/redis:/data"
   api:
     build: .
     environment:

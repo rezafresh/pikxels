@@ -5,10 +5,8 @@ lint:
 	@poetry run black src
 	@poetry run isort --profile black src
 	@poetry run ruff check src
-start-fetch-land-state:
-	@poetry run dotenv run \
-		python -m src.app.cli.fetch_land_state \
-			--land "$${land}" > logs/land-"$${land}"-state.json
+start-tree-hunt:
+	@poetry run dotenv run python -m src.app.cli.tree_hunt
 start-api-dev:
 	@poetry run dotenv run \
 		uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000 --reload
@@ -27,6 +25,6 @@ docker-down:
 docker-up: docker-down create-requirements-file
 	@docker compose up --build
 start-services: docker-down
-	@docker compose up browserless
+	@docker compose up browserless redis
 start-load-test:
 	@node tests/load-test.js "$${load:-10}"
