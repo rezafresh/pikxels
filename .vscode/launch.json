@@ -8,7 +8,7 @@
             "name": "tree_hunt",
             "type": "debugpy",
             "request": "launch",
-            "module": "src.app.cli.tree_hunt",
+            "module": "src.app.cli.tree_hunt"
         },
         {
             "name": "api",

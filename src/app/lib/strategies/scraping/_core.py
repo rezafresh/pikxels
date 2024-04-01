@@ -34,7 +34,7 @@ class LandState:
 
     def save_to_cache(self):
         redis.set(
-            f"land-{self.land_number}-state",
+            f"app:land:{self.land_number}:state",
             json.dumps(self.state),
             ex=settings.REDIS_DEFAULT_TTL,
         )
@@ -113,7 +113,7 @@ class LandState:
 
     @classmethod
     def from_cache(cls, land_number: int) -> Union["LandState", None]:
-        if serialized_state := redis.get(f"land-{land_number}-state"):
+        if serialized_state := redis.get(f"app:land:{land_number}:state"):
             state = json.loads(serialized_state)
             return LandState(land_number, state)
         return None

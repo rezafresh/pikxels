@@ -28,3 +28,7 @@ start-services: docker-down
 	@docker compose up browserless redis
 start-load-test:
 	@node tests/load-test.js "$${load:-10}"
+start-rq-worker:
+	@poetry run dotenv run rq worker
+start-redis-cli:
+	@docker compose exec redis redis-cli
