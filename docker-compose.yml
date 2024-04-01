@@ -3,9 +3,9 @@ services:
   browserless:
     image: browserless/chrome
     environment:
-      MAX_CONCURRENT_SESSIONS: 4
+      MAX_CONCURRENT_SESSIONS: ${DOCKER_BROWSERLESS_MAX_CONCURRENT_SESSIONS:-4}
       CONNECTION_TIMEOUT: -1
-      MAX_QUEUE_LENGTH: 4995
+      MAX_QUEUE_LENGTH: ${DOCKER_BROWSERLESS_MAX_QUEUE_LENGTH:-4996}
       PREBOOT_CHROME: true
       KEEP_ALIVE: true
       DEFAULT_STEALTH: true
@@ -25,7 +25,7 @@ services:
   worker:
     build: .
     env_file: .env.docker
-    command: docker-entry-worker workers=4
+    command: docker-entry-worker workers=${DOCKER_WORKER_WORKERS:-4}
     depends_on:
       - browserless
   api:
