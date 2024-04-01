@@ -10,6 +10,8 @@ start-tree-hunt:
 start-api-dev:
 	@poetry run dotenv run \
 		uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000 --reload
+start-api:
+	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
 ngrok:
 	@ssh -R 443:localhost:9000 v2@connect.ngrok-agent.com http
 create-requirements-file:
@@ -25,14 +27,18 @@ docker-down:
 docker-up: docker-down create-requirements-file
 	@docker compose up --build
 start-services: docker-down
-	@docker compose up browserless redis
+	@docker compose up browserless redis workers
 start-load-test:
 	@node tests/load-test.js "$${load:-10}"
-start-rq-worker:
+start-rq-worker-dev:
 	@poetry run dotenv run rq worker-pool -n "$${workers:-1}" > logs/rq-worker.log
+start-rq-worker:
+	rq worker-pool -n "$${workers:-1}"
 redis-cli:
 	@docker compose exec redis redis-cli
 redis-flushall:
 	@docker compose exec redis redis-cli flushall
 rq-queue-empty:
 	@poetry run rq empty default
+docker-standalone-worker: docker-down
+	docker compose up browserless worker

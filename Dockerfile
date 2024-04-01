@@ -4,5 +4,4 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
-ENTRYPOINT [ "sh", "scripts/docker-entrypoint.sh" ]
-EXPOSE 9000
+CMD [ "make", "start-api" ]

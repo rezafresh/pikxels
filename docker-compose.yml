@@ -19,9 +19,23 @@ services:
       - 6379:6379
     volumes:
       - "./docker/redis:/data"
+  workers:
+    build: .
+    environment:
+      REDIS_HOST: redis
+      REDIS_DEFAULT_TTL: -1
+      BROWSERLESS_URL: ws://browserless:3000
+    command: [ "make", "start-rq-worker", "workers=8" ]
+    depends_on:
+      - browserless
+      - redis
   api:
     build: .
     environment:
+      REDIS_HOST: redis
+      REDIS_DEFAULT_TTL: -1
       BROWSERLESS_URL: ws://browserless:3000
     ports:
       - 9000:9000
+    depends_on:
+      - workers
