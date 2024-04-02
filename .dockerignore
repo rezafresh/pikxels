@@ -1,6 +1,9 @@
-.ruff_cache
-.vscode
+/.ruff_cache
+/.vscode
 /docs
 /logs
 /tests
-.env
+/.env
+/.env.docker
+/.git
+/web

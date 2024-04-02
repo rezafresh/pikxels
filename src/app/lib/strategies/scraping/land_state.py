@@ -67,7 +67,7 @@ class LandState:
         async with async_playwright() as pw:
             try:
                 browser = await pw.chromium.connect_over_cdp(
-                    settings.BROWSERLESS_URL,
+                    settings.BROWSERLESS_CDP_ENDPOINT_URL,
                     timeout=settings.BROWSERLESS_DEFAULT_TIMEOUT,
                 )
             except Exception:
