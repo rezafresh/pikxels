@@ -39,7 +39,7 @@ docker-down:
 docker-up: docker-down create-requirements-file
 	@docker compose up --build
 docker-start-services: docker-down
-	@docker compose up browserless redis
+	@docker compose up browserless redis worker --build
 docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
 docker-start-standalone-worker:
