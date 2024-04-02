@@ -21,7 +21,9 @@ start-worker:
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}
 start-api:
 	@poetry run uvicorn src.app.api.asgi:app \
-		--host 0.0.0.0 --port ${API_PORT} --reload
+		--host 0.0.0.0 \
+		--port ${API_PORT} \
+		--reload
 start-tree-hunt:
 	@poetry run python -m src.app.cli.tree_hunt
 ngrok:
@@ -44,11 +46,13 @@ docker-start-standalone-worker:
 	@docker compose down browserless worker
 	@docker compose up browserless worker
 docker-entry-api:
-	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port ${API_PORT}
+	@uvicorn src.app.api.asgi:app \
+		--host 0.0.0.0 \
+		--port ${API_PORT}
 docker-entry-worker:
 	@rq worker-pool \
 		-n ${WORKER_CONCURRENCY} \
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}
 rq-dashboard:
-	@poetry run rq-dashboard \
+	poetry run rq-dashboard \
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}
