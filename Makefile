@@ -39,16 +39,14 @@ docker-down:
 docker-up: docker-down create-requirements-file
 	@docker compose up --build
 docker-start-services: docker-down
-	@docker compose up browserless redis worker --build
+	@docker compose up browserless redis
 docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
 docker-start-standalone-worker:
 	@docker compose down browserless worker
 	@docker compose up browserless worker
 docker-entry-api:
-	@uvicorn src.app.api.asgi:app \
-		--host 0.0.0.0 \
-		--port ${API_PORT}
+	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
 docker-entry-worker:
 	@rq worker-pool \
 		-n ${WORKER_CONCURRENCY} \

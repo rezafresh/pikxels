@@ -5,9 +5,6 @@ services:
     environment:
       MAX_CONCURRENT_SESSIONS: ${BROWSERLESS_MAX_CONCURRENT_SESSIONS}
       CONNECTION_TIMEOUT: -1
-      # MAX_QUEUE_LENGTH: ${BROWSERLESS_MAX_QUEUE_LENGTH:-4998}
-      # PREBOOT_CHROME: true
-      # KEEP_ALIVE: true
       DEFAULT_STEALTH: true
       DEFAULT_HEADLESS: true
     ports:
@@ -24,15 +21,21 @@ services:
       - "./docker/redis:/data"
   worker:
     build: .
-    env_file: .env.docker
+    env_file: .env
+    environment:
+      APP_BROWSERLESS_CDP_ENDPOINT_URL: ws://browserless:3000
+      APP_REDIS_HOST: redis
     command: make docker-entry-worker
     depends_on:
       - browserless
   api:
     build: .
-    env_file: .env.docker
+    env_file: .env
+    environment:
+      APP_BROWSERLESS_CDP_ENDPOINT_URL: ws://browserless:3000
+      APP_REDIS_HOST: redis
     command: make docker-entry-api
     ports:
-      - 9000:9000
+      - ${API_PORT}:9000
     depends_on:
       - worker
