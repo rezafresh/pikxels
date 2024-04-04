@@ -38,10 +38,9 @@ git-push: lint
 docker-down:
 	@docker compose down
 docker-up: docker-down
+	@docker compose up --build
+docker-up-detached: docker-down
 	@docker compose up -d --build
-docker-logs:
-	@docker compose logs -f
-docker-up-logs: docker-down docker-up docker-logs
 docker-start-services: docker-down
 	@docker compose up browserless redis
 docker-redis-flushall:
