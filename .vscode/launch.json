@@ -18,11 +18,16 @@
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "src.app.api.asgi:app",
-                "--port",
-                "9000",
+                "--port", "9000",
                 "--reload"
             ],
             "jinja": true
+        },
+        {
+            "name": "test",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "tests.test"
         }
     ]
 }
