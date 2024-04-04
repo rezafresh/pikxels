@@ -97,9 +97,9 @@ class LandState:
         cls, land_number: int, queue: rq.Queue = queue_default
     ) -> Union["LandState", None]:
         if job := queue.fetch_job(f"app:land:{land_number}:state"):
-            if cached := job.result:
-                land_state = json.loads(cached)
-                return LandState(land_number, land_state)
+            if latest := job.latest_result():
+                if cached := latest.return_value:
+                    return LandState(land_number, json.loads(cached))
         return None
 
     @classmethod
