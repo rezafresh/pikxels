@@ -27,7 +27,7 @@ class LandState:
         return self._state
 
     @property
-    def last_tree_respawn_in(self) -> timedelta:
+    def last_tree_respawn_in(self) -> timedelta | None:
         return self.get_last_tree_respawn_in()
 
     def get_last_tree_respawn_in(self) -> timedelta | None:
@@ -144,8 +144,12 @@ def worker(land_number: int):
     try:
         td = land_state.last_tree_respawn_in
     except Exception:
+        pass
+
+    if not td:
         td = timedelta(seconds=86400)  # 1 day
 
-    rq.job.get_current_job().result_ttl = int(td.total_seconds())
+    current_job = rq.job.get_current_job()
+    current_job.result_ttl = int(td.total_seconds())
     LandState.enqueue_in(land_number, td, queue=q.low)
     return json.dumps(land_state.state)
