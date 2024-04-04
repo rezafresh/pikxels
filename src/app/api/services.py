@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from ..lib.strategies.scraping import LandState
 
 
-def get_raw_land_state(land_number: int, cached: bool = True):
+def get_land_state(land_number: int, cached: bool = True):
     if land_state := LandState.get(land_number, cached):
         return {"state": land_state.state}
     raise HTTPException(422, "Could not retrieve the land state. Try again later.")

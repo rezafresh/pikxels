@@ -5,12 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "tree_hunt",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "src.app.cli.tree_hunt"
-        },
-        {
             "name": "api",
             "type": "debugpy",
             "request": "launch",
@@ -18,10 +12,32 @@
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "src.app.api.asgi:app",
-                "--port", "9000",
+                "--port",
+                "9000",
                 "--reload"
             ],
             "jinja": true
+        },
+        {
+            "name": "worker",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "rq.cli",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "worker-pool",
+                "-n", "2",
+                "-u", "redis://localhost:6379",
+                "default",
+                "low"
+            ]
+        },
+
+        {
+            "name": "tree_hunt",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.app.cli.tree_hunt"
         },
         {
             "name": "test",

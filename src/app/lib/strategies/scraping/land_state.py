@@ -1,7 +1,7 @@
 import asyncio
 import json
 from datetime import datetime, timedelta
-from random import randint
+from time import sleep
 from typing import Union
 
 import rq
@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from playwright.async_api import Page, async_playwright
 
 from .... import settings
-from ._queues import queue_default, queue_low
+from . import _queues as q
 from ._utils import retry_until_valid
 
 
@@ -28,21 +28,20 @@ class LandState:
 
     @property
     def last_tree_respawn_in(self) -> timedelta:
-        try:
-            return self._get_last_tree_respawn_in()
-        except Exception:
-            return timedelta(seconds=randint(180, 300))
+        return self._get_last_tree_respawn_in()
 
-    def _get_last_tree_respawn_in(self) -> timedelta:
+    def _get_last_tree_respawn_in(self) -> timedelta | None:
         entities: dict = self.state["entities"]
-        max_utc_refresh = max(
-            [
-                value["generic"]["utcRefresh"]
-                for key, value in entities.items()
-                if value["entity"].startswith("ent_tree")
-            ]
-        )
-        last_utc_refresh = datetime.fromtimestamp(max_utc_refresh / 1000)
+        max_utc_refreshes = [
+            value["generic"]["utcRefresh"]
+            for _, value in entities.items()
+            if value["entity"].startswith("ent_tree")
+        ]
+
+        if not max_utc_refreshes:
+            return None
+
+        last_utc_refresh = datetime.fromtimestamp(max(max_utc_refreshes) / 1000)
         now = datetime.now()
         return last_utc_refresh - now
 
@@ -94,7 +93,7 @@ class LandState:
 
     @classmethod
     def from_cache(
-        cls, land_number: int, queue: rq.Queue = queue_default
+        cls, land_number: int, *, queue: rq.Queue = q.default
     ) -> Union["LandState", None]:
         if job := queue.fetch_job(f"app:land:{land_number}:state"):
             if latest := job.latest_result():
@@ -103,44 +102,33 @@ class LandState:
         return None
 
     @classmethod
+    def enqueue(cls, land_number: int, *, queue: rq.Queue = q.default) -> rq.job.Job:
+        return queue.enqueue(
+            worker, land_number, job_id=f"app:land:{land_number}:state"
+        )
+
+    @classmethod
+    def enqueue_in(
+        cls, land_number: int, time_delta: timedelta, *, queue: rq.Queue = q.default
+    ) -> rq.job.Job:
+        return queue.enqueue_in(
+            time_delta, worker, land_number, job_id=f"app:land:{land_number}:state"
+        )
+
+    @classmethod
     def get(cls, land_number: int, cached: bool = True):
         if cached and (land_state := cls.from_cache(land_number)):
             return land_state
 
         job = cls.enqueue(land_number)
 
-        while True:
-            if job.is_finished:
-                return LandState(land_number, json.loads(job.result))
-            elif job.is_failed:
-                return None
+        while not (job.is_finished or job.is_failed):
+            sleep(1)
 
-            continue
+        if not job.result:
+            raise HTTPException(422, "The job returned a invalid land state")
 
-    @classmethod
-    def enqueue(
-        cls, land_number: int, *, queue: rq.Queue = queue_default
-    ) -> rq.job.Job:
-        return queue.enqueue(
-            worker,
-            land_number,
-            job_id=f"app:land:{land_number}:state",
-            result_ttl=-1,
-            retry=rq.Retry(max=5, interval=[10, 30, 60, 120, 300]),
-        )
-
-    @classmethod
-    def enqueue_in(
-        cls, land_number: int, at: timedelta, *, queue: rq.Queue = queue_default
-    ) -> rq.job.Job:
-        return queue.enqueue_in(
-            at,
-            worker,
-            land_number,
-            job_id=f"app:land:{land_number}:state",
-            result_ttl=-1,
-            retry=rq.Retry(max=5, interval=[10, 30, 60, 120, 300]),
-        )
+        return LandState(land_number, json.loads(job.result))
 
 
 @retry_until_valid(tries=10)
@@ -152,5 +140,11 @@ async def phaser_land_state_getter(page: Page):
 
 def worker(land_number: int):
     land_state: LandState = asyncio.run(LandState.from_browser(land_number))
-    LandState.enqueue_in(land_number, land_state.last_tree_respawn_in, queue=queue_low)
+    current_job = rq.job.get_current_job()
+
+    if last_tree_respawn := land_state.last_tree_respawn_in:
+        current_job.result_ttl = int(last_tree_respawn.total_seconds())
+    else:
+        current_job.result_ttl = 86400  # 1 day
+
     return json.dumps(land_state.state)
