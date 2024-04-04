@@ -111,7 +111,7 @@ class LandState:
 
         while True:
             if job.is_finished:
-                return cls.from_cache(land_number)
+                return LandState(land_number, json.loads(job.result))
             elif job.is_failed:
                 return None
 
@@ -152,6 +152,5 @@ async def phaser_land_state_getter(page: Page):
 
 def worker(land_number: int):
     land_state: LandState = asyncio.run(LandState.from_browser(land_number))
-    # LandState.enqueue_in(land_number, land_state.last_tree_respawn_in, queue=queue_low)
-    LandState.enqueue_in(land_number, timedelta(seconds=15), queue=queue_low)
+    LandState.enqueue_in(land_number, land_state.last_tree_respawn_in, queue=queue_low)
     return json.dumps(land_state.state)
