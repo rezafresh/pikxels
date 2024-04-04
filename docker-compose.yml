@@ -42,3 +42,9 @@ services:
       - ${API_PORT}:9000
     depends_on:
       - worker
+  rq-dashboard:
+    build: https://github.com/Parallels/rq-dashboard.git
+    environment:
+      RQ_DASHBOARD_REDIS_URL: redis://redis:6379
+    ports:
+      - 9181:9181
