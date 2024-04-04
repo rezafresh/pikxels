@@ -1,7 +1,7 @@
 import asyncio
 import json
+import time
 from datetime import datetime, timedelta
-from time import sleep
 from typing import Union
 
 import rq
@@ -28,12 +28,12 @@ class LandState:
 
     @property
     def last_tree_respawn_in(self) -> timedelta:
-        return self._get_last_tree_respawn_in()
+        return self.get_last_tree_respawn_in()
 
-    def _get_last_tree_respawn_in(self) -> timedelta | None:
+    def get_last_tree_respawn_in(self) -> timedelta | None:
         entities: dict = self.state["entities"]
         max_utc_refreshes = [
-            value["generic"]["utcRefresh"]
+            value["generic"].get("utcRefresh", time.time() / 1000)
             for _, value in entities.items()
             if value["entity"].startswith("ent_tree")
         ]
@@ -123,7 +123,7 @@ class LandState:
         job = cls.enqueue(land_number)
 
         while not (job.is_finished or job.is_failed):
-            sleep(1)
+            time.sleep(1)
 
         if not job.result:
             raise HTTPException(422, "The job returned a invalid land state")
@@ -142,9 +142,9 @@ def worker(land_number: int):
     land_state: LandState = asyncio.run(LandState.from_browser(land_number))
     current_job = rq.job.get_current_job()
 
-    if last_tree_respawn := land_state.last_tree_respawn_in:
-        current_job.result_ttl = int(last_tree_respawn.total_seconds())
-    else:
+    try:
+        current_job.result_ttl = int(land_state.last_tree_respawn_in.total_seconds())
+    except Exception:
         current_job.result_ttl = 86400  # 1 day
 
     return json.dumps(land_state.state)
