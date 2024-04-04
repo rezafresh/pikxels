@@ -46,5 +46,7 @@ services:
     build: https://github.com/Parallels/rq-dashboard.git
     environment:
       RQ_DASHBOARD_REDIS_URL: redis://redis:6379
+      RQ_DASHBOARD_USERNAME: ${RQ_DASHBOARD_USERNAME}
+      RQ_DASHBOARD_PASSWORD: ${RQ_DASHBOARD_PASSWORD}
     ports:
       - 9181:9181
