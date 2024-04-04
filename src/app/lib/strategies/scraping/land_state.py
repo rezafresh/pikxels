@@ -1,7 +1,7 @@
 import asyncio
+import datetime
 import json
-from datetime import datetime
-from typing import Union, cast
+from typing import Union
 
 import redis
 import rq
@@ -28,39 +28,6 @@ class LandState:
     @property
     def state(self):
         return self._state
-
-    @property
-    def trees(self):
-        try:
-            return self._parse_trees(self._state)
-        except Exception:
-            raise HTTPException(422, "Could not parse trees data")
-
-    def _parse_trees(self, state: dict) -> list[dict]:
-        entities: dict = state["entities"]
-        results = []
-
-        for item in entities.values():
-            if not cast(str, item["entity"]).startswith("ent_tree"):
-                continue
-
-            try:
-                next_state_in = datetime.fromtimestamp(
-                    item["generic"]["utcRefresh"] / 1000
-                )
-            except Exception:
-                next_state_in = None
-
-            results.append(
-                {
-                    "entity": item["entity"],
-                    "position": item["position"],
-                    "current_state": item["generic"]["state"],
-                    "next_state_in": next_state_in,
-                }
-            )
-
-        return sorted(results, key=lambda _: (_["next_state_in"] or 0))
 
     @classmethod
     async def from_browser(cls, land_number: int) -> "LandState":
@@ -117,8 +84,8 @@ class LandState:
         return None
 
     @classmethod
-    def get(cls, land_number: int):
-        if land_state := cls.from_cache(land_number):
+    def get(cls, land_number: int, cached: bool = False):
+        if cached and (land_state := cls.from_cache(land_number)):
             return land_state
 
         job = cls.enqueue(land_number)
@@ -134,10 +101,17 @@ class LandState:
     @classmethod
     def enqueue(cls, land_number: int) -> rq.job.Job:
         return cls.queue.enqueue(
+            worker, land_number, job_id=f"app:land:{land_number}:state", result_ttl=-1
+        )
+
+    @classmethod
+    def enqueue_in(cls, land_number: int, at: datetime.timedelta) -> rq.job.Job:
+        return cls.queue.enqueue_in(
+            at,
             worker,
             land_number,
             job_id=f"app:land:{land_number}:state",
-            result_ttl=settings.REDIS_DEFAULT_TTL,
+            result_ttl=-1,
         )
 
 
@@ -150,4 +124,5 @@ async def phaser_land_state_getter(page: Page):
 
 def worker(land_number: int):
     land_state: LandState = asyncio.run(LandState.from_browser(land_number))
+
     return json.dumps(land_state.state)

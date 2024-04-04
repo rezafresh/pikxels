@@ -28,23 +28,21 @@ start-tree-hunt:
 	@poetry run python -m src.app.cli.tree_hunt
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
-create-requirements-file:
+git-push: lint
 	@poetry export -q --without=dev -o requirements.txt
-git-push: lint create-requirements-file
 	@git add .
 	@git commit -m wip
 	@git push
 docker-down:
 	@docker compose down
-docker-up: docker-down create-requirements-file
+docker-up: docker-down
 	@docker compose up --build
 docker-start-services: docker-down
 	@docker compose up browserless redis
 docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
-docker-start-standalone-worker:
-	@docker compose down browserless worker
-	@docker compose up browserless worker
+docker-start-standalone-worker: docker-down
+	@docker compose up browserless worker --build
 docker-entry-api:
 	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
 docker-entry-worker:
@@ -52,5 +50,5 @@ docker-entry-worker:
 		-n ${WORKER_CONCURRENCY} \
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}
 rq-dashboard:
-	poetry run rq-dashboard \
+	@poetry run rq-dashboard \
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}

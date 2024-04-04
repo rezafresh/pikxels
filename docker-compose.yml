@@ -11,7 +11,7 @@ services:
       DEFAULT_STEALTH: true
       DEFAULT_HEADLESS: true
     ports:
-      - 33000:3000
+      - 127.0.0.1:33000:3000
   redis:
     image: redis
     command:
@@ -19,7 +19,7 @@ services:
       - --save 60 1
       - --loglevel warning
     ports:
-      - 6379:6379
+      - 127.0.0.1:6379:6379
     volumes:
       - "./docker/redis:/data"
   worker:

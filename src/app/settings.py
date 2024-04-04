@@ -2,7 +2,6 @@ import os
 
 REDIS_HOST = os.getenv("APP_REDIS_HOST", "localhost")
 REDIS_PORT = os.getenv("APP_REDIS_PORT", 6379)
-REDIS_DEFAULT_TTL = os.getenv("APP_REDIS_DEFAULT_TTL", 45)
 BROWSERLESS_CDP_ENDPOINT_URL = os.getenv(
     "APP_BROWSERLESS_CDP_ENDPOINT_URL", "ws://localhost:3000"
 )
