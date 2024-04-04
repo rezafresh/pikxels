@@ -122,7 +122,11 @@ class LandState:
     @classmethod
     def enqueue(cls, land_number: int) -> rq.job.Job:
         return cls.queue.enqueue(
-            worker, land_number, job_id=f"app:land:{land_number}:state", result_ttl=-1
+            worker,
+            land_number,
+            job_id=f"app:land:{land_number}:state",
+            result_ttl=-1,
+            retry=rq.Retry(max=5, interval=[10, 30, 60, 120, 300]),
         )
 
     @classmethod
@@ -133,6 +137,7 @@ class LandState:
             land_number,
             job_id=f"app:land:{land_number}:state",
             result_ttl=-1,
+            retry=rq.Retry(max=5, interval=[10, 30, 60, 120, 300]),
         )
 
 
