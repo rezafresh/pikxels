@@ -140,11 +140,12 @@ async def phaser_land_state_getter(page: Page):
 
 def worker(land_number: int):
     land_state: LandState = asyncio.run(LandState.from_browser(land_number))
-    current_job = rq.job.get_current_job()
 
     try:
-        current_job.result_ttl = int(land_state.last_tree_respawn_in.total_seconds())
+        td = land_state.last_tree_respawn_in
     except Exception:
-        current_job.result_ttl = 86400  # 1 day
+        td = timedelta(seconds=86400)  # 1 day
 
+    rq.job.get_current_job().result_ttl = td.total_seconds()
+    LandState.enqueue_in(land_number, td, queue=q.low)
     return json.dumps(land_state.state)
