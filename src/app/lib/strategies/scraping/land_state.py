@@ -146,6 +146,6 @@ def worker(land_number: int):
     except Exception:
         td = timedelta(seconds=86400)  # 1 day
 
-    rq.job.get_current_job().result_ttl = td.total_seconds()
+    rq.job.get_current_job().result_ttl = int(td.total_seconds())
     LandState.enqueue_in(land_number, td, queue=q.low)
     return json.dumps(land_state.state)
