@@ -18,7 +18,9 @@ lint:
 start-worker:
 	@poetry run rq worker-pool \
 		-n ${WORKER_CONCURRENCY} \
-		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}
+		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT} \
+		default \
+		low
 start-api:
 	@poetry run uvicorn src.app.api.asgi:app \
 		--host 0.0.0.0 \
@@ -48,7 +50,9 @@ docker-entry-api:
 docker-entry-worker:
 	@rq worker-pool \
 		-n ${WORKER_CONCURRENCY} \
-		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}
+		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT} \
+		default \
+		low
 rq-dashboard:
 	@poetry run rq-dashboard \
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}

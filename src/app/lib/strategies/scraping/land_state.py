@@ -4,20 +4,16 @@ from datetime import datetime, timedelta
 from random import randint
 from typing import Union
 
-import redis
 import rq
 from fastapi import HTTPException
 from playwright.async_api import Page, async_playwright
 
 from .... import settings
+from ._queues import queue_default, queue_low
 from ._utils import retry_until_valid
 
 
 class LandState:
-    queue = rq.Queue(
-        connection=redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
-    )
-
     def __init__(self, land_number, state: dict) -> None:
         self._land_number = land_number
         self._state = state
@@ -97,8 +93,10 @@ class LandState:
         return LandState(land_number, state)
 
     @classmethod
-    def from_cache(cls, land_number: int) -> Union["LandState", None]:
-        if job := cls.queue.fetch_job(f"app:land:{land_number}:state"):
+    def from_cache(
+        cls, land_number: int, queue: rq.Queue = queue_default
+    ) -> Union["LandState", None]:
+        if job := queue.fetch_job(f"app:land:{land_number}:state"):
             if cached := job.result:
                 land_state = json.loads(cached)
                 return LandState(land_number, land_state)
@@ -120,8 +118,10 @@ class LandState:
             continue
 
     @classmethod
-    def enqueue(cls, land_number: int) -> rq.job.Job:
-        return cls.queue.enqueue(
+    def enqueue(
+        cls, land_number: int, *, queue: rq.Queue = queue_default
+    ) -> rq.job.Job:
+        return queue.enqueue(
             worker,
             land_number,
             job_id=f"app:land:{land_number}:state",
@@ -130,8 +130,10 @@ class LandState:
         )
 
     @classmethod
-    def enqueue_in(cls, land_number: int, at: timedelta) -> rq.job.Job:
-        return cls.queue.enqueue_in(
+    def enqueue_in(
+        cls, land_number: int, at: timedelta, *, queue: rq.Queue = queue_default
+    ) -> rq.job.Job:
+        return queue.enqueue_in(
             at,
             worker,
             land_number,
@@ -150,5 +152,5 @@ async def phaser_land_state_getter(page: Page):
 
 def worker(land_number: int):
     land_state: LandState = asyncio.run(LandState.from_browser(land_number))
-    LandState.enqueue_in(land_number, land_state.last_tree_respawn_in)
+    LandState.enqueue_in(land_number, land_state.last_tree_respawn_in, queue=queue_low)
     return json.dumps(land_state.state)
