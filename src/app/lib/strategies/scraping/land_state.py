@@ -142,14 +142,11 @@ def worker(land_number: int):
     land_state: LandState = asyncio.run(LandState.from_browser(land_number))
 
     try:
-        td = land_state.last_tree_respawn_in
+        if not (result_ttl := int(land_state.last_tree_respawn_in.total_seconds())):
+            result_ttl = 86400  # 1 day
     except Exception:
-        pass
+        result_ttl = 86400  # 1 day
 
-    if not td:
-        td = timedelta(seconds=86400)  # 1 day
-
-    current_job = rq.job.get_current_job()
-    current_job.result_ttl = int(td.total_seconds())
-    LandState.enqueue_in(land_number, td, queue=q.low)
+    rq.job.get_current_job().result_ttl = max(0, result_ttl)
+    LandState.enqueue_in(land_number, timedelta(seconds=result_ttl), queue=q.low)
     return json.dumps(land_state.state)

@@ -26,7 +26,7 @@
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "worker-pool",
-                "-n", "2",
+                "-n", "1",
                 "-u", "redis://localhost:6379",
                 "default",
                 "low"
