@@ -1,1 +1,1 @@
-from .land_state import LandState as LandState
+from .land_state import get as get_land_stage

@@ -12,7 +12,7 @@ setup:
 	@poetry lock
 	@poetry install --no-root
 lint:
-	@poetry run black src
+	@poetry run black -l 100 src
 	@poetry run isort --profile black src
 	@poetry run ruff check src
 start-worker:
@@ -42,7 +42,7 @@ docker-up: docker-down
 docker-up-detached: docker-down
 	@docker compose up -d --build
 docker-start-services: docker-down
-	@docker compose up browserless redis
+	@docker compose up browserless redis rq-dashboard
 docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
 docker-start-standalone-worker: docker-down

@@ -12,8 +12,7 @@
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "src.app.api.asgi:app",
-                "--port",
-                "9000",
+                "--port", "9000",
                 "--reload"
             ],
             "jinja": true
@@ -26,7 +25,7 @@
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "worker-pool",
-                "-n", "1",
+                "-n", "5",
                 "-u", "redis://localhost:6379",
                 "default",
                 "low"
@@ -37,6 +36,7 @@
             "name": "tree_hunt",
             "type": "debugpy",
             "request": "launch",
+            "envFile": "${workspaceFolder}/.env",
             "module": "src.app.cli.tree_hunt"
         },
         {

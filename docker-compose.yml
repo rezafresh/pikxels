@@ -21,6 +21,16 @@ services:
       - 127.0.0.1:6379:6379
     volumes:
       - "./docker/redis:/data"
+  rq-dashboard:
+    build: https://github.com/Parallels/rq-dashboard.git
+    environment:
+      RQ_DASHBOARD_REDIS_URL: redis://redis:6379
+      RQ_DASHBOARD_USERNAME: ${RQ_DASHBOARD_USERNAME}
+      RQ_DASHBOARD_PASSWORD: ${RQ_DASHBOARD_PASSWORD}
+    ports:
+      - 9181:9181
+    depends_on:
+      - redis
   worker:
     build: .
     env_file: .env
@@ -30,6 +40,7 @@ services:
     command: make docker-entry-worker
     depends_on:
       - browserless
+      - redis
   api:
     build: .
     env_file: .env
@@ -41,11 +52,4 @@ services:
       - ${API_PORT}:9000
     depends_on:
       - worker
-  rq-dashboard:
-    build: https://github.com/Parallels/rq-dashboard.git
-    environment:
-      RQ_DASHBOARD_REDIS_URL: redis://redis:6379
-      RQ_DASHBOARD_USERNAME: ${RQ_DASHBOARD_USERNAME}
-      RQ_DASHBOARD_PASSWORD: ${RQ_DASHBOARD_PASSWORD}
-    ports:
-      - 9181:9181
+      - redis
