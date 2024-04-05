@@ -15,11 +15,9 @@ from ._utils import retry_until_valid
 
 def get_last_tree_next_stage_seconds(land_state: dict) -> int | None:
     entities: dict = land_state["entities"]
-    max_utc_refreshes = [
-        value["generic"].get("utcRefresh", time.time() / 1000)
-        for _, value in entities.items()
-        if value["entity"].startswith("ent_tree")
-    ]
+
+    trees = [value for _, value in entities.items() if value["entity"].startswith("ent_tree")]
+    max_utc_refreshes = [tree["generic"].get("utcRefresh", time.time() / 1000) for tree in trees]
 
     if not max_utc_refreshes:
         return None
@@ -117,10 +115,14 @@ def worker(land_number: int):
 
 def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
     land_state = json.loads(result)
+
     if (result_ttl := get_last_tree_next_stage_seconds(land_state) or 60) > 0:
         job.result_ttl = result_ttl
     else:
         job.result_ttl = 60
+
+    land_number: int = job.args[0]
+    enqueue_in(land_number, time_delta=timedelta(seconds=result_ttl), queue=q.low)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
