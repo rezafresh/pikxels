@@ -73,7 +73,7 @@ def enqueue(land_number: int, *, queue: rq.Queue = q.default) -> rq.job.Job:
 def enqueue_in(
     land_number: int, time_delta: timedelta, *, queue: rq.Queue = q.default
 ) -> rq.job.Job:
-    return queue.enqueue_at(
+    return queue.enqueue_in(
         time_delta,
         worker,
         land_number,
