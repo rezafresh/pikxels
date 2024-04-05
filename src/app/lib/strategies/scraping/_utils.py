@@ -1,4 +1,4 @@
-from time import sleep
+import asyncio
 from typing import Awaitable
 
 
@@ -11,8 +11,9 @@ def retry_until_valid(*, tries: int = 3):
                     if result := await f(*args, **kwargs):
                         return result
                 except Exception:
-                    sleep(2)
+                    await asyncio.sleep(1)
                     _tries -= 1
+            return None
 
         return g
 

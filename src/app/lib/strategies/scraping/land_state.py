@@ -102,7 +102,7 @@ def get(land_number: int, cached: bool = True):
     return json.loads(job.result)
 
 
-@retry_until_valid(tries=10)
+@retry_until_valid(tries=30)
 async def phaser_land_state_getter(page: Page):
     return await page.evaluate(
         "JSON.stringify(Phaser.Display.Canvas.CanvasPool.pool[0].parent.game.scene.scenes[1].stateManager.room.state)",
