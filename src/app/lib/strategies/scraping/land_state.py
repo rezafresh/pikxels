@@ -30,13 +30,13 @@ def get_last_tree_next_stage_seconds(land_state: dict) -> int | None:
 async def from_browser(land_number: int) -> dict:
     async with async_playwright() as pw:
         browser = await pw.chromium.connect_over_cdp(
-            settings.BROWSERLESS_CDP_ENDPOINT_URL,
-            timeout=settings.BROWSERLESS_DEFAULT_TIMEOUT,
+            settings.PW_CDP_ENDPOINT_URL,
+            timeout=settings.PW_DEFAULT_TIMEOUT,
         )
         context = await browser.new_context()
         page = await context.new_page()
-        page.set_default_navigation_timeout(settings.BROWSERLESS_DEFAULT_TIMEOUT)
-        page.set_default_timeout(settings.BROWSERLESS_DEFAULT_TIMEOUT)
+        page.set_default_navigation_timeout(settings.PW_DEFAULT_TIMEOUT)
+        page.set_default_timeout(settings.PW_DEFAULT_TIMEOUT)
 
         try:
             if not (await page.goto(f"https://play.pixels.xyz/pixels/share/{land_number}")).ok:
