@@ -58,8 +58,8 @@ async def from_browser(land_number: int) -> dict:
     return json.loads(state_str)
 
 
-def from_cache(land_number: int) -> dict | None:
-    if job := q.low.fetch_job(f"app:land:{land_number}:state"):
+def from_cache(land_number: int, *, queue: rq.Queue = q.default) -> dict | None:
+    if job := queue.fetch_job(f"app:land:{land_number}:state"):
         if latest := job.latest_result():
             if cached := latest.return_value:
                 return json.loads(cached)
@@ -90,8 +90,11 @@ def enqueue_in(
 
 
 def get(land_number: int, cached: bool = True):
-    if cached and (land_state := from_cache(land_number)):
-        return land_state
+    if cached:
+        if land_state := from_cache(land_number, queue=q.low):
+            return land_state
+        elif land_state := from_cache(land_number):
+            return land_state
 
     job = enqueue(land_number)
 
