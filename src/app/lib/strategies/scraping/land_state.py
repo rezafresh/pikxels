@@ -15,7 +15,6 @@ from ._utils import retry_until_valid
 
 def get_last_tree_next_stage_seconds(land_state: dict) -> int | None:
     entities: dict = land_state["entities"]
-
     trees = [value for _, value in entities.items() if value["entity"].startswith("ent_tree")]
     max_utc_refreshes = [tree["generic"].get("utcRefresh", time.time() / 1000) for tree in trees]
 
@@ -111,7 +110,7 @@ def get(land_number: int, cached: bool = True):
     return json.loads(job.result)
 
 
-@retry_until_valid(tries=settings.PW_DEFAULT_TIMEOUT)
+@retry_until_valid(tries=settings.PW_DEFAULT_TIMEOUT // 1000)
 async def phaser_land_state_getter(page: Page):
     return await page.evaluate(
         "JSON.stringify(Phaser.Display.Canvas.CanvasPool.pool[0].parent.game.scene.scenes[1].stateManager.room.state)",
