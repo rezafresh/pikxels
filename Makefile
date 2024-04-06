@@ -3,11 +3,6 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
-WORKER_CONCURRENCY ?= 2
-API_PORT ?= 9000
-APP_REDIS_HOST ?= localhost
-APP_REDIS_PORT ?= 6379
-
 setup:
 	@poetry lock
 	@poetry install --no-root
@@ -15,12 +10,8 @@ lint:
 	@poetry run black -l 100 src
 	@poetry run isort --profile black src
 	@poetry run ruff check src
-start-worker:
-	@poetry run rq worker-pool \
-		-n ${WORKER_CONCURRENCY} \
-		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT} \
-		default \
-		low
+start-workers:
+	@poetry run python -m src.app.cli.start_workers
 start-api:
 	@poetry run uvicorn src.app.api.asgi:app \
 		--host 0.0.0.0 \
@@ -50,11 +41,7 @@ docker-start-standalone-worker: docker-down
 docker-entry-api:
 	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
 docker-entry-worker:
-	@rq worker-pool \
-		-n ${WORKER_CONCURRENCY} \
-		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT} \
-		default \
-		low
+	@python -m src.app.cli.start_workers
 rq-dashboard:
 	@poetry run rq-dashboard \
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}

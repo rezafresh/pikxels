@@ -29,16 +29,18 @@ def get_last_tree_next_stage_seconds(land_state: dict) -> int | None:
 
 async def from_browser(land_number: int) -> dict:
     async with async_playwright() as pw:
-        browser = await pw.chromium.connect_over_cdp(
-            settings.PW_CDP_ENDPOINT_URL,
-            timeout=settings.PW_DEFAULT_TIMEOUT,
-        )
-        context = await browser.new_context()
-        page = await context.new_page()
-        page.set_default_navigation_timeout(settings.PW_DEFAULT_TIMEOUT)
-        page.set_default_timeout(settings.PW_DEFAULT_TIMEOUT)
+        browser = context = page = None
 
         try:
+            browser = await pw.chromium.connect_over_cdp(
+                settings.PW_CDP_ENDPOINT_URL,
+                timeout=settings.PW_DEFAULT_TIMEOUT,
+            )
+            context = await browser.new_context()
+            page = await context.new_page()
+            page.set_default_navigation_timeout(settings.PW_DEFAULT_TIMEOUT)
+            page.set_default_timeout(settings.PW_DEFAULT_TIMEOUT)
+
             if not (await page.goto(f"https://play.pixels.xyz/pixels/share/{land_number}")).ok:
                 raise HTTPException(422, "An error has ocurred while navigating to the land")
 
@@ -49,9 +51,9 @@ async def from_browser(land_number: int) -> dict:
             elif not state_str:
                 raise HTTPException(422, "Invalid land state")
         finally:
-            await page.close()
-            await context.close()
-            await browser.close()
+            page and await page.close()
+            context and await context.close()
+            browser and await browser.close()
 
     return json.loads(state_str)
 
@@ -125,8 +127,8 @@ def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs)
     else:
         job.result_ttl = 60
 
-    # land_number: int = job.args[0]
-    # enqueue_in(land_number, time_delta=timedelta(seconds=result_ttl), queue=q.low)
+    land_number: int = job.args[0]
+    enqueue_in(land_number, time_delta=timedelta(seconds=result_ttl), queue=q.low)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):

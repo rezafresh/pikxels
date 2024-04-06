@@ -36,7 +36,7 @@ services:
     env_file: .env
     environment:
       APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000
-      APP_REDIS_HOST: redis
+      APP_REDIS_URL: redis://redis:6379
     command: make docker-entry-worker
     depends_on:
       - browserless
@@ -46,7 +46,7 @@ services:
     env_file: .env
     environment:
       APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000
-      APP_REDIS_HOST: redis
+      APP_REDIS_URL: redis://redis:6379
     command: make docker-entry-api
     ports:
       - 127.0.0.1:${API_PORT}:9000
