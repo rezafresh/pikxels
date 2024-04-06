@@ -4,11 +4,11 @@ from time import time
 import httpx
 from fastapi import HTTPException
 
-from ..lib.strategies.scraping import get_land_stage
+from ..lib.strategies.scraping import land_state
 
 
 def get_land_state(land_number: int, cached: bool = True):
-    if state := get_land_stage(land_number, cached):
+    if state := land_state.get(land_number, cached):
         return {"state": state}
     raise HTTPException(422, "Could not retrieve the land state. Try again later.")
 
@@ -32,3 +32,14 @@ async def get_marketplace_listing():
             for item_id in set(list(counts.keys()) + list(prices.keys()))
         },
     }
+
+
+def get_cached_lands_states() -> dict[str, dict]:
+    def get_from_cache(land_number: int) -> dict:
+        return land_state.from_cache(land_number) or land_state.from_cache(
+            land_number, queue=land_state.q.low
+        )
+
+    lands = {i: get_from_cache(i) for i in range(1, 5000)}
+    result = {str(key): value for key, value in lands.items() if value}
+    return {"states": result}
