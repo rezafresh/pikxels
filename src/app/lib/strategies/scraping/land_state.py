@@ -130,7 +130,7 @@ def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
         if "too many" in value.message.lower():
             job.meta["message"] = "The Job cannot be done now, the browser engine is at his limit"
         else:
-            job.meta["message"] = "Failed the browser engine"
+            job.meta["message"] = "Failed to connect to the browser engine"
     else:
         job.meta["message"] = str(value)
 
