@@ -43,7 +43,11 @@ async def from_browser(land_number: int) -> dict:
                 raise HTTPException(422, "An error has ocurred while navigating to the land")
 
             await page.wait_for_load_state("load")
-            state_str = await phaser_land_state_getter(page)
+
+            if (state_str := await phaser_land_state_getter(page)) is None:
+                raise HTTPException(422, "Could not retrieve the land state")
+            elif not state_str:
+                raise HTTPException(422, "Invalid land state")
         finally:
             await page.close()
             await context.close()
