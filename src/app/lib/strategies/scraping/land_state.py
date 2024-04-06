@@ -121,8 +121,8 @@ def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs)
     else:
         job.result_ttl = 60
 
-    land_number: int = job.args[0]
-    enqueue_in(land_number, time_delta=timedelta(seconds=result_ttl), queue=q.low)
+    # land_number: int = job.args[0]
+    # enqueue_in(land_number, time_delta=timedelta(seconds=result_ttl), queue=q.low)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
