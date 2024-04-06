@@ -59,7 +59,7 @@ async def from_browser(land_number: int) -> dict:
 
 
 def from_cache(land_number: int) -> dict | None:
-    if job := q.default.fetch_job(f"app:land:{land_number}:state"):
+    if job := q.low.fetch_job(f"app:land:{land_number}:state"):
         if latest := job.latest_result():
             if cached := latest.return_value:
                 return json.loads(cached)
