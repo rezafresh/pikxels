@@ -2,7 +2,7 @@ import asyncio
 from typing import Awaitable
 
 
-def retry_until_valid(*, tries: int = 3):
+def retry_until_valid(*, tries: int = 10):
     def wrapper(f: Awaitable):
         async def g(*args, **kwargs):
             _tries = tries
