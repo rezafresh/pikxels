@@ -15,7 +15,7 @@ def main():
     low_queue_workers = concurrency - default_queue_workers
     workers = [rq.Worker([q.default], connection=q._redis) for _ in range(default_queue_workers)]
     workers.extend(rq.Worker([q.low], connection=q._redis) for _ in range(low_queue_workers))
-    processes = [Process(target=w.work) for w in workers]
+    processes = [Process(target=w.work, kwargs={"with_scheduler": True}) for w in workers]
 
     for p in processes:
         p.start()
