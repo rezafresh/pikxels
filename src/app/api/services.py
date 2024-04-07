@@ -7,9 +7,12 @@ from fastapi import HTTPException
 from ..lib.strategies.scraping import land_state
 
 
-def get_land_state(land_number: int, cached: bool = True):
+def get_land_state(land_number: int, cached: bool = True, raw: bool = False):
     if state := land_state.get(land_number, cached):
-        return {"state": state}
+        if raw:
+            return {"state": state}
+        return {"state": land_state.parse(state)}
+
     raise HTTPException(422, "Could not retrieve the land state. Try again later.")
 
 
@@ -34,12 +37,17 @@ async def get_marketplace_listing():
     }
 
 
-def get_cached_lands_states() -> dict[str, dict]:
+def get_cached_lands_states(raw: bool = False) -> dict[str, dict]:
     def get_from_cache(land_number: int) -> dict:
         return land_state.from_cache(land_number) or land_state.from_cache(
             land_number, queue=land_state.q.low
         )
 
     lands = {i: get_from_cache(i) for i in range(1, 5000)}
-    result = {str(key): value for key, value in lands.items() if value}
+
+    if raw:
+        result = {str(key): value for key, value in lands.items() if value}
+    else:
+        result = {str(key): land_state.parse(value) for key, value in lands.items() if value}
+
     return {"states": result}

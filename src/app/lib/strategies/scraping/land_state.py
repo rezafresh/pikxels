@@ -10,7 +10,7 @@ from playwright.async_api import Page, async_playwright
 
 from .... import settings
 from . import _queues as q
-from ._utils import retry_until_valid
+from ._utils import retry_until_valid, unix_time_to_datetime
 
 
 def get_last_tree_next_stage_seconds(land_state: dict) -> int | None:
@@ -24,6 +24,49 @@ def get_last_tree_next_stage_seconds(land_state: dict) -> int | None:
     last_utc_refresh = datetime.fromtimestamp(max(max_utc_refreshes) / 1000)
     now = datetime.now()
     return int((last_utc_refresh - now).total_seconds())
+
+
+def parse_tree(data: dict) -> dict:
+    utc_refresh = unix_time_to_datetime(data["generic"].get("utcRefresh"))
+    statics = {_["name"]: _["value"] for _ in data["generic"]["statics"]}
+    last_timer = unix_time_to_datetime(statics["lastTimer"])
+    last_chop = unix_time_to_datetime(statics["lastChop"])
+    return {
+        "entity": data["entity"],
+        "position": data["position"],
+        "state": data["generic"]["state"],
+        "utcRefresh": utc_refresh,
+        "lastChop": last_chop,
+        "lastTimer": last_timer,
+    }
+
+
+def parse_windmill(data: dict) -> dict:
+    statics = {_["name"]: _["value"] for _ in data["generic"]["statics"]}
+    return {
+        "entity": data["entity"],
+        "position": data["position"],
+        "allowPublic": bool(int(statics["allowPublic"])),
+        "inUseBy": statics["inUseBy"],
+        "finishTime": unix_time_to_datetime(statics["finishTime"]),
+    }
+
+
+def parse(land_state: dict) -> dict:
+    entities: dict = land_state["entities"]
+    return {
+        "is_blocked": land_state["permissions"]["use"][0] != "ANY",
+        "trees": {
+            key: parse_tree(value)
+            for key, value in entities.items()
+            if value["entity"].startswith("ent_tree")
+        },
+        "windmills": {
+            key: parse_windmill(value)
+            for key, value in entities.items()
+            if value["entity"].startswith("ent_windmill")
+        },
+    }
 
 
 async def from_browser(land_number: int) -> dict:
