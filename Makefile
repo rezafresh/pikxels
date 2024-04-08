@@ -17,6 +17,8 @@ start-api:
 		--host 0.0.0.0 \
 		--port ${API_PORT} \
 		--reload
+start-tree-hunt:
+	@poetry run python -m src.app.cli.tree_hunt
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
 git-push: lint

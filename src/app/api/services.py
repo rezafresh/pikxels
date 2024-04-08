@@ -4,14 +4,19 @@ from time import time
 import httpx
 from fastapi import HTTPException
 
-from ..lib.strategies.scraping import land_state
+from ..lib.strategies.scraping import _queues as q
+from ..lib.strategies.scraping.land_state import (
+    land_state_from_cache,
+    land_state_get,
+    land_state_parse,
+)
 
 
 def get_land_state(land_number: int, cached: bool = True, raw: bool = False):
-    if state := land_state.get(land_number, cached):
+    if state := land_state_get(land_number, cached):
         if raw:
             return {"state": state}
-        return {"state": land_state.parse(state)}
+        return {"state": land_state_parse(state)}
 
     raise HTTPException(422, "Could not retrieve the land state. Try again later.")
 
@@ -39,8 +44,8 @@ async def get_marketplace_listing():
 
 def get_cached_lands_states(raw: bool = False) -> dict[str, dict]:
     def get_from_cache(land_number: int) -> dict:
-        return land_state.from_cache(land_number) or land_state.from_cache(
-            land_number, queue=land_state.q.low
+        return land_state_from_cache(land_number) or land_state_from_cache(
+            land_number, queue=q.sync
         )
 
     lands = {i: get_from_cache(i) for i in range(1, 5000)}
@@ -48,6 +53,6 @@ def get_cached_lands_states(raw: bool = False) -> dict[str, dict]:
     if raw:
         result = {str(key): value for key, value in lands.items() if value}
     else:
-        result = {str(key): land_state.parse(value) for key, value in lands.items() if value}
+        result = {str(key): land_state_parse(value) for key, value in lands.items() if value}
 
     return {"states": result}

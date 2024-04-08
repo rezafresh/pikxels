@@ -1,5 +1,5 @@
-from ..lib.strategies.scraping._queues import low as low_queue
-from ..lib.strategies.scraping.land_state import enqueue as land_state_enqueue
+from ..lib.strategies.scraping._queues import sync as low_queue
+from ..lib.strategies.scraping.land_state import land_state_enqueue
 
 
 def main():
