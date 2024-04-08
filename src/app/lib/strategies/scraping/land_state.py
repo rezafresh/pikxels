@@ -13,17 +13,36 @@ from . import _queues as q
 from ._utils import retry_until_valid, unix_time_to_datetime
 
 
-def get_last_tree_next_stage_seconds(land_state: dict) -> int | None:
-    entities: dict = land_state["entities"]
-    trees = [value for _, value in entities.items() if value["entity"].startswith("ent_tree")]
-    max_utc_refreshes = [tree["generic"].get("utcRefresh", time.time() / 1000) for tree in trees]
+class LandHasNoResource(Exception):
+    pass
 
-    if not max_utc_refreshes:
+
+def get_windmill_first_availability(land_state: dict) -> datetime | None:
+    entities: dict = land_state["entities"]
+
+    if not (windmills := parse_windmills(entities)):
+        raise LandHasNoResource("Land has no windmill")
+
+    finishes_times: list[datetime] = [wm["finishTime"] for wm in windmills]
+
+    if not finishes_times:
         return None
 
-    last_utc_refresh = datetime.fromtimestamp(max(max_utc_refreshes) / 1000)
-    now = datetime.now()
-    return int((last_utc_refresh - now).total_seconds())
+    return min(finishes_times).replace(microsecond=0)
+
+
+def get_last_tree_next_stage(land_state: dict) -> datetime | None:
+    entities: dict = land_state["entities"]
+
+    if not (trees := parse_trees(entities)):
+        raise LandHasNoResource("Land has no tree")
+
+    utc_refreshes: list[datetime] = [tree["utcRefresh"] for tree in trees if tree["utcRefresh"]]
+
+    if not utc_refreshes:
+        return None
+
+    return max(utc_refreshes).replace(microsecond=0)
 
 
 def parse_tree(data: dict) -> dict:
@@ -41,6 +60,14 @@ def parse_tree(data: dict) -> dict:
     }
 
 
+def parse_trees(entities: dict) -> list[dict]:
+    return [
+        {"id": key, **parse_tree(value)}
+        for key, value in entities.items()
+        if value["entity"].startswith("ent_tree")
+    ]
+
+
 def parse_windmill(data: dict) -> dict:
     statics = {_["name"]: _["value"] for _ in data["generic"]["statics"]}
     return {
@@ -52,20 +79,20 @@ def parse_windmill(data: dict) -> dict:
     }
 
 
+def parse_windmills(entities: dict) -> list[dict]:
+    return [
+        {"id": key, **parse_windmill(value)}
+        for key, value in entities.items()
+        if value["entity"].startswith("ent_windmill")
+    ]
+
+
 def parse(land_state: dict) -> dict:
     entities: dict = land_state["entities"]
     return {
         "is_blocked": land_state["permissions"]["use"][0] != "ANY",
-        "trees": {
-            key: parse_tree(value)
-            for key, value in entities.items()
-            if value["entity"].startswith("ent_tree")
-        },
-        "windmills": {
-            key: parse_windmill(value)
-            for key, value in entities.items()
-            if value["entity"].startswith("ent_windmill")
-        },
+        "trees": parse_trees(entities),
+        "windmills": parse_windmills(entities),
     }
 
 
@@ -167,11 +194,17 @@ def worker(land_number: int):
 def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
     land_state = json.loads(result)
 
-    if (result_ttl := get_last_tree_next_stage_seconds(land_state) or 60) > 0:
-        job.result_ttl = result_ttl
-    else:
-        job.result_ttl = 60
+    try:
+        if _ := get_last_tree_next_stage(land_state):
+            result_ttl = int((_ - datetime.now()).total_seconds())
+        else:
+            # the land only has mature trees
+            result_ttl = 14400  # 4 hours
+    except LandHasNoResource:
+        # the land doesnt have trees
+        result_ttl = 86400  # 1 day
 
+    job.result_ttl = result_ttl
     land_number: int = job.args[0]
     enqueue_in(land_number, time_delta=timedelta(seconds=result_ttl), queue=q.low)
 
