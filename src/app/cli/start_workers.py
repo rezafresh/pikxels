@@ -3,7 +3,7 @@ import os
 from multiprocessing import Process
 
 import rq
-import rq.worker_pool
+import rq.scheduler
 
 from ..lib.strategies.scraping import _queues as q
 
@@ -14,14 +14,17 @@ def main():
 
     default_queue_workers = math.floor(concurrency * 0.6)
     sync_queue_workers = concurrency - default_queue_workers
+
     workers = [
-        rq.worker_pool.WorkerPool([q.default], q._redis, default_queue_workers),
-        rq.worker_pool.WorkerPool([q.sync], q._redis, sync_queue_workers),
+        *[rq.Worker([q.default], connection=q._redis) for _ in range(default_queue_workers)],
+        *[rq.Worker([q.sync], connection=q._redis) for _ in range(sync_queue_workers)],
     ]
-    processes = [Process(target=w.start) for w in workers]
+    processes = [Process(target=w.work) for w in workers]
 
     for p in processes:
         p.start()
+
+    processes.append(rq.scheduler.RQScheduler([q.sync], q._redis).start())
 
     for p in processes:
         p.join()
