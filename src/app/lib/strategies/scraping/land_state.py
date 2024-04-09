@@ -1,6 +1,7 @@
 import asyncio
 import json
 import time
+import traceback
 from datetime import datetime, timedelta
 from random import randint
 from typing import TypedDict
@@ -192,7 +193,9 @@ def worker(land_number: int):
     try:
         result = json.dumps(asyncio.run(from_browser(land_number)))
     except Exception as error:
-        worker_failure_handler(current_job, current_job.connection, type(error), error)
+        worker_failure_handler(
+            current_job, current_job.connection, type(error), error, traceback.format_exc()
+        )
         raise
     else:
         worker_success_handler(current_job, current_job.connection, result)
