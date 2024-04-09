@@ -54,8 +54,8 @@ def parse_windmills(entities: dict) -> list[t.ParsedWindMill]:
 
 def parse(land_state: dict) -> t.ParsedLandState:
     return {
-        "is_blocked": land_state["permissions"]["use"][0] != "ANY",
-        "total_players": len(land_state["players"]),
+        "isBlocked": land_state["permissions"]["use"][0] != "ANY",
+        "totalPlayers": len(land_state["players"]),
         "trees": parse_trees(land_state["entities"]),
         "windmills": parse_windmills(land_state["entities"]),
     }
