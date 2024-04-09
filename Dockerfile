@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.10-bullseye
 RUN apt update && apt upgrade -y
 WORKDIR /app
 COPY requirements.txt .
