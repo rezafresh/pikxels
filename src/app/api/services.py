@@ -5,11 +5,9 @@ import httpx
 from fastapi import HTTPException
 
 from ..lib.strategies.scraping import _queues as q
-from ..lib.strategies.scraping.land_state import (
-    land_state_from_cache,
-    land_state_get,
-    land_state_parse,
-)
+from ..lib.strategies.scraping.land_state import from_cache as land_state_from_cache
+from ..lib.strategies.scraping.land_state import get as land_state_get
+from ..lib.strategies.scraping.land_state import parse as land_state_parse
 
 
 def get_land_state(land_number: int, cached: bool = True, raw: bool = False):

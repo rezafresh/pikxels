@@ -3,17 +3,45 @@ import json
 import time
 from datetime import datetime, timedelta
 from random import randint
+from typing import TypedDict
 
 import rq
 from fastapi import HTTPException
 from playwright.async_api import Error as PWError
 from playwright.async_api import Page, async_playwright
 
-from ..... import settings
-from .. import _queues as q
-from .._utils import retry_until_valid
-from . import _parsers as p
-from . import types as t
+from .... import settings
+from . import _queues as q
+from ._utils import retry_until_valid, unix_time_to_datetime
+
+
+class LandEntityPosition(TypedDict):
+    x: int
+    y: int
+
+
+class ParsedTree(TypedDict):
+    entity: str
+    position: LandEntityPosition
+    state: str
+    utcRefresh: datetime | None
+    lastChop: datetime | None
+    lastTimer: datetime | None
+
+
+class ParsedWindMill(TypedDict):
+    entity: str
+    position: LandEntityPosition
+    allowPublic: bool
+    inUseBy: str
+    finishTime: datetime | None
+
+
+class ParsedLandState(TypedDict):
+    is_blocked: bool
+    total_players: int
+    trees: list[ParsedTree]
+    windmills: list[ParsedWindMill]
 
 
 async def from_browser(land_number: int) -> dict:
@@ -55,29 +83,6 @@ def from_cache(land_number: int, *, queue: rq.Queue = q.default) -> dict | None:
     return None
 
 
-def enqueue(land_number: int, *, queue: rq.Queue = q.default) -> rq.job.Job:
-    return queue.enqueue(
-        worker,
-        land_number,
-        job_id=f"app:land:{land_number}:state",
-        on_success=worker_success_handler,
-        on_failure=worker_failure_handler,
-    )
-
-
-def enqueue_in(
-    land_number: int, time_delta: timedelta, *, queue: rq.Queue = q.default
-) -> rq.job.Job:
-    return queue.enqueue_in(
-        time_delta,
-        worker,
-        land_number,
-        job_id=f"app:land:{land_number}:state",
-        on_success=worker_success_handler,
-        on_failure=worker_failure_handler,
-    )
-
-
 def get(land_number: int, cached: bool = True):
     if cached:
         if land_state := from_cache(land_number):
@@ -107,11 +112,94 @@ async def phaser_land_state_getter(page: Page):
     )
 
 
+def enqueue(land_number: int, *, queue: rq.Queue = q.default) -> rq.job.Job:
+    return queue.enqueue(
+        worker,
+        land_number,
+        job_id=f"app:land:{land_number}:state",
+    )
+
+
+def enqueue_at(land_number: int, at: datetime, *, queue: rq.Queue = q.default) -> rq.job.Job:
+    return queue.enqueue_at(
+        at,
+        worker,
+        land_number,
+        job_id=f"app:land:{land_number}:state",
+    )
+
+
+def parse_tree(data: dict) -> ParsedTree:
+    utc_refresh = unix_time_to_datetime(data["generic"].get("utcRefresh"))
+    statics = {_["name"]: _["value"] for _ in data["generic"]["statics"]}
+    last_timer = unix_time_to_datetime(statics["lastTimer"])
+    last_chop = unix_time_to_datetime(statics["lastChop"])
+    return {
+        "entity": data["entity"],
+        "position": data["position"],
+        "state": data["generic"]["state"],
+        "utcRefresh": utc_refresh,
+        "lastChop": last_chop,
+        "lastTimer": last_timer,
+    }
+
+
+def parse_trees(entities: dict) -> list[ParsedTree]:
+    return sorted(
+        [
+            {"id": key, **parse_tree(value)}
+            for key, value in entities.items()
+            if value["entity"].startswith("ent_tree")
+        ],
+        key=lambda _: (_["utcRefresh"] or datetime.fromtimestamp(0)),
+    )
+
+
+def parse_windmill(data: dict) -> ParsedWindMill:
+    statics = {_["name"]: _["value"] for _ in data["generic"]["statics"]}
+    return {
+        "entity": data["entity"],
+        "position": data["position"],
+        "allowPublic": bool(int(statics["allowPublic"])),
+        "inUseBy": statics["inUseBy"],
+        "finishTime": unix_time_to_datetime(statics["finishTime"]),
+    }
+
+
+def parse_windmills(entities: dict) -> list[ParsedWindMill]:
+    return sorted(
+        [
+            {"id": key, **parse_windmill(value)}
+            for key, value in entities.items()
+            if value["entity"].startswith("ent_windmill")
+        ],
+        key=lambda _: (_["finishTime"] or datetime.fromtimestamp(0)),
+    )
+
+
+def parse(land_state: dict) -> ParsedLandState:
+    return {
+        "isBlocked": land_state["permissions"]["use"][0] != "ANY",
+        "totalPlayers": len(land_state["players"]),
+        "trees": parse_trees(land_state["entities"]),
+        "windmills": parse_windmills(land_state["entities"]),
+    }
+
+
 def worker(land_number: int):
-    return json.dumps(asyncio.run(from_browser(land_number)))
+    current_job = rq.get_current_job()
+
+    try:
+        result = json.dumps(asyncio.run(from_browser(land_number)))
+    except Exception as error:
+        worker_failure_handler(current_job, current_job.connection, type(error), error)
+        raise
+    else:
+        worker_success_handler(current_job, current_job.connection, result)
+        return result
 
 
-def get_result_ttl_by_trees(land_state: t.ParsedLandState):
+def get_result_ttl_by_trees(land_state: ParsedLandState):
     if not land_state.get("trees"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -125,7 +213,7 @@ def get_result_ttl_by_trees(land_state: t.ParsedLandState):
         return 3600  # 1 hour
 
 
-def get_result_ttl_by_windmills(land_state: t.ParsedLandState):
+def get_result_ttl_by_windmills(land_state: ParsedLandState):
     if not land_state.get("windmills"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -140,13 +228,15 @@ def get_result_ttl_by_windmills(land_state: t.ParsedLandState):
 
 
 def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
-    parsed_land_state = p.parse(json.loads(result))
+    parsed_land_state = parse(json.loads(result))
     result_ttl = min(
         get_result_ttl_by_trees(parsed_land_state), get_result_ttl_by_windmills(parsed_land_state)
     )
     job.result_ttl = result_ttl
     land_number: int = job.args[0]
-    enqueue_in(land_number, time_delta=timedelta(seconds=result_ttl), queue=q.sync)
+    enqueue_time = datetime.now() + timedelta(seconds=result_ttl)
+    print(land_number, enqueue_time)
+    enqueue_at(land_number, enqueue_time, queue=q.sync)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
