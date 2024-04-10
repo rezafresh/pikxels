@@ -1,15 +1,14 @@
 services:
   browserless:
-    image: browserless/chrome
+    image: ghcr.io/browserless/chrome:latest
+    # build:
+    #   context: https://github.com/browserless/browserless.git#v2.6.1
+    #   dockerfile: docker/chrome/Dockerfile
     environment:
       TZ: America/Sao_Paulo
-      MAX_CONCURRENT_SESSIONS: ${BROWSERLESS_MAX_CONCURRENT_SESSIONS}
-      CONNECTION_TIMEOUT: -1
-      MAX_QUEUE_LENGTH: 0
-      PREBOOT_CHROME: true
-      KEEP_ALIVE: true
-      DEFAULT_STEALTH: true
-      DEFAULT_HEADLESS: true
+      CONCURRENT: ${BROWSERLESS_CONCURRENT}
+      TIMEOUT: 0
+      QUEUED: 0
     ports:
       - 127.0.0.1:33000:3000
   redis:
@@ -38,7 +37,7 @@ services:
     build: .
     env_file: .env
     environment:
-      APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000
+      APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000/chrome/playwright
       APP_REDIS_URL: redis://redis:6379
     command: make docker-entry-worker
     depends_on:
@@ -48,7 +47,7 @@ services:
     build: .
     env_file: .env
     environment:
-      APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000
+      APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000/chrome/playwright
       APP_REDIS_URL: redis://redis:6379
     command: make docker-entry-api
     ports:

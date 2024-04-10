@@ -12,7 +12,7 @@ lint:
 	@poetry run ruff check src
 start-workers:
 	@poetry run rq worker-pool \
-		-n ${BROWSERLESS_MAX_CONCURRENT_SESSIONS} \
+		-n ${BROWSERLESS_CONCURRENT} \
 		-u ${APP_REDIS_URL}
 start-api:
 	@poetry run uvicorn src.app.api.asgi:app \
@@ -49,7 +49,7 @@ docker-entry-api:
 	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
 docker-entry-worker:
 	@rq worker-pool \
-		-n ${BROWSERLESS_MAX_CONCURRENT_SESSIONS} \
+		-n ${BROWSERLESS_CONCURRENT} \
 		-u ${APP_REDIS_URL}
 rq-dashboard:
 	@poetry run rq-dashboard \

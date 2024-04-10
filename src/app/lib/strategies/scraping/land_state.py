@@ -47,31 +47,23 @@ class ParsedLandState(TypedDict):
 
 async def from_browser(land_number: int) -> dict:
     async with async_playwright() as pw:
-        browser = context = page = None
+        browser = await pw.chromium.connect(
+            settings.PW_CDP_ENDPOINT_URL,
+            timeout=settings.PW_DEFAULT_TIMEOUT,
+        )
+        page = await browser.new_page()
+        page.set_default_navigation_timeout(settings.PW_DEFAULT_TIMEOUT)
+        page.set_default_timeout(settings.PW_DEFAULT_TIMEOUT)
 
-        try:
-            browser = await pw.chromium.connect_over_cdp(
-                settings.PW_CDP_ENDPOINT_URL,
-                timeout=settings.PW_DEFAULT_TIMEOUT,
-            )
-            context = await browser.new_context()
-            page = await context.new_page()
-            page.set_default_navigation_timeout(settings.PW_DEFAULT_TIMEOUT)
-            page.set_default_timeout(settings.PW_DEFAULT_TIMEOUT)
+        if not (await page.goto(f"https://play.pixels.xyz/pixels/share/{land_number}")).ok:
+            raise HTTPException(422, "An error has ocurred while navigating to the land")
 
-            if not (await page.goto(f"https://play.pixels.xyz/pixels/share/{land_number}")).ok:
-                raise HTTPException(422, "An error has ocurred while navigating to the land")
+        # await page.wait_for_load_state("load")
 
-            # await page.wait_for_load_state("load")
-
-            if (state_str := await phaser_land_state_getter(page)) is None:
-                raise HTTPException(422, "Could not retrieve the land state")
-            elif not state_str:
-                raise HTTPException(422, "Invalid land state")
-        finally:
-            page and await page.close()
-            context and await context.close()
-            browser and await browser.close()
+        if (state_str := await phaser_land_state_getter(page)) is None:
+            raise HTTPException(422, "Could not retrieve the land state")
+        elif not state_str:
+            raise HTTPException(422, "Invalid land state")
 
     return json.loads(state_str)
 
@@ -135,7 +127,7 @@ def parse_tree(data: dict) -> ParsedTree:
     return {
         "entity": data["entity"],
         "position": data["position"],
-        "state": data["generic"]["state"],
+        "state": data["generic"].get("state"),
         "utcRefresh": utc_refresh,
         "lastChop": last_chop,
         "lastTimer": last_timer,
