@@ -4,7 +4,6 @@ from time import time
 import httpx
 from fastapi import HTTPException
 
-from ..lib.strategies.scraping import _queues as q
 from ..lib.strategies.scraping.land_state import from_cache as land_state_from_cache
 from ..lib.strategies.scraping.land_state import get as land_state_get
 from ..lib.strategies.scraping.land_state import parse as land_state_parse
@@ -41,12 +40,7 @@ async def get_marketplace_listing():
 
 
 def get_cached_lands_states(raw: bool = False) -> dict[str, dict]:
-    def get_from_cache(land_number: int) -> dict:
-        return land_state_from_cache(land_number) or land_state_from_cache(
-            land_number, queue=q.sync
-        )
-
-    lands = {i: get_from_cache(i) for i in range(1, 5000)}
+    lands = {i: land_state_from_cache(i) for i in range(1, 5000)}
 
     if raw:
         result = {str(key): value for key, value in lands.items() if value}

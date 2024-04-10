@@ -2,7 +2,7 @@ import asyncio
 import json
 import time
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime
 from random import randint
 from typing import TypedDict
 
@@ -85,11 +85,8 @@ def from_cache(land_number: int, *, queue: rq.Queue = q.default) -> dict | None:
 
 
 def get(land_number: int, cached: bool = True):
-    if cached:
-        if land_state := from_cache(land_number):
-            return land_state
-        elif land_state := from_cache(land_number, queue=q.sync):
-            return land_state
+    if cached and (land_state := from_cache(land_number)):
+        return land_state
 
     job = enqueue(land_number)
 
@@ -230,16 +227,15 @@ def get_result_ttl_by_windmills(land_state: ParsedLandState):
         return 3600  # 1 hour
 
 
-def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
-    parsed_land_state = parse(json.loads(result))
-    result_ttl = min(
+def get_best_result_ttl(land_state: dict) -> int:
+    parsed_land_state = parse(json.loads(land_state))
+    return min(
         get_result_ttl_by_trees(parsed_land_state), get_result_ttl_by_windmills(parsed_land_state)
     )
-    job.result_ttl = result_ttl
-    land_number: int = job.args[0]
-    enqueue_time = datetime.now() + timedelta(seconds=result_ttl)
-    print(land_number, enqueue_time)
-    enqueue_at(land_number, enqueue_time, queue=q.sync)
+
+
+def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
+    job.result_ttl = get_best_result_ttl(result)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):

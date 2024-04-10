@@ -11,7 +11,9 @@ lint:
 	@poetry run isort --profile black src
 	@poetry run ruff check src
 start-workers:
-	@poetry run python -m src.app.cli.start_workers
+	@poetry run rq worker-pool \
+		-n ${BROWSERLESS_MAX_CONCURRENT_SESSIONS} \
+		-u ${APP_REDIS_URL}
 start-api:
 	@poetry run uvicorn src.app.api.asgi:app \
 		--host 0.0.0.0 \
@@ -43,7 +45,9 @@ docker-start-tree-hunt:
 docker-entry-api:
 	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
 docker-entry-worker:
-	@python -m src.app.cli.start_workers
+	@rq worker-pool \
+		-n ${BROWSERLESS_MAX_CONCURRENT_SESSIONS} \
+		-u ${APP_REDIS_URL}
 rq-dashboard:
 	@poetry run rq-dashboard \
 		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}
