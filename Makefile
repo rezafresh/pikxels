@@ -28,21 +28,18 @@ git-push: lint
 	@git add .
 	@git commit -m wip
 	@git push
-docker-build:
-	@poetry export -q --without=dev -o requirements.txt
-	@docker compose build
 docker-down:
 	@docker compose down
-docker-up: docker-down docker-build
-	@docker compose up
-docker-up-detached: docker-down docker-build
-	@docker compose up -d
+docker-up: docker-down
+	@docker compose up --build
+docker-up-detached: docker-down
+	@docker compose up -d --build
 docker-up-services: docker-down
 	@docker compose up browserless redis rq-dashboard
 docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
-docker-up-standalone-worker: docker-down docker-build
-	@docker compose up browserless worker
+docker-up-standalone-worker: docker-down
+	@docker compose up browserless worker --build
 docker-start-tree-hunt:
 	@docker compose exec worker python -m src.app.cli.tree_hunt
 docker-entry-api:
