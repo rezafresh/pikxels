@@ -1,8 +1,7 @@
 import asyncio
 import json
 import time
-import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 from typing import TypedDict
 
@@ -107,6 +106,8 @@ def enqueue(land_number: int, *, queue: rq.Queue = q.default) -> rq.job.Job:
         worker,
         land_number,
         job_id=f"app:land:{land_number}:state",
+        on_success=worker_success_handler,
+        on_failure=worker_failure_handler,
     )
 
 
@@ -116,6 +117,8 @@ def enqueue_at(land_number: int, at: datetime, *, queue: rq.Queue = q.default) -
         worker,
         land_number,
         job_id=f"app:land:{land_number}:state",
+        on_success=worker_success_handler,
+        on_failure=worker_failure_handler,
     )
 
 
@@ -177,18 +180,7 @@ def parse(land_state: dict) -> ParsedLandState:
 
 
 def worker(land_number: int):
-    current_job = rq.get_current_job()
-
-    try:
-        result = json.dumps(asyncio.run(from_browser(land_number)))
-    except Exception as error:
-        worker_failure_handler(
-            current_job, current_job.connection, type(error), error, traceback.format_exc()
-        )
-        raise
-    else:
-        worker_success_handler(current_job, current_job.connection, result)
-        return result
+    return json.dumps(asyncio.run(from_browser(land_number)))
 
 
 def get_result_ttl_by_trees(land_state: ParsedLandState):
@@ -228,6 +220,10 @@ def get_best_result_ttl(land_state: dict) -> int:
 
 def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
     job.result_ttl = get_best_result_ttl(result)
+    land_number = int(job.args[0])
+    next_sync = datetime.now() + timedelta(seconds=job.result_ttl)
+    print("next sync", land_number, next_sync)
+    enqueue_at(land_number, next_sync, queue=q.sync)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
@@ -241,3 +237,7 @@ def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
 
     job.meta["detail"] = repr(value)
     job.save_meta()
+    land_number = int(job.args[0])
+    next_attempt = datetime.now() + timedelta(seconds=randint(120, 600))
+    print("next attempt", land_number, next_attempt)
+    enqueue_at(land_number, next_attempt, queue=q.sync)
