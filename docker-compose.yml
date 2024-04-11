@@ -4,8 +4,8 @@ services:
     environment:
       TZ: America/Sao_Paulo
       CONCURRENT: ${BROWSERLESS_CONCURRENT}
-      TIMEOUT: -1
-      QUEUED: 0
+      TIMEOUT: ${BROWSERLESS_TIMEOUT}
+      QUEUED: ${BROWSERLESS_QUEUED}
     ports:
       - 127.0.0.1:33000:3000
   redis:
