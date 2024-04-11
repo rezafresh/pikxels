@@ -5,15 +5,7 @@ from subprocess import Popen
 
 def start_worker_pool(queue: list[str], workers_count: int):
     return Popen(
-        [
-            "rq",
-            "worker-pool",
-            "-n",
-            str(workers_count),
-            "-u",
-            os.getenv("APP_REDIS_URL"),
-            " ".join(queue),
-        ]
+        ["rq", "worker-pool", "-n", str(workers_count), "-u", os.getenv("APP_REDIS_URL"), *queue]
     )
 
 
