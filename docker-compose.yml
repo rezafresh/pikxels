@@ -1,9 +1,6 @@
 services:
   browserless:
-    image: ghcr.io/browserless/chrome:latest
-    # build:
-    #   context: https://github.com/browserless/browserless.git#v2.6.1
-    #   dockerfile: docker/chrome/Dockerfile
+    image: ghcr.io/browserless/chrome:v2.6.1
     environment:
       TZ: America/Sao_Paulo
       CONCURRENT: ${BROWSERLESS_CONCURRENT}
