@@ -1,11 +1,12 @@
 import math
 import os
-from multiprocessing import Process
+from subprocess import Popen
 
-import rq
-import rq.worker_pool
 
-from src.app.lib.strategies.scraping import _queues as q
+def start_worker_pool(queue: str, workers_count: int):
+    return Popen(
+        ["rq", "worker-pool", "-n", str(workers_count), "-u", os.getenv("APP_REDIS_URL"), queue]
+    )
 
 
 def _main():
@@ -14,24 +15,22 @@ def _main():
 
     default_queue_concurrency = math.floor(max_concurrency * 0.6)
     sync_queue_concurrency = max_concurrency - default_queue_concurrency
-    workers = [
-        rq.worker_pool.WorkerPool([q.default], q._redis, default_queue_concurrency),
-        rq.worker_pool.WorkerPool([q.sync], q._redis, sync_queue_concurrency),
+    processes = [
+        start_worker_pool("default", default_queue_concurrency),
+        start_worker_pool("sync", sync_queue_concurrency),
     ]
-    processes = [Process(target=w.start) for w in workers]
 
-    for p in processes:
-        p.start()
-
-    for p in processes:
-        p.join()
+    while True:
+        try:
+            for p in processes:
+                p.wait()
+            break
+        except KeyboardInterrupt:
+            pass
 
 
 def main():
-    try:
-        _main()
-    except KeyboardInterrupt:
-        pass
+    _main()
 
 
 if __name__ == "__main__":
