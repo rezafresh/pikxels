@@ -186,7 +186,7 @@ def worker(land_number: int):
     return json.dumps(asyncio.run(from_browser(land_number)))
 
 
-def get_result_ttl_by_trees(land_state: ParsedLandState):
+def get_invalidation_by_trees(land_state: ParsedLandState):
     if not land_state.get("trees"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -200,7 +200,7 @@ def get_result_ttl_by_trees(land_state: ParsedLandState):
         return 3600  # 1 hour
 
 
-def get_result_ttl_by_windmills(land_state: ParsedLandState):
+def get_invalidation_by_windmills(land_state: ParsedLandState):
     if not land_state.get("windmills"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -214,17 +214,19 @@ def get_result_ttl_by_windmills(land_state: ParsedLandState):
         return 3600  # 1 hour
 
 
-def get_best_result_ttl(land_state: dict) -> int:
+def get_best_invalidation_seconds(land_state: dict) -> int:
     parsed_land_state = parse(json.loads(land_state))
     return min(
-        get_result_ttl_by_trees(parsed_land_state), get_result_ttl_by_windmills(parsed_land_state)
+        get_invalidation_by_trees(parsed_land_state),
+        get_invalidation_by_windmills(parsed_land_state),
     )
 
 
 def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
-    job.result_ttl = get_best_result_ttl(result)
+    job.result_ttl = -1
     land_number = int(job.args[0])
-    next_sync = datetime.now() + timedelta(seconds=job.result_ttl)
+    best_result_ttl = get_best_invalidation_seconds(result)
+    next_sync = datetime.now() + timedelta(seconds=best_result_ttl)
     print("next sync", land_number, next_sync)
     enqueue_at(land_number, next_sync, queue=q.sync)
 
