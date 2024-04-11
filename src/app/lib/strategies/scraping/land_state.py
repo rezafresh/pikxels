@@ -228,6 +228,7 @@ def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs)
     best_result_ttl = get_best_invalidation_seconds(result)
     next_sync = datetime.now() + timedelta(seconds=best_result_ttl)
     print("next sync", land_number, next_sync)
+    job.meta["next_sync"] = str(next_sync)
     enqueue_at(land_number, next_sync, queue=q.sync)
 
 
