@@ -79,7 +79,7 @@ def get(land_number: int, cached: bool = True):
     if cached:
         if land_state := from_cache(land_number):
             return land_state
-        elif land_state := from_cache(land_number, q.sync):
+        elif land_state := from_cache(land_number, queue=q.sync):
             return land_state
 
     job = enqueue(land_number)
