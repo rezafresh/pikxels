@@ -4,7 +4,7 @@ services:
     environment:
       TZ: America/Sao_Paulo
       CONCURRENT: ${BROWSERLESS_CONCURRENT}
-      TIMEOUT: 0
+      TIMEOUT: -1
       QUEUED: 0
     ports:
       - 127.0.0.1:33000:3000
