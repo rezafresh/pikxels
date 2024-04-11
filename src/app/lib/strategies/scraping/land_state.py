@@ -76,8 +76,11 @@ def from_cache(land_number: int, *, queue: rq.Queue = q.default) -> dict | None:
 
 
 def get(land_number: int, cached: bool = True):
-    if cached and (land_state := from_cache(land_number)):
-        return land_state
+    if cached:
+        if land_state := from_cache(land_number):
+            return land_state
+        elif land_state := from_cache(land_number, q.sync):
+            return land_state
 
     job = enqueue(land_number)
 
