@@ -37,7 +37,7 @@ services:
     build: .
     env_file: .env
     environment:
-      APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000/chrome/playwright
+      APP_PW_WS_ENDPOINT: ws://browserless:3000/chrome/playwright
       APP_REDIS_URL: redis://redis:6379
     command: make docker-entry-worker
     depends_on:
@@ -47,7 +47,7 @@ services:
     build: .
     env_file: .env
     environment:
-      APP_PW_CDP_ENDPOINT_URL: ws://browserless:3000/chrome/playwright
+      APP_PW_WS_ENDPOINT: ws://browserless:3000/chrome/playwright
       APP_REDIS_URL: redis://redis:6379
     command: make docker-entry-api
     ports:
