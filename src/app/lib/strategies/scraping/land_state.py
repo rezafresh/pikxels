@@ -48,7 +48,7 @@ class ParsedLandState(TypedDict):
 async def from_browser(land_number: int) -> dict:
     async with async_playwright() as pw:
         browser = await pw.chromium.connect(
-            settings.PW_CDP_ENDPOINT_URL,
+            settings.PW_WS_ENDPOINT,
             timeout=settings.PW_DEFAULT_TIMEOUT,
         )
         page = await browser.new_page()
