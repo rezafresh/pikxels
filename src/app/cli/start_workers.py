@@ -3,9 +3,17 @@ import os
 from subprocess import Popen
 
 
-def start_worker_pool(queue: str, workers_count: int):
+def start_worker_pool(queue: list[str], workers_count: int):
     return Popen(
-        ["rq", "worker-pool", "-n", str(workers_count), "-u", os.getenv("APP_REDIS_URL"), queue]
+        [
+            "rq",
+            "worker-pool",
+            "-n",
+            str(workers_count),
+            "-u",
+            os.getenv("APP_REDIS_URL"),
+            " ".join(queue),
+        ]
     )
 
 
@@ -16,8 +24,8 @@ def _main():
     default_queue_concurrency = math.floor(max_concurrency * 0.6)
     sync_queue_concurrency = max_concurrency - default_queue_concurrency
     processes = [
-        start_worker_pool("default", default_queue_concurrency),
-        start_worker_pool("sync", sync_queue_concurrency),
+        start_worker_pool(["default", "sync"], default_queue_concurrency),
+        start_worker_pool(["sync", "default"], sync_queue_concurrency),
     ]
 
     while True:
