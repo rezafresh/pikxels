@@ -238,21 +238,24 @@ def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs)
     land_number = int(job.args[0])
     best_result_ttl = get_best_invalidation_seconds(result)
     next_sync = datetime.now() + timedelta(seconds=best_result_ttl)
-    print("next sync", land_number, next_sync)
-    job.meta["next_sync"] = str(next_sync)
+    job.meta = {"next_sync": str(next_sync)}
     enqueue_at(land_number, next_sync, queue=q.sync)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
+    job.meta = {"error": {}}
+
     if isinstance(value, PWError):
         if "too many" in value.message.lower():
-            job.meta["message"] = "The Job cannot be done now, the browser engine is at his limit"
+            job.meta["error"][
+                "message"
+            ] = "The Job cannot be done now, the browser engine is at his limit"
         else:
-            job.meta["message"] = "Failed to connect to the browser engine"
+            job.meta["error"]["message"] = "Failed to connect to the browser engine"
     else:
-        job.meta["message"] = str(value)
+        job.meta["error"]["message"] = str(value)
 
-    job.meta["detail"] = repr(value)
+    job.meta["error"]["detail"] = repr(value)
     job.save_meta()
     land_number = int(job.args[0])
     next_attempt = datetime.now() + timedelta(seconds=randint(120, 600))
