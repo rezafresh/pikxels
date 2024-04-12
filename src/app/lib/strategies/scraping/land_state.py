@@ -6,6 +6,7 @@ from random import randint
 from typing import TypedDict
 
 import rq
+import rq.results
 from fastapi import HTTPException
 from playwright.async_api import Error as PWError
 from playwright.async_api import Page, async_playwright
@@ -67,20 +68,29 @@ async def from_browser(land_number: int) -> dict:
     return json.loads(state_str)
 
 
-def from_cache(land_number: int, *, queue: rq.Queue = q.default) -> dict | None:
+def from_cache(
+    land_number: int, *, queue: rq.Queue = q.default
+) -> tuple[rq.results.Result, dict] | None:
     if job := queue.fetch_job(f"app:land:{land_number}:state"):
         if latest := job.latest_result():
             if cached := latest.return_value:
-                return json.loads(cached)
+                return latest, json.loads(cached)
     return None
 
 
-def get(land_number: int, cached: bool = True):
-    if cached:
-        if land_state := from_cache(land_number):
-            return land_state
-        elif land_state := from_cache(land_number, queue=q.sync):
-            return land_state
+def get_from_cache(land_number: int, *, raw: bool = False) -> tuple[rq.results.Result, dict] | None:
+    if not (state := from_cache(land_number)):
+        if not (state := from_cache(land_number, queue=q.sync)):
+            return None
+
+    return state if raw else (state[0], parse(state[1]))
+
+
+def get(
+    land_number: int, *, cached: bool = True, raw: bool = False
+) -> tuple[rq.results.Result, dict]:
+    if cached and (state := get_from_cache(land_number, raw=raw)):
+        return state
 
     job = enqueue(land_number)
 
@@ -94,7 +104,8 @@ def get(land_number: int, cached: bool = True):
     elif not job.result:
         raise HTTPException(422, "The job finished successfully, but returned an invalid result")
 
-    return json.loads(job.result)
+    result = json.loads(job.result)
+    return job.latest_result(), (result if raw else parse(result))
 
 
 @retry_until_valid(tries=settings.PW_DEFAULT_TIMEOUT // 1000)

@@ -4,18 +4,32 @@ from time import time
 import httpx
 from fastapi import HTTPException
 
-from ..lib.strategies.scraping.land_state import from_cache as land_state_from_cache
 from ..lib.strategies.scraping.land_state import get as land_state_get
-from ..lib.strategies.scraping.land_state import parse as land_state_parse
+from ..lib.strategies.scraping.land_state import (
+    get_from_cache as land_state_get_from_cache,
+)
 
 
 def get_land_state(land_number: int, cached: bool = True, raw: bool = False):
-    if state := land_state_get(land_number, cached):
-        if raw:
-            return {"state": state}
-        return {"state": land_state_parse(state)}
+    if not (state := land_state_get(land_number, cached=cached, raw=raw)):
+        raise HTTPException(422, "Could not retrieve the land state. Try again later.")
 
-    raise HTTPException(422, "Could not retrieve the land state. Try again later.")
+    return {"resultCreatedAt": state[0].created_at.astimezone().isoformat(), "state": state[1]}
+
+
+def get_cached_lands_states() -> dict[str, dict]:
+    def make_land_state(land_number: int):
+        if not (cached := land_state_get_from_cache(land_number)):
+            return None
+
+        return {
+            "resultCreatedAt": cached[0].created_at.astimezone().isoformat(),
+            "state": cached[1],
+        }
+
+    lands = {i: make_land_state(i) for i in range(1, 5000)}
+    result = {str(key): value for key, value in lands.items() if value}
+    return {"states": result}
 
 
 async def get_marketplace_listing():
@@ -37,14 +51,3 @@ async def get_marketplace_listing():
             for item_id in set(list(counts.keys()) + list(prices.keys()))
         },
     }
-
-
-def get_cached_lands_states(raw: bool = False) -> dict[str, dict]:
-    lands = {i: land_state_from_cache(i) for i in range(1, 5000)}
-
-    if raw:
-        result = {str(key): value for key, value in lands.items() if value}
-    else:
-        result = {str(key): land_state_parse(value) for key, value in lands.items() if value}
-
-    return {"states": result}
