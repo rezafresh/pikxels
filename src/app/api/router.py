@@ -1,8 +1,8 @@
 from fastapi.routing import APIRouter
 
-from . import services
+from . import controllers
 
 router = APIRouter()
-router.get("/land/{land_number:int}/state/")(services.get_land_state)
-router.get("/lands/resources/")(services.get_cached_lands_available_resources)
-router.get("/marketplace/listing/")(services.get_marketplace_listing)
+router.get("/land/{land_number:int}/state/")(controllers.get_land_state)
+router.get("/lands/resources/")(controllers.get_cached_lands_available_resources)
+router.get("/marketplace/listing/")(controllers.get_marketplace_listing)
