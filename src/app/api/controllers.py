@@ -83,7 +83,8 @@ def get_cached_lands_available_resources(offset: int = 0):
     return {
         "totalItems": len(resources),
         "currentOffset": offset,
-        "resources": resources,
+        "resultsPerPage": (results_per_page := 50),
+        "resources": resources[offset : offset + results_per_page],
     }
 
 
