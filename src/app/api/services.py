@@ -1,67 +1,70 @@
 from datetime import datetime
+from itertools import chain
 from time import time
 
 import httpx
+import rq
 from fastapi import HTTPException
 
+from ..lib.strategies.scraping._queues import sync
 from ..lib.strategies.scraping.land_state import get as land_state_get
-from ..lib.strategies.scraping.land_state import (
-    get_from_cache as land_state_get_from_cache,
-)
+from ..lib.strategies.scraping.land_state import parse as land_state_parse
 
 
 def get_land_state(land_number: int, cached: bool = True, raw: bool = False):
     if not (state := land_state_get(land_number, cached=cached, raw=raw)):
         raise HTTPException(422, "Could not retrieve the land state. Try again later.")
 
-    return {"resultCreatedAt": state[0].created_at.astimezone().isoformat(), "state": state[1]}
+    return {"lastUpdated": state[0].created_at.astimezone().isoformat(), "state": state[1]}
 
 
 def get_cached_lands_available_resources(offset: int = 0):
+    if not (job_ids := sync.finished_job_registry.get_job_ids()):
+        return HTTPException(404, "No data found")
+
+    jobs = [sync.fetch_job(jid) for jid in job_ids]
     now = datetime.now()
 
-    def make_resources(land_number: int):
-        if not (cached := land_state_get_from_cache(land_number)):
-            return None
+    def parse(j: rq.job.Job):
+        if last_result := j.latest_result():
+            if result := last_result.return_value:
+                return {"lastUpdated": str(last_result.created_at), **land_state_parse(result)}
+        return None
 
-        result = [
-            *list(
-                filter(
-                    lambda t: ((t["utcRefresh"] or now) - now).total_seconds() <= 600,
-                    cached[1]["trees"],
-                )
-            ),
-            *list(
-                filter(
-                    lambda w: ((w["finishTime"] or now) - now).total_seconds() <= 600,
-                    cached[1]["windmills"],
-                )
-            ),
+    resources = {j.args[0]: parse(j) for j in jobs}
+    resources = [
+        [
+            *[
+                {
+                    "landNumber": int(land_number),
+                    "isBlocked": state["isBlocked"],
+                    "totalPlayers": state["totalPlayers"],
+                    "lastUpdated": state["lastUpdated"],
+                    **t,
+                }
+                for t in state["trees"]
+                if 0 < ((t["utcRefresh"] or now) - now).total_seconds() < 600
+            ],
+            *[
+                {
+                    "landNumber": int(land_number),
+                    "isBlocked": state["isBlocked"],
+                    "totalPlayers": state["totalPlayers"],
+                    "lastUpdated": state["lastUpdated"],
+                    **w,
+                }
+                for w in state["windmills"]
+                if 0 < ((w["finishTime"] or now) - now).total_seconds() < 600
+            ],
         ]
-        return [
-            {
-                "land": land_number,
-                "landIsBlocked": cached[1]["isBlocked"],
-                "totalPlayers": cached[1]["totalPlayers"],
-                **_,
-            }
-            for _ in result
-        ]
-
-    results = list(filter(bool, [make_resources(i) for i in range(1, 5000)]))
-    results = [_ for item in results for _ in item]
-
-    def predicate(item: dict) -> bool:
-        return True
-
-    results = [_ for _ in results if predicate(_)]
-    results = sorted(
-        results, key=lambda item: (item.get("utcRefresh") or item.get("finishTime") or now)
-    )
+        for land_number, state in resources.items()
+    ]
+    resources = [*chain.from_iterable(resources)]
+    resources = sorted(resources, key=lambda r: (r.get("utcRefresh") or r.get("finishTime") or now))
     return {
-        "totalItems": len(results),
+        "totalItems": len(resources),
         "currentOffset": offset,
-        "resources": results[offset : offset + 20],
+        "resources": resources,
     }
 
 

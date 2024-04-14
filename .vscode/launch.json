@@ -18,18 +18,11 @@
             "jinja": true
         },
         {
-            "name": "worker",
+            "name": "workers",
             "type": "debugpy",
             "request": "launch",
-            "module": "rq.cli",
-            "envFile": "${workspaceFolder}/.env",
-            "args": [
-                "worker-pool",
-                "-n", "5",
-                "-u", "redis://localhost:6379",
-                "default",
-                "low"
-            ]
+            "module": "src.app.cli.start_workers",
+            "envFile": "${workspaceFolder}/.env"
         },
 
         {

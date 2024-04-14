@@ -39,8 +39,8 @@ class ParsedWindMill(TypedDict):
 
 
 class ParsedLandState(TypedDict):
-    is_blocked: bool
-    total_players: int
+    isBlocked: bool
+    totalPlayers: int
     trees: list[ParsedTree]
     windmills: list[ParsedWindMill]
 
@@ -74,7 +74,7 @@ def from_cache(
     if job := queue.fetch_job(f"app:land:{land_number}:state"):
         if latest := job.latest_result():
             if cached := latest.return_value:
-                return latest, json.loads(cached)
+                return latest, cached
     return None
 
 
@@ -104,7 +104,7 @@ def get(
     elif not job.result:
         raise HTTPException(422, "The job finished successfully, but returned an invalid result")
 
-    result = json.loads(job.result)
+    result = job.result
     return job.latest_result(), (result if raw else parse(result))
 
 
@@ -194,10 +194,10 @@ def parse(land_state: dict) -> ParsedLandState:
 
 
 def worker(land_number: int):
-    return json.dumps(asyncio.run(from_browser(land_number)))
+    return asyncio.run(from_browser(land_number))
 
 
-def get_invalidation_by_trees(land_state: ParsedLandState):
+def get_ttl_by_trees(land_state: ParsedLandState):
     if not land_state.get("trees"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -211,7 +211,7 @@ def get_invalidation_by_trees(land_state: ParsedLandState):
         return 3600  # 1 hour
 
 
-def get_invalidation_by_windmills(land_state: ParsedLandState):
+def get_ttl_by_windmills(land_state: ParsedLandState):
     if not land_state.get("windmills"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -225,21 +225,20 @@ def get_invalidation_by_windmills(land_state: ParsedLandState):
         return 3600  # 1 hour
 
 
-def get_best_invalidation_seconds(land_state: dict) -> int:
-    parsed_land_state = parse(json.loads(land_state))
+def get_best_ttl_seconds(land_state: dict) -> int:
+    parsed_land_state = parse(land_state)
     return min(
-        get_invalidation_by_trees(parsed_land_state),
-        get_invalidation_by_windmills(parsed_land_state),
+        get_ttl_by_trees(parsed_land_state),
+        get_ttl_by_windmills(parsed_land_state),
     )
 
 
 def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
     job.result_ttl = -1
-    land_number = int(job.args[0])
-    best_result_ttl = get_best_invalidation_seconds(result)
-    next_sync = datetime.now() + timedelta(seconds=best_result_ttl)
+    best_ttl = get_best_ttl_seconds(result)
+    next_sync = datetime.now() + timedelta(seconds=best_ttl)
     job.meta = {"next_sync": str(next_sync)}
-    enqueue_at(land_number, next_sync, queue=q.sync)
+    enqueue_at(int(job.args[0]), next_sync, queue=q.sync)
 
 
 def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
@@ -257,7 +256,5 @@ def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
 
     job.meta["error"]["detail"] = repr(value)
     job.save_meta()
-    land_number = int(job.args[0])
     next_attempt = datetime.now() + timedelta(seconds=randint(120, 600))
-    print("next attempt", land_number, next_attempt)
-    enqueue_at(land_number, next_attempt, queue=q.sync)
+    enqueue_at(job.args[0], next_attempt, queue=q.sync)
