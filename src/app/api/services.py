@@ -28,7 +28,10 @@ def get_cached_lands_available_resources(offset: int = 0):
     def parse(j: rq.job.Job):
         if last_result := j.latest_result():
             if result := last_result.return_value:
-                return {"lastUpdated": str(last_result.created_at), **land_state_parse(result)}
+                return {
+                    "lastUpdated": last_result.created_at.astimezone().isoformat(),
+                    **land_state_parse(result),
+                }
         return None
 
     resources = {j.args[0]: parse(j) for j in jobs}
