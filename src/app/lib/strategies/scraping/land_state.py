@@ -75,7 +75,6 @@ async def from_browser(land_number: int) -> dict:
 
 
 def from_cache(land_number: int) -> LandStateJobResult | None:
-
     with get_redis_connection() as redis:
         if cached := redis.get(f"app:land:{land_number}:state"):
             result = json.loads(cached)
