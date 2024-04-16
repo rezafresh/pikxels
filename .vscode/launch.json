@@ -18,21 +18,6 @@
             "jinja": true
         },
         {
-            "name": "workers",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "src.app.cli.start_workers",
-            "envFile": "${workspaceFolder}/.env"
-        },
-
-        {
-            "name": "land_hunt",
-            "type": "debugpy",
-            "request": "launch",
-            "envFile": "${workspaceFolder}/.env",
-            "module": "src.app.cli.land_hunt"
-        },
-        {
             "name": "test",
             "type": "debugpy",
             "request": "launch",

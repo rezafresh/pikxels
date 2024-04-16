@@ -10,15 +10,11 @@ lint:
 	@poetry run black -l 100 src
 	@poetry run isort --profile black src
 	@poetry run ruff check src
-start-workers:
-	@poetry run python -m src.app.cli.start_workers
 start-api:
 	@poetry run uvicorn src.app.api.asgi:app \
 		--host 0.0.0.0 \
 		--port ${API_PORT} \
 		--reload
-start-land-hunt:
-	@poetry run python -m src.app.cli.land_hunt
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
 git-push: lint
@@ -33,17 +29,8 @@ docker-up: docker-down
 docker-up-detached: docker-down
 	@docker compose up -d --build
 docker-up-services: docker-down
-	@docker compose up browserless redis rq-dashboard
+	@docker compose up browserless redis
 docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
-docker-up-standalone-worker: docker-down
-	@docker compose up browserless worker --build
-docker-start-land-hunt:
-	@docker compose exec worker python -m src.app.cli.land_hunt
 docker-entry-api:
 	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
-docker-entry-worker:
-	@python -m src.app.cli.start_workers
-rq-dashboard:
-	@poetry run rq-dashboard \
-		-u redis://${APP_REDIS_HOST}:${APP_REDIS_PORT}

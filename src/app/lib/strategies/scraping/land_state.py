@@ -1,19 +1,26 @@
 import asyncio
 import json
-import time
 from datetime import datetime, timedelta
 from random import randint
 from typing import TypedDict
 
-import rq
-import rq.results
 from fastapi import HTTPException
-from playwright.async_api import Error as PWError
 from playwright.async_api import Page, async_playwright
 
 from .... import settings
-from . import _queues as q
-from ._utils import retry_until_valid, unix_time_to_datetime
+from ...executor import pool
+from ...redis import get_redis_connection
+from ...utils import retry_until_valid, unix_time_to_datetime
+
+LandState = dict
+
+
+class LandStateMeta(TypedDict):
+    updatedAt: datetime
+    expiresAt: datetime
+
+
+LandStateJobResult = tuple[LandState, LandStateMeta]
 
 
 class LandEntityPosition(TypedDict):
@@ -39,6 +46,7 @@ class ParsedWindMill(TypedDict):
 
 
 class ParsedLandState(TypedDict):
+    lastUpdated: datetime
     isBlocked: bool
     totalPlayers: int
     trees: list[ParsedTree]
@@ -58,8 +66,6 @@ async def from_browser(land_number: int) -> dict:
         if not (await page.goto(f"https://play.pixels.xyz/pixels/share/{land_number}")).ok:
             raise HTTPException(422, "An error has ocurred while navigating to the land")
 
-        # await page.wait_for_load_state("load")
-
         if (state_str := await phaser_land_state_getter(page)) is None:
             raise HTTPException(422, "Could not retrieve the land state")
         elif not state_str:
@@ -68,71 +74,47 @@ async def from_browser(land_number: int) -> dict:
     return json.loads(state_str)
 
 
-def from_cache(
-    land_number: int, *, queue: rq.Queue = q.default
-) -> tuple[rq.results.Result, dict] | None:
-    if job := queue.fetch_job(f"app:land:{land_number}:state"):
-        if latest := job.latest_result():
-            if cached := latest.return_value:
-                return latest, cached
+def from_cache(land_number: int) -> LandStateJobResult | None:
+
+    with get_redis_connection() as redis:
+        if cached := redis.get(f"app:land:{land_number}:state"):
+            result = json.loads(cached)
+
+            if cached_meta := redis.get(f"app:land:{land_number}:state:meta"):
+                return result, json.loads(cached_meta)
+
+            return result, {}
+
     return None
 
 
-def get_from_cache(land_number: int, *, raw: bool = False) -> tuple[rq.results.Result, dict] | None:
-    if not (state := from_cache(land_number)):
-        if not (state := from_cache(land_number, queue=q.sync)):
-            return None
+def get(land_number: int, *, raw: bool = False) -> LandStateJobResult:
+    if not (result := from_cache(land_number)):
+        result = pool.submit(worker, land_number).result()
 
-    return state if raw else (state[0], parse(state[1]))
+    return result if raw else (parse(result[0]), result[1])
 
 
-def get(
-    land_number: int, *, cached: bool = True, raw: bool = False
-) -> tuple[rq.results.Result, dict]:
-    if cached and (state := get_from_cache(land_number, raw=raw)):
-        return state
+def worker(land_number: int) -> LandStateJobResult:
+    with get_redis_connection() as redis:
+        result: dict = asyncio.run(from_browser(land_number))
+        result_as_str = json.dumps(result, default=str)
+        best_ex_time = get_best_expiration_seconds(result)
+        meta = {
+            "updatedAt": (now := datetime.now()),
+            "expiresAt": now + timedelta(seconds=best_ex_time),
+        }
+        redis.set(f"app:land:{land_number}:state", result_as_str, ex=best_ex_time)
+        redis.set(f"app:land:{land_number}:state:meta", json.dumps(meta, default=str))
+        redis.hset("app:lands:states", str(land_number), result_as_str)
 
-    job = enqueue(land_number)
-
-    while not (job.is_finished or job.is_failed):
-        time.sleep(1)
-
-    if job.is_failed:
-        raise HTTPException(
-            422, job.get_meta().get("message", "Unexpected error ocurred while running the job")
-        )
-    elif not job.result:
-        raise HTTPException(422, "The job finished successfully, but returned an invalid result")
-
-    result = job.result
-    return job.latest_result(), (result if raw else parse(result))
+    return result, meta
 
 
 @retry_until_valid(tries=settings.PW_DEFAULT_TIMEOUT // 1000)
 async def phaser_land_state_getter(page: Page):
     return await page.evaluate(
         "JSON.stringify(Phaser.Display.Canvas.CanvasPool.pool[0].parent.game.scene.scenes[1].stateManager.room.state)",
-    )
-
-
-def enqueue(land_number: int, *, queue: rq.Queue = q.default) -> rq.job.Job:
-    return queue.enqueue(
-        worker,
-        land_number,
-        job_id=f"app:land:{land_number}:state",
-        on_success=worker_success_handler,
-        on_failure=worker_failure_handler,
-    )
-
-
-def enqueue_at(land_number: int, at: datetime, *, queue: rq.Queue = q.default) -> rq.job.Job:
-    return queue.enqueue_at(
-        at,
-        worker,
-        land_number,
-        job_id=f"app:land:{land_number}:state",
-        on_success=worker_success_handler,
-        on_failure=worker_failure_handler,
     )
 
 
@@ -184,20 +166,16 @@ def parse_windmills(entities: dict) -> list[ParsedWindMill]:
     )
 
 
-def parse(land_state: dict) -> ParsedLandState:
+def parse(state: LandState) -> ParsedLandState:
     return {
-        "isBlocked": land_state["permissions"]["use"][0] != "ANY",
-        "totalPlayers": len(land_state["players"]),
-        "trees": parse_trees(land_state["entities"]),
-        "windmills": parse_windmills(land_state["entities"]),
+        "isBlocked": state["permissions"]["use"][0] != "ANY",
+        "totalPlayers": len(state["players"]),
+        "trees": parse_trees(state["entities"]),
+        "windmills": parse_windmills(state["entities"]),
     }
 
 
-def worker(land_number: int):
-    return asyncio.run(from_browser(land_number))
-
-
-def get_ttl_by_trees(land_state: ParsedLandState):
+def get_expiration_by_trees(land_state: ParsedLandState):
     if not land_state.get("trees"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -211,7 +189,7 @@ def get_ttl_by_trees(land_state: ParsedLandState):
         return 3600  # 1 hour
 
 
-def get_ttl_by_windmills(land_state: ParsedLandState):
+def get_expiration_by_windmills(land_state: ParsedLandState):
     if not land_state.get("windmills"):
         # if the land doesnt have trees
         return 86400  # 1 day
@@ -225,36 +203,9 @@ def get_ttl_by_windmills(land_state: ParsedLandState):
         return 3600  # 1 hour
 
 
-def get_best_ttl_seconds(land_state: dict) -> int:
-    parsed_land_state = parse(land_state)
+def get_best_expiration_seconds(state: LandState) -> int:
+    parsed_state = parse(state)
     return min(
-        get_ttl_by_trees(parsed_land_state),
-        get_ttl_by_windmills(parsed_land_state),
+        get_expiration_by_trees(parsed_state),
+        get_expiration_by_windmills(parsed_state),
     )
-
-
-def worker_success_handler(job: rq.job.Job, connection, result, *args, **kwargs):
-    job.result_ttl = -1
-    best_ttl = get_best_ttl_seconds(result)
-    next_sync = datetime.now() + timedelta(seconds=best_ttl)
-    job.meta = {"next_sync": str(next_sync)}
-    enqueue_at(int(job.args[0]), next_sync, queue=q.sync)
-
-
-def worker_failure_handler(job: rq.job.Job, connection, type, value, traceback):
-    job.meta = {"error": {}}
-
-    if isinstance(value, PWError):
-        if "too many" in value.message.lower():
-            job.meta["error"][
-                "message"
-            ] = "The Job cannot be done now, the browser engine is at his limit"
-        else:
-            job.meta["error"]["message"] = "Failed to connect to the browser engine"
-    else:
-        job.meta["error"]["message"] = str(value)
-
-    job.meta["error"]["detail"] = repr(value)
-    job.save_meta()
-    next_attempt = datetime.now() + timedelta(seconds=randint(120, 600))
-    enqueue_at(job.args[0], next_attempt, queue=q.sync)
