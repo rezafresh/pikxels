@@ -1,4 +1,3 @@
-import asyncio
 import json
 from datetime import datetime, timedelta
 from random import randint
@@ -8,7 +7,7 @@ from fastapi import HTTPException
 from playwright.async_api import Page, async_playwright
 
 from .... import settings
-from ...executor import pool
+from ...concurrency import semaphore
 from ...redis import get_redis_connection
 from ...utils import retry_until_valid, unix_time_to_datetime
 
@@ -54,6 +53,11 @@ class ParsedLandState(TypedDict):
 
 
 async def from_browser(land_number: int) -> dict:
+    async with semaphore:
+        return await _from_browser(land_number)
+
+
+async def _from_browser(land_number: int) -> dict:
     async with async_playwright() as pw:
         browser = await pw.chromium.connect(
             settings.PW_WS_ENDPOINT,
@@ -74,12 +78,12 @@ async def from_browser(land_number: int) -> dict:
     return json.loads(state_str)
 
 
-def from_cache(land_number: int) -> LandStateJobResult | None:
-    with get_redis_connection() as redis:
-        if cached := redis.get(f"app:land:{land_number}:state"):
+async def from_cache(land_number: int) -> LandStateJobResult | None:
+    async with get_redis_connection() as redis:
+        if cached := await redis.get(f"app:land:{land_number}:state"):
             result = json.loads(cached)
 
-            if cached_meta := redis.get(f"app:land:{land_number}:state:meta"):
+            if cached_meta := await redis.get(f"app:land:{land_number}:state:meta"):
                 return result, json.loads(cached_meta)
 
             return result, {}
@@ -87,25 +91,25 @@ def from_cache(land_number: int) -> LandStateJobResult | None:
     return None
 
 
-def get(land_number: int, *, raw: bool = False) -> LandStateJobResult:
-    if not (result := from_cache(land_number)):
-        result = pool.submit(worker, land_number).result()
+async def get(land_number: int, *, raw: bool = False) -> LandStateJobResult:
+    if not (result := await from_cache(land_number)):
+        result = await worker(land_number)
 
     return result if raw else (parse(result[0]), result[1])
 
 
-def worker(land_number: int) -> LandStateJobResult:
-    with get_redis_connection() as redis:
-        result: dict = asyncio.run(from_browser(land_number))
+async def worker(land_number: int) -> LandStateJobResult:
+    async with get_redis_connection() as redis:
+        result: dict = await from_browser(land_number)
         result_as_str = json.dumps(result, default=str)
         best_ex_time = get_best_expiration_seconds(result)
         meta = {
             "updatedAt": (now := datetime.now()),
             "expiresAt": now + timedelta(seconds=best_ex_time),
         }
-        redis.set(f"app:land:{land_number}:state", result_as_str, ex=best_ex_time)
-        redis.set(f"app:land:{land_number}:state:meta", json.dumps(meta, default=str))
-        redis.hset("app:lands:states", str(land_number), result_as_str)
+        await redis.set(f"app:land:{land_number}:state", result_as_str, ex=best_ex_time)
+        await redis.set(f"app:land:{land_number}:state:meta", json.dumps(meta, default=str))
+        await redis.hset("app:lands:states", str(land_number), result_as_str)
 
     return result, meta
 

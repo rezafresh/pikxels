@@ -1,11 +1,11 @@
-from contextlib import closing, contextmanager
+from contextlib import aclosing, asynccontextmanager
 
-from redis import Redis
+from redis.asyncio import Redis
 
 from .. import settings
 
 
-@contextmanager
-def get_redis_connection():
-    with closing(Redis.from_url(settings.REDIS_URL, decode_responses=True)) as client:
+@asynccontextmanager
+async def get_redis_connection():
+    async with aclosing(Redis.from_url(settings.REDIS_URL, decode_responses=True)) as client:
         yield client

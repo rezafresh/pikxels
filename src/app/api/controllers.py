@@ -2,19 +2,18 @@ import json
 from datetime import datetime
 from itertools import chain
 
-from ..lib.executor import pool
 from ..lib.redis import get_redis_connection
 from ..lib.strategies.scraping import land_state as ls
 
 
-def get_land_state(land_number: int, raw: bool = False):
-    state, meta = ls.get(land_number, raw=raw)
+async def get_land_state(land_number: int, raw: bool = False):
+    state, meta = await ls.get(land_number, raw=raw)
     return {**meta, "state": state}
 
 
-def get_cached_lands_available_resources(offset: int = 0):
-    with get_redis_connection() as redis:
-        cached: dict = redis.hgetall("app:lands:states") or {}
+async def get_cached_lands_available_resources(offset: int = 0):
+    async with get_redis_connection() as redis:
+        cached: dict = (await redis.hgetall("app:lands:states")) or {}
 
     def to_datetime(dt: datetime | str | None) -> datetime | None:
         if isinstance(dt, datetime):
@@ -63,16 +62,19 @@ def get_cached_lands_available_resources(offset: int = 0):
     }
 
 
-def get_current_running_processes():
-    return {
-        "processes": [
-            {
-                "uid": uid,
-                "fn": wi.fn.__module__,
-                "args": wi.args,
-                "kwargs": wi.kwargs,
-                "state": wi.future._state,
-            }
-            for uid, wi in pool._pending_work_items.items()
-        ]
-    }
+async def get_current_running_processes():
+    pass
+    # processes = [
+    #     {
+    #         "uid": uid,
+    #         "fn": t.fn.__module__,
+    #         "args": wi.args,
+    #         "kwargs": wi.kwargs,
+    #         "state": wi.future._state,
+    #     }
+    #     for wi in executor._threads.
+    # ]
+    # return {
+    #     "length": len(processes),
+    #     "processes": processes
+    # }
