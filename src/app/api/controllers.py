@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime
 from itertools import chain
 
@@ -60,3 +61,13 @@ async def get_cached_lands_available_resources(offset: int = 0):
         "resultsPerPage": (results_per_page := 50),
         "resources": resources[offset : offset + results_per_page],
     }
+
+
+async def get_cached_lands():
+    async with get_redis_connection() as redis:
+        if keys := await redis.keys("app:land:*:state"):
+            cached = sorted([int(re.search("\d+", _).group(0)) for _ in keys])
+        else:
+            cached = []
+
+    return {"totalItems": len(cached), "cachedLands": cached}

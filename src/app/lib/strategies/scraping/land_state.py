@@ -108,7 +108,8 @@ async def worker(land_number: int) -> LandStateJobResult:
             "expiresAt": now + timedelta(seconds=best_ex_time),
         }
         await redis.set(f"app:land:{land_number}:state", result_as_str, ex=best_ex_time)
-        await redis.set(f"app:land:{land_number}:state:meta", json.dumps(meta, default=str))
+        meta_as_str = json.dumps(meta, default=str)
+        await redis.set(f"app:land:{land_number}:state:meta", meta_as_str, ex=best_ex_time)
         await redis.hset("app:lands:states", str(land_number), result_as_str)
 
     return result, meta
