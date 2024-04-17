@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from itertools import chain
 
+from ..lib.executor import pool
 from ..lib.redis import get_redis_connection
 from ..lib.strategies.scraping import land_state as ls
 
@@ -59,4 +60,19 @@ def get_cached_lands_available_resources(offset: int = 0):
         "currentOffset": offset,
         "resultsPerPage": (results_per_page := 50),
         "resources": resources[offset : offset + results_per_page],
+    }
+
+
+def get_current_running_processes():
+    return {
+        "processes": [
+            {
+                "uid": uid,
+                "fn": wi.fn.__module__,
+                "args": wi.args,
+                "kwargs": wi.kwargs,
+                "state": wi.future._state,
+            }
+            for uid, wi in pool._pending_work_items.items()
+        ]
     }

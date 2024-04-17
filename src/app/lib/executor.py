@@ -1,5 +1,5 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 
 from .. import settings
 
-pool = ThreadPoolExecutor(max_workers=settings.CONCURRENCY)
+pool = ProcessPoolExecutor(max_workers=settings.CONCURRENCY)
