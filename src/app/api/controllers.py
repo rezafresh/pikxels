@@ -60,21 +60,3 @@ async def get_cached_lands_available_resources(offset: int = 0):
         "resultsPerPage": (results_per_page := 50),
         "resources": resources[offset : offset + results_per_page],
     }
-
-
-async def get_current_running_processes():
-    pass
-    # processes = [
-    #     {
-    #         "uid": uid,
-    #         "fn": t.fn.__module__,
-    #         "args": wi.args,
-    #         "kwargs": wi.kwargs,
-    #         "state": wi.future._state,
-    #     }
-    #     for wi in executor._threads.
-    # ]
-    # return {
-    #     "length": len(processes),
-    #     "processes": processes
-    # }
