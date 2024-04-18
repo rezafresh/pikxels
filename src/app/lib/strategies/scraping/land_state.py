@@ -2,6 +2,7 @@ import json
 import time
 from asyncio import Semaphore
 from datetime import datetime, timedelta
+from random import randint
 from typing import TypedDict
 
 from fastapi import HTTPException
@@ -95,7 +96,6 @@ async def worker(land_number: int, semaphore: Semaphore) -> LandState:
     async with get_redis_connection() as redis:
         raw_state = await from_browser(land_number, semaphore)
         seconds_to_expire = get_best_seconds_to_expire(raw_state)
-        logger.info(f"{land_number=} {seconds_to_expire=}")
         result: LandState = {
             "createdAt": (now := datetime.now()),
             "expiresAt": now + timedelta(seconds=seconds_to_expire),
@@ -153,6 +153,12 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
     result = min(last_tree_respawn, first_wm_available)
 
     if (delta := int((result - now).total_seconds())) == 0:
+        # this case happens if:
+        # 1. all resources are available now.
+        #   In that case, probally the land is locked;
         return 86400
+    elif seconds_to_expire < 0:
+        # probally, the data Analyzed is old; schedule update between 1 and 5 minutes;
+        seconds_to_expire = randint(60, 300)
 
     return delta
