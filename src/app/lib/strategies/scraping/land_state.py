@@ -161,4 +161,4 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         # probally, the data Analyzed is old; schedule update between 1 and 5 minutes;
         return randint(60, 300)
 
-    return delta
+    return max(15, delta)
