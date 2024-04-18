@@ -1,6 +1,6 @@
 import json
+import time
 from datetime import datetime, timedelta
-from random import randint
 from typing import TypedDict
 
 from fastapi import HTTPException
@@ -9,17 +9,13 @@ from playwright.async_api import Page, async_playwright
 from .... import settings
 from ...concurrency import semaphore
 from ...redis import get_redis_connection
-from ...utils import retry_until_valid, unix_time_to_datetime
-
-LandState = dict
+from ...utils import retry_until_valid
 
 
-class LandStateMeta(TypedDict):
-    updatedAt: datetime
+class LandState(TypedDict):
+    createdAt: datetime
     expiresAt: datetime
-
-
-LandStateJobResult = tuple[LandState, LandStateMeta]
+    state: dict
 
 
 class LandEntityPosition(TypedDict):
@@ -78,41 +74,35 @@ async def _from_browser(land_number: int) -> dict:
     return json.loads(state_str)
 
 
-async def from_cache(land_number: int) -> LandStateJobResult | None:
+async def from_cache(land_number: int) -> LandState:
     async with get_redis_connection() as redis:
         if cached := await redis.get(f"app:land:{land_number}:state"):
-            result = json.loads(cached)
-
-            if cached_meta := await redis.get(f"app:land:{land_number}:state:meta"):
-                return result, json.loads(cached_meta)
-
-            return result, {}
+            return json.loads(cached)
 
     return None
 
 
-async def get(land_number: int, *, raw: bool = False) -> LandStateJobResult:
-    if not (result := await from_cache(land_number)):
-        result = await worker(land_number)
+async def get(land_number: int) -> LandState:
+    if cached := await from_cache(land_number):
+        return cached
 
-    return result if raw else (parse(result[0]), result[1])
+    return await worker(land_number)
 
 
-async def worker(land_number: int) -> LandStateJobResult:
+async def worker(land_number: int) -> LandState:
     async with get_redis_connection() as redis:
-        result: dict = await from_browser(land_number)
-        result_as_str = json.dumps(result, default=str)
-        best_ex_time = get_best_expiration_seconds(result)
-        meta = {
-            "updatedAt": (now := datetime.now()),
-            "expiresAt": now + timedelta(seconds=best_ex_time),
+        raw_state = await from_browser(land_number)
+        seconds_to_expire = get_best_seconds_to_expire(raw_state)
+        result: LandState = {
+            "createdAt": (now := datetime.now()),
+            "expiresAt": now + timedelta(seconds=seconds_to_expire),
+            "state": raw_state,
         }
-        await redis.set(f"app:land:{land_number}:state", result_as_str, ex=best_ex_time)
-        meta_as_str = json.dumps(meta, default=str)
-        await redis.set(f"app:land:{land_number}:state:meta", meta_as_str, ex=best_ex_time)
-        await redis.hset("app:lands:states", str(land_number), result_as_str)
+        await redis.set(
+            f"app:land:{land_number}:state", json.dumps(result, default=str), ex=seconds_to_expire
+        )
 
-    return result, meta
+    return result
 
 
 @retry_until_valid(tries=settings.PW_DEFAULT_TIMEOUT // 1000)
@@ -122,94 +112,38 @@ async def phaser_land_state_getter(page: Page):
     )
 
 
-def parse_tree(data: dict) -> ParsedTree:
-    utc_refresh = unix_time_to_datetime(data["generic"].get("utcRefresh"))
-    statics = {_["name"]: _["value"] for _ in data["generic"]["statics"]}
-    last_timer = unix_time_to_datetime(statics["lastTimer"])
-    last_chop = unix_time_to_datetime(statics["lastChop"])
-    return {
-        "entity": data["entity"],
-        "position": data["position"],
-        "state": data["generic"].get("state"),
-        "utcRefresh": utc_refresh,
-        "lastChop": last_chop,
-        "lastTimer": last_timer,
-    }
+def get_best_seconds_to_expire(raw_state: dict) -> int:
+    now = datetime.now()
+    tomorrow = now + timedelta(days=1)
+    entities: dict = raw_state["entities"]
+    trees = [v for _, v in entities.items() if v["entity"].startswith("ent_tree")]
 
+    def extract_utc_refresh(t: dict) -> int:
+        if utc_refresh := t["generic"]["utcRefresh"]:
+            return utc_refresh // 1000
+        return time.time()
 
-def parse_trees(entities: dict) -> list[ParsedTree]:
-    return sorted(
-        [
-            {"id": key, **parse_tree(value)}
-            for key, value in entities.items()
-            if value["entity"].startswith("ent_tree")
-        ],
-        key=lambda _: (_["utcRefresh"] or datetime.fromtimestamp(0)),
-    )
-
-
-def parse_windmill(data: dict) -> ParsedWindMill:
-    statics = {_["name"]: _["value"] for _ in data["generic"]["statics"]}
-    return {
-        "entity": data["entity"],
-        "position": data["position"],
-        "allowPublic": bool(int(statics["allowPublic"])),
-        "inUseBy": statics["inUseBy"],
-        "finishTime": unix_time_to_datetime(statics["finishTime"]),
-    }
-
-
-def parse_windmills(entities: dict) -> list[ParsedWindMill]:
-    return sorted(
-        [
-            {"id": key, **parse_windmill(value)}
-            for key, value in entities.items()
-            if value["entity"].startswith("ent_windmill")
-        ],
-        key=lambda _: (_["finishTime"] or datetime.fromtimestamp(0)),
-    )
-
-
-def parse(state: LandState) -> ParsedLandState:
-    return {
-        "isBlocked": state["permissions"]["use"][0] != "ANY",
-        "totalPlayers": len(state["players"]),
-        "trees": parse_trees(state["entities"]),
-        "windmills": parse_windmills(state["entities"]),
-    }
-
-
-def get_expiration_by_trees(land_state: ParsedLandState):
-    if not land_state.get("trees"):
-        # if the land doesnt have trees
-        return 86400  # 1 day
-    elif not land_state["trees"][0]["utcRefresh"]:
-        # if the next tree is available
-        return randint(60, 300)  # between 1 and 5 minutes
-    elif utc_refresh := land_state["trees"][-1]["utcRefresh"]:
-        # if all trees are in cooldown, scan again when the last one finish
-        return max(60, int((utc_refresh - datetime.now()).total_seconds()))
+    if trees:
+        last_tree_respawn = datetime.fromtimestamp(max(extract_utc_refresh(t) for t in trees))
     else:
-        return 3600  # 1 hour
+        last_tree_respawn = tomorrow
 
+    windmills = [v for _, v in entities.items() if v["entity"].startswith("ent_windmill")]
 
-def get_expiration_by_windmills(land_state: ParsedLandState):
-    if not land_state.get("windmills"):
-        # if the land doesnt have trees
-        return 86400  # 1 day
-    elif not land_state["windmills"][0]["finishTime"]:
-        # if the next tree is available
-        return randint(60, 300)  # between 1 and 5 minutes
-    elif finish_time := land_state["windmills"][-1]["finishTime"]:
-        # if all trees are in cooldown, scan again when the last one finish
-        return max(60, int((finish_time - datetime.now()).total_seconds()))
+    def extract_finish_time(wm: dict) -> int:
+        statics: list[dict] = wm["generic"]["statics"]
+
+        if finish_time_str := [_ for _ in statics if _["name"] == "finishTime"][0]["value"]:
+            return int(finish_time_str) // 1000
+
+        return time.time()
+
+    if windmills:
+        first_wm_available = datetime.fromtimestamp(
+            min(extract_finish_time(wm) for wm in windmills)
+        )
     else:
-        return 3600  # 1 hour
+        first_wm_available = tomorrow
 
-
-def get_best_expiration_seconds(state: LandState) -> int:
-    parsed_state = parse(state)
-    return min(
-        get_expiration_by_trees(parsed_state),
-        get_expiration_by_windmills(parsed_state),
-    )
+    result = min(last_tree_respawn, first_wm_available)
+    return int((result - now).total_seconds())
