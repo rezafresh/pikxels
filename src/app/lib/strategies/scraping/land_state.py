@@ -119,7 +119,7 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
     trees = [v for _, v in entities.items() if v["entity"].startswith("ent_tree")]
 
     def extract_utc_refresh(t: dict) -> int:
-        if utc_refresh := t["generic"]["utcRefresh"]:
+        if utc_refresh := t["generic"].get("utcRefresh"):
             return utc_refresh // 1000
         return time.time()
 
@@ -133,7 +133,7 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
     def extract_finish_time(wm: dict) -> int:
         statics: list[dict] = wm["generic"]["statics"]
 
-        if finish_time_str := [_ for _ in statics if _["name"] == "finishTime"][0]["value"]:
+        if finish_time_str := [_ for _ in statics if _["name"] == "finishTime"][0].get("value"):
             return int(finish_time_str) // 1000
 
         return time.time()
