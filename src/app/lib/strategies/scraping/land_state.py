@@ -9,7 +9,9 @@ from playwright.async_api import Page, async_playwright
 
 from .... import settings
 from ...redis import get_redis_connection
-from ...utils import retry_until_valid
+from ...utils import get_logger, retry_until_valid
+
+logger = get_logger("app:land-state")
 
 
 class LandState(TypedDict):
@@ -93,6 +95,7 @@ async def worker(land_number: int, semaphore: Semaphore) -> LandState:
     async with get_redis_connection() as redis:
         raw_state = await from_browser(land_number, semaphore)
         seconds_to_expire = get_best_seconds_to_expire(raw_state)
+        logger.info(f"{land_number=} {seconds_to_expire=}")
         result: LandState = {
             "createdAt": (now := datetime.now()),
             "expiresAt": now + timedelta(seconds=seconds_to_expire),

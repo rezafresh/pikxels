@@ -1,22 +1,13 @@
 import asyncio
 import json
-import logging
 from datetime import datetime
 
 from redis.asyncio import Redis
 
 from ...lib.redis import get_redis_connection
 from ...lib.strategies.scraping import land_state as ls
+from ...lib.utils import get_logger
 from .._concurrency import sema_tasks
-
-
-def get_logger(name: str) -> logging.Logger:
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    logger.addHandler(_ := logging.StreamHandler())
-    _.setFormatter(logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s"))
-    return logger
-
 
 logger = get_logger("app:tasks:res-hunter")
 

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime
 from typing import Awaitable
 
@@ -30,3 +31,11 @@ def unix_time_to_datetime(unix_time: str | int | None) -> datetime | None:
         return datetime.fromtimestamp(unix_time // 1000)
 
     return None
+
+
+def get_logger(name: str) -> logging.Logger:
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    logger.addHandler(_ := logging.StreamHandler())
+    _.setFormatter(logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s"))
+    return logger
