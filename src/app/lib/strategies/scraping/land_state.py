@@ -146,4 +146,4 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         first_wm_available = tomorrow
 
     result = min(last_tree_respawn, first_wm_available)
-    return int((result - now).total_seconds())
+    return max(0, int((result - now).total_seconds()))
