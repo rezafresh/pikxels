@@ -36,5 +36,5 @@ docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
 docker-entry-api:
 	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
-docker-start-resource-hunter:
-	@docker compose exec api python -m src.app.cli.resource_hunter
+docker-entry-res-hunter:
+	@python -m src.app.cli.resource_hunter

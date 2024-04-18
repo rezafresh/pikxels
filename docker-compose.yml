@@ -20,6 +20,16 @@ services:
       - 127.0.0.1:6379:6379
     volumes:
       - "./docker/redis:/data"
+  res-hunter:
+    build: .
+    env_file: .env
+    environment:
+      APP_PW_WS_ENDPOINT: ws://browserless:3000/chrome/playwright
+      APP_REDIS_URL: redis://redis:6379
+    command: make docker-entry-res-hunter
+    depends_on:
+      - browserless
+      - redis
   api:
     build: .
     env_file: .env
@@ -30,4 +40,5 @@ services:
     ports:
       - 127.0.0.1:${API_PORT}:9000
     depends_on:
+      - browserless
       - redis
