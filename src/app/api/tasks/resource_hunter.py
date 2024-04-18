@@ -19,9 +19,11 @@ async def worker(redis: Redis, land_number: int):
             state = await _worker(redis, land_number)
 
             if expires_at := str_datetime_to_datetime(state["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
-                sleep_seconds = int(max(0, (expires_at - datetime.now()).total_seconds()))
+                if (sleep_seconds := (expires_at - datetime.now()).total_seconds()) <= 0:
+                    sleep_seconds = randint(60, 600)
             else:
                 sleep_seconds = randint(60, 300)
+
         except Exception as error:
             logger.error(f"{repr(error)}")
             sleep_seconds = randint(60, 300)
