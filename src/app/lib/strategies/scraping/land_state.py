@@ -157,8 +157,8 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         # 1. all resources are available now.
         #   In that case, probally the land is locked;
         return 86400
-    elif seconds_to_expire < 0:
+    elif delta < 0:
         # probally, the data Analyzed is old; schedule update between 1 and 5 minutes;
-        seconds_to_expire = randint(60, 300)
+        result = randint(60, 300)
 
-    return delta
+    return result
