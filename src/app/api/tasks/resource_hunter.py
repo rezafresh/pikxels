@@ -1,6 +1,7 @@
 import asyncio
 import json
 from datetime import datetime
+from random import randint
 
 from redis.asyncio import Redis
 
@@ -14,8 +15,13 @@ logger = get_logger("app:tasks:res-hunter")
 
 async def worker(redis: Redis, land_number: int):
     while not asyncio.current_task().cancelled():
-        state = await _worker(redis, land_number)
-        sleep_seconds = int(max(0, (state["expiresAt"] - datetime.now()).total_seconds()))
+        try:
+            state = await _worker(redis, land_number)
+            sleep_seconds = int(max(0, (state["expiresAt"] - datetime.now()).total_seconds()))
+        except Exception as error:
+            logger.error(f"{repr(error)}")
+            sleep_seconds = randint(60, 300)
+
         logger.info(f"Land {land_number} next sync in {sleep_seconds} seconds")
         await asyncio.sleep(sleep_seconds)
 
