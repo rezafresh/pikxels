@@ -4,10 +4,11 @@ from fastapi import WebSocket
 
 from ..lib.redis import get_redis_connection
 from ..lib.strategies.scraping import land_state as ls
+from ._concurrency import sema_api
 
 
 async def get_land_state(land_number: int):
-    return await ls.get(land_number)
+    return await ls.get(land_number, sema_api)
 
 
 async def stream_lands_states(websocket: WebSocket):

@@ -1,5 +1,6 @@
 import json
 import time
+from asyncio import Semaphore
 from datetime import datetime, timedelta
 from typing import TypedDict
 
@@ -7,7 +8,6 @@ from fastapi import HTTPException
 from playwright.async_api import Page, async_playwright
 
 from .... import settings
-from ...concurrency import semaphore
 from ...redis import get_redis_connection
 from ...utils import retry_until_valid
 
@@ -48,7 +48,7 @@ class ParsedLandState(TypedDict):
     windmills: list[ParsedWindMill]
 
 
-async def from_browser(land_number: int) -> dict:
+async def from_browser(land_number: int, semaphore: Semaphore) -> dict:
     async with semaphore:
         return await _from_browser(land_number)
 
@@ -82,16 +82,16 @@ async def from_cache(land_number: int) -> LandState:
     return None
 
 
-async def get(land_number: int) -> LandState:
+async def get(land_number: int, semaphore: Semaphore) -> LandState:
     if cached := await from_cache(land_number):
         return cached
 
-    return await worker(land_number)
+    return await worker(land_number, semaphore)
 
 
-async def worker(land_number: int) -> LandState:
+async def worker(land_number: int, semaphore: Semaphore) -> LandState:
     async with get_redis_connection() as redis:
-        raw_state = await from_browser(land_number)
+        raw_state = await from_browser(land_number, semaphore)
         seconds_to_expire = get_best_seconds_to_expire(raw_state)
         result: LandState = {
             "createdAt": (now := datetime.now()),

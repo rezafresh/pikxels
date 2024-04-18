@@ -5,13 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "resource_hunter",
-            "type": "debugpy",
-            "request": "launch",
-            "envFile": "${workspaceFolder}/.env",
-            "module": "src.app.cli.resource_hunter"
-        },
-        {
             "name": "api",
             "type": "debugpy",
             "request": "launch",
@@ -23,12 +16,6 @@
                 "--reload"
             ],
             "jinja": true
-        },
-        {
-            "name": "test",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "tests.test"
         }
     ]
 }

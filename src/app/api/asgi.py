@@ -1,8 +1,11 @@
+import asyncio
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .router import router
+from .tasks import resource_hunter
 
 app = FastAPI()
 app.add_middleware(
@@ -25,3 +28,5 @@ def _(request: Request, exc: Exception):
 
 
 app.include_router(router)
+current_loop = asyncio.get_running_loop()
+current_loop.create_task(resource_hunter.main(), name="resource-hunter")
