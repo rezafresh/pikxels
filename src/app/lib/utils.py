@@ -33,6 +33,16 @@ def unix_time_to_datetime(unix_time: str | int | None) -> datetime | None:
     return None
 
 
+def str_datetime_to_datetime(dt: str | int | None) -> datetime | None:
+    if isinstance(dt, datetime):
+        return dt
+    if isinstance(dt, str):
+        if dt_parsed := datetime.strptime(dt, "%Y-%m-%d %H:%M:%S"):
+            return dt_parsed
+
+    return None
+
+
 def get_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)

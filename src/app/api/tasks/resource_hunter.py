@@ -7,7 +7,7 @@ from redis.asyncio import Redis
 
 from ...lib.redis import get_redis_connection
 from ...lib.strategies.scraping import land_state as ls
-from ...lib.utils import get_logger
+from ...lib.utils import get_logger, str_datetime_to_datetime
 from .._concurrency import sema_tasks
 
 logger = get_logger("app:tasks:res-hunter")
@@ -17,7 +17,11 @@ async def worker(redis: Redis, land_number: int):
     while not asyncio.current_task().cancelled():
         try:
             state = await _worker(redis, land_number)
-            sleep_seconds = int(max(0, (state["expiresAt"] - datetime.now()).total_seconds()))
+
+            if expires_at := str_datetime_to_datetime(state["expiresAt"]):
+                sleep_seconds = int(max(0, (expires_at - datetime.now()).total_seconds()))
+            else:
+                sleep_seconds = randint(60, 300)
         except Exception as error:
             logger.error(f"{repr(error)}")
             sleep_seconds = randint(60, 300)
