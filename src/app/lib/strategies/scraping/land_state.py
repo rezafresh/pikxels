@@ -114,6 +114,7 @@ async def phaser_land_state_getter(page: Page):
 
 def get_best_seconds_to_expire(raw_state: dict) -> int:
     now = datetime.now()
+    epoch_time = time.time()
     tomorrow = now + timedelta(days=1)
     entities: dict = raw_state["entities"]
     trees = [v for _, v in entities.items() if v["entity"].startswith("ent_tree")]
@@ -121,7 +122,8 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
     def extract_utc_refresh(t: dict) -> int:
         if utc_refresh := t["generic"].get("utcRefresh"):
             return utc_refresh // 1000
-        return time.time()
+
+        return epoch_time
 
     if trees:
         last_tree_respawn = datetime.fromtimestamp(max(extract_utc_refresh(t) for t in trees))
@@ -136,7 +138,7 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         if finish_time_str := [_ for _ in statics if _["name"] == "finishTime"][0].get("value"):
             return int(finish_time_str) // 1000
 
-        return time.time()
+        return epoch_time
 
     if windmills:
         first_wm_available = datetime.fromtimestamp(
@@ -146,4 +148,8 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         first_wm_available = tomorrow
 
     result = min(last_tree_respawn, first_wm_available)
-    return max(0, int((result - now).total_seconds()))
+
+    if (delta := int((result - now).total_seconds())) == 0:
+        return 86400
+
+    return delta
