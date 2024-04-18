@@ -15,8 +15,6 @@ start-api:
 		--host 0.0.0.0 \
 		--port ${API_PORT} \
 		--reload
-start-resource-hunter:
-	@poetry run python -m src.app.cli.resource_hunter
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
 git-push: lint
@@ -36,5 +34,3 @@ docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
 docker-entry-api:
 	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
-docker-entry-res-hunter:
-	@python -m src.app.cli.resource_hunter
