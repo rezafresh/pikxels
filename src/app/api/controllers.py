@@ -1,6 +1,6 @@
 import json
 
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 
 from ..lib.redis import get_redis_connection
 from ..lib.strategies.scraping import land_state as ls
@@ -19,6 +19,14 @@ async def stream_lands_states(websocket: WebSocket):
         await ps.subscribe("app:lands:states:channel")
 
         while True:
-            if message := await ps.get_message(ignore_subscribe_messages=True, timeout=None):
+            try:
+                if not (
+                    message := await ps.get_message(ignore_subscribe_messages=True, timeout=None)
+                ):
+                    continue
+
                 message_as_json = json.loads(message["data"])
                 await websocket.send_json(message_as_json)
+            except WebSocketDisconnect:
+                await websocket.close()
+                break

@@ -7,7 +7,7 @@ from redis.asyncio import Redis
 
 from ...lib.redis import get_redis_connection
 from ...lib.strategies.scraping import land_state as ls
-from ...lib.utils import get_logger, str_datetime_to_datetime
+from ...lib.utils import get_logger, parse_datetime
 from .._concurrency import sema_tasks
 
 logger = get_logger("app:tasks:res-hunter")
@@ -18,7 +18,7 @@ async def worker(redis: Redis, land_number: int):
         try:
             state = await _worker(redis, land_number)
 
-            if expires_at := str_datetime_to_datetime(state["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
+            if expires_at := parse_datetime(state["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
                 if (sleep_seconds := int((expires_at - datetime.now()).total_seconds())) <= 0:
                     sleep_seconds = randint(60, 600)
             else:

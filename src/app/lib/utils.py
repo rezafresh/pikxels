@@ -33,9 +33,7 @@ def unix_time_to_datetime(unix_time: str | int | None) -> datetime | None:
     return None
 
 
-def str_datetime_to_datetime(
-    dt: str | int | None, dt_fmt: str = "%Y-%m-%d %H:%M:%S"
-) -> datetime | None:
+def parse_datetime(dt: str | datetime | None, dt_fmt: str = "%Y-%m-%d %H:%M:%S") -> datetime | None:
     if isinstance(dt, datetime):
         return dt
     if isinstance(dt, str):
