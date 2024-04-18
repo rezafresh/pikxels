@@ -28,5 +28,4 @@ async def stream_lands_states(websocket: WebSocket):
                 message_as_json = json.loads(message["data"])
                 await websocket.send_json(message_as_json)
             except WebSocketDisconnect:
-                await websocket.close()
                 break
