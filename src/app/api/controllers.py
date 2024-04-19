@@ -6,7 +6,7 @@ from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 from ..lib.redis import get_redis_connection
 from ..lib.strategies.scraping import land_state as ls
 
-ws_semaphore = Semaphore(10)
+ws_semaphore = Semaphore(2)
 
 
 async def get_land_state(land_number: int):
