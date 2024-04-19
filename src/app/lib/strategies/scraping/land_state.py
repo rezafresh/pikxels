@@ -1,5 +1,4 @@
 import json
-import time
 from asyncio import Semaphore
 from datetime import datetime, timedelta
 from random import randint
@@ -53,6 +52,7 @@ class ParsedLandState(TypedDict):
 
 async def from_browser(land_number: int, semaphore: Semaphore) -> dict:
     async with semaphore:
+        logger.info(f"Fetching state for land {land_number}")
         return await _from_browser(land_number)
 
 
@@ -116,41 +116,49 @@ async def phaser_land_state_getter(page: Page):
 
 
 def get_best_seconds_to_expire(raw_state: dict) -> int:
+    if raw_state["permissions"]["use"][0] != "ANY":
+        # Land is Blocked
+        return 86400
+
     now = datetime.now()
-    epoch_time = time.time()
-    tomorrow = now + timedelta(days=1)
-    entities: dict = raw_state["entities"]
-    trees = [v for _, v in entities.items() if v["entity"].startswith("ent_tree")]
+    now_as_epoch = int(now.timestamp())
+    tomorrow_as_epoch = int((now + timedelta(days=1)).timestamp())
 
     def extract_utc_refresh(t: dict) -> int:
         if utc_refresh := t["generic"].get("utcRefresh"):
             return utc_refresh // 1000
 
-        return epoch_time
+        return now_as_epoch
 
-    if trees:
-        last_tree_respawn = datetime.fromtimestamp(max(extract_utc_refresh(t) for t in trees))
-    else:
-        last_tree_respawn = tomorrow
-
-    windmills = [v for _, v in entities.items() if v["entity"].startswith("ent_windmill")]
-
-    def extract_finish_time(wm: dict) -> int:
-        statics: list[dict] = wm["generic"]["statics"]
+    def extract_finish_time(industry: dict) -> int:
+        statics: list[dict] = industry["generic"]["statics"]
 
         if finish_time_str := [_ for _ in statics if _["name"] == "finishTime"][0].get("value"):
             return int(finish_time_str) // 1000
 
-        return epoch_time
+        return now_as_epoch
 
-    if windmills:
-        first_wm_available = datetime.fromtimestamp(
-            min(extract_finish_time(wm) for wm in windmills)
-        )
-    else:
-        first_wm_available = tomorrow
+    entities: dict = raw_state["entities"]
+    resources = {
+        "trees": [v for _, v in entities.items() if v["entity"].startswith("ent_tree")],
+        "windmills": [v for _, v in entities.items() if v["entity"].startswith("ent_windmill")],
+        "wineries": [v for _, v in entities.items() if v["entity"].startswith("ent_winery")],
+    }
+    timers = [tomorrow_as_epoch]
 
-    result = min(last_tree_respawn, first_wm_available)
+    # trees
+    if resources["trees"]:
+        timers.append(max(extract_utc_refresh(t) for t in resources["trees"]))
+
+    # windmills
+    if resources["windmills"]:
+        timers.append(min(extract_finish_time(item) for item in resources["windmills"]))
+
+    # wineries
+    if resources["wineries"]:
+        timers.append(min(extract_finish_time(item) for item in resources["wineries"]))
+
+    result = datetime.fromtimestamp(min(timers))
 
     if (delta := int((result - now).total_seconds())) == 0:
         # this case happens if:

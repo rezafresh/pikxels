@@ -10,7 +10,7 @@ from ...lib.strategies.scraping import land_state as ls
 from ...lib.utils import get_logger, parse_datetime
 from .._concurrency import sema_tasks
 
-logger = get_logger("app:tasks:res-hunter")
+logger = get_logger("app:resource-hunter")
 
 
 async def worker(redis: Redis, land_number: int):
@@ -39,7 +39,7 @@ async def _worker(redis: Redis, land_number: int):
     state = await ls.worker(land_number, sema_tasks)
     await redis.publish(
         "app:lands:states:channel",
-        json.dumps({"message": {"landNumber": land_number, **state}}, default=str),
+        json.dumps({"landNumber": land_number, **state}, default=str),
     )
     return state
 
