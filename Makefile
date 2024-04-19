@@ -22,6 +22,8 @@ git-push: lint
 	@git add .
 	@git commit -m wip
 	@git push
+clean:
+	@py3clean .
 docker-down:
 	@docker compose down
 docker-up: docker-down
