@@ -1,12 +1,10 @@
+import asyncio
 import json
-from asyncio import Semaphore
 
 from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 
 from ..lib.redis import get_redis_connection
 from ..lib.strategies.scraping import land_state as ls
-
-ws_semaphore = Semaphore(2)
 
 
 async def get_land_state(land_number: int):
@@ -17,19 +15,28 @@ async def get_land_state(land_number: int):
 
 
 async def stream_lands_states(websocket: WebSocket):
-    async with ws_semaphore:
-        try:
-            await _stream_lands_states(websocket)
-        except WebSocketDisconnect:
-            pass
+    try:
+        await _stream_lands_states(websocket)
+    except WebSocketDisconnect:
+        pass
 
 
 async def _stream_lands_states(websocket: WebSocket):
     await websocket.accept()
 
-    for i in range(5000):
-        if state := await ls.from_cache(i + 1):
-            await websocket.send_json({"message": {"type": "cached", "landNumber": i + 1, **state}})
+    while (await websocket.receive_text()) != "1":
+        continue
+
+    async def job(land_number: int):
+        return land_number, await ls.from_cache(land_number)
+
+    cached = await asyncio.gather(*[job(i + 1) for i in range(5000)])
+
+    for land_number, state in cached:
+        if state:
+            await websocket.send_json(
+                {"message": {"type": "cached", "landNumber": land_number, **state}}
+            )
 
     async with get_redis_connection() as redis:
         ps = redis.pubsub(ignore_subscribe_messages=True)
