@@ -8,7 +8,7 @@ from redis.asyncio import Redis
 from ...lib.redis import get_redis_connection
 from ...lib.strategies.scraping import land_state as ls
 from ...lib.utils import get_logger, parse_datetime
-from .._concurrency import sema_tasks
+from ._concurrency import semaphore
 
 logger = get_logger("app:resource-hunter")
 
@@ -36,7 +36,7 @@ async def _worker(redis: Redis, land_number: int):
     if cached := await ls.from_cache(land_number):
         return cached
 
-    state = await ls.worker(land_number, sema_tasks)
+    state = await ls.worker(land_number, semaphore)
     await redis.publish(
         "app:lands:states:channel",
         json.dumps({"landNumber": land_number, **state}, default=str),

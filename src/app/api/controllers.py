@@ -1,9 +1,12 @@
 import json
+from asyncio import Semaphore
 
 from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 
 from ..lib.redis import get_redis_connection
 from ..lib.strategies.scraping import land_state as ls
+
+ws_semaphore = Semaphore(10)
 
 
 async def get_land_state(land_number: int):
@@ -14,10 +17,11 @@ async def get_land_state(land_number: int):
 
 
 async def stream_lands_states(websocket: WebSocket):
-    try:
-        await _stream_lands_states(websocket)
-    except WebSocketDisconnect:
-        pass
+    async with ws_semaphore:
+        try:
+            await _stream_lands_states(websocket)
+        except WebSocketDisconnect:
+            pass
 
 
 async def _stream_lands_states(websocket: WebSocket):
