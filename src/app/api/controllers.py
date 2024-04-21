@@ -12,8 +12,9 @@ semaphore = Semaphore(1)
 
 
 async def get_land_state(land_number: int):
-    if cached := await ls.from_cache(land_number):
-        return cached
+    async with get_redis_connection() as redis:
+        if cached := await ls.from_cache(land_number, redis=redis):
+            return cached
 
     raise HTTPException(404, "There is no state cached for this land.")
 
@@ -34,11 +35,13 @@ async def _stream_lands_states(websocket: WebSocket):
 
     logger.info(f"Sending land states data to client {websocket.client.host} via ws")
 
-    for i in range(5000):
-        if state := await ls.from_cache(i + 1):
-            await websocket.send_json({"message": {"type": "cached", "landNumber": i + 1, **state}})
-
     async with get_redis_connection() as redis:
+        for i in range(5000):
+            if state := await ls.from_cache(i + 1, redis=redis):
+                await websocket.send_json(
+                    {"message": {"type": "cached", "landNumber": i + 1, **state}}
+                )
+
         ps = redis.pubsub(ignore_subscribe_messages=True)
         await ps.subscribe("app:lands:states:channel")
 

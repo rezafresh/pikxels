@@ -1,53 +1,22 @@
 import json
 from asyncio import Semaphore
 from datetime import datetime, timedelta
-from random import randint
 from typing import TypedDict
 
 from fastapi import HTTPException
 from playwright.async_api import Page, ViewportSize, async_playwright
+from redis.asyncio import Redis
 
 from .... import settings
-from ...redis import get_redis_connection
 from ...utils import get_logger, retry_until_valid
 
 logger = get_logger("app:land-state")
 
 
-class LandState(TypedDict):
+class CachedLandState(TypedDict):
     createdAt: datetime
     expiresAt: datetime
     state: dict
-
-
-class LandEntityPosition(TypedDict):
-    x: int
-    y: int
-
-
-class ParsedTree(TypedDict):
-    entity: str
-    position: LandEntityPosition
-    state: str
-    utcRefresh: datetime | None
-    lastChop: datetime | None
-    lastTimer: datetime | None
-
-
-class ParsedWindMill(TypedDict):
-    entity: str
-    position: LandEntityPosition
-    allowPublic: bool
-    inUseBy: str
-    finishTime: datetime | None
-
-
-class ParsedLandState(TypedDict):
-    lastUpdated: datetime
-    isBlocked: bool
-    totalPlayers: int
-    trees: list[ParsedTree]
-    windmills: list[ParsedWindMill]
 
 
 async def from_browser(land_number: int, semaphore: Semaphore) -> dict:
@@ -81,35 +50,11 @@ async def _from_browser(land_number: int) -> dict:
     return json.loads(state_str)
 
 
-async def from_cache(land_number: int) -> LandState:
-    async with get_redis_connection() as redis:
-        if cached := await redis.get(f"app:land:{land_number}:state"):
-            return json.loads(cached)
+async def from_cache(land_number: int, *, redis: Redis) -> CachedLandState:
+    if cached := await redis.get(f"app:land:{land_number}:state"):
+        return json.loads(cached)
 
     return None
-
-
-async def get(land_number: int, semaphore: Semaphore) -> LandState:
-    if cached := await from_cache(land_number):
-        return cached
-
-    return await worker(land_number, semaphore)
-
-
-async def worker(land_number: int, semaphore: Semaphore) -> LandState:
-    async with get_redis_connection() as redis:
-        raw_state = await from_browser(land_number, semaphore)
-        seconds_to_expire = get_best_seconds_to_expire(raw_state)
-        result: LandState = {
-            "createdAt": (now := datetime.now()),
-            "expiresAt": now + timedelta(seconds=seconds_to_expire),
-            "state": raw_state,
-        }
-        await redis.set(
-            f"app:land:{land_number}:state", json.dumps(result, default=str), ex=seconds_to_expire
-        )
-
-    return result
 
 
 @retry_until_valid(tries=settings.PW_DEFAULT_TIMEOUT // 1000)
@@ -119,58 +64,17 @@ async def phaser_land_state_getter(page: Page):
     )
 
 
-def get_best_seconds_to_expire(raw_state: dict) -> int:
-    if raw_state["permissions"]["use"][0] != "ANY":
-        # Land is Blocked
-        return 86400
+async def publish(land_number: int, state: CachedLandState, *, redis: Redis):
+    await redis.publish(
+        "app:lands:states:channel", json.dumps({"landNumber": land_number, **state}, default=str)
+    )
 
-    now = datetime.now()
-    now_as_epoch = int(now.timestamp())
-    tomorrow_as_epoch = int((now + timedelta(days=1)).timestamp())
 
-    def extract_utc_refresh(t: dict) -> int:
-        if utc_refresh := t["generic"].get("utcRefresh"):
-            return utc_refresh // 1000
-
-        return now_as_epoch
-
-    def extract_finish_time(industry: dict) -> int:
-        statics: list[dict] = industry["generic"]["statics"]
-
-        if finish_time_str := [_ for _ in statics if _["name"] == "finishTime"][0].get("value"):
-            return int(finish_time_str) // 1000
-
-        return now_as_epoch
-
-    entities: dict = raw_state["entities"]
-    resources = {
-        "trees": [v for _, v in entities.items() if v["entity"].startswith("ent_tree")],
-        "windmills": [v for _, v in entities.items() if v["entity"].startswith("ent_windmill")],
-        "wineries": [v for _, v in entities.items() if v["entity"].startswith("ent_winery")],
+async def to_cache(land_number: int, raw_state: dict, ex: int, *, redis: Redis) -> CachedLandState:
+    result: CachedLandState = {
+        "createdAt": (now := datetime.now()),
+        "expiresAt": now + timedelta(seconds=ex),
+        "state": raw_state,
     }
-    timers = [tomorrow_as_epoch]
-
-    # trees
-    if resources["trees"]:
-        timers.append(max(extract_utc_refresh(t) for t in resources["trees"]))
-
-    # windmills
-    if resources["windmills"]:
-        timers.append(min(extract_finish_time(item) for item in resources["windmills"]))
-
-    # wineries
-    if resources["wineries"]:
-        timers.append(min(extract_finish_time(item) for item in resources["wineries"]))
-
-    result = datetime.fromtimestamp(min(timers))
-
-    if (delta := int((result - now).total_seconds())) == 0:
-        # this case happens if:
-        # 1. all resources are available now.
-        #   In that case, probally the land is locked;
-        return 86400
-    elif delta < 0:
-        # probally, the data Analyzed is old; schedule update between 1 and 5 minutes;
-        return randint(60, 300)
-
-    return max(15, delta)
+    await redis.set(f"app:land:{land_number}:state", json.dumps(result, default=str), ex=ex)
+    return result
