@@ -14,6 +14,8 @@ start-api:
 	@poetry run python -m src.app.cli.start_api --reload
 start-worker:
 	@poetry run python -m src.app.cli.start_worker
+start-rq-info:
+	@poetry run rq info -u ${APP_REDIS_URL}
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
 create-requirements-txt:
@@ -37,8 +39,12 @@ docker-up-detached-logs: docker-up-detached
 docker-up-services: docker-down
 	@docker compose up browserless redis
 docker-redis-flushall:
-	@docker compose exec redis redis-cli flushall
+	@docker compose exec redis redis-cli -a ${REDIS_PASSWORD} flushall
 docker-entry-api:
 	@python -m src.app.cli.start_api
 docker-entry-worker:
 	@python -m src.app.cli.start_worker
+docker-start-redis-cli:
+	@docker compose exec redis redis-cli -a ${REDIS_PASSWORD}
+docker-start-rq-info:
+	@docker compose exec worker rq info -u ${APP_REDIS_URL}

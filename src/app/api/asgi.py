@@ -1,4 +1,3 @@
-import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
@@ -7,19 +6,13 @@ from fastapi.responses import JSONResponse
 
 from ..lib.utils import get_logger
 from .router import router
-from .tasks import resource_hunter
 
 logger = get_logger("app:asgi")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    current_loop = asyncio.get_running_loop()
-    tasks = [
-        current_loop.create_task(resource_hunter.main(), name="resource-hunter"),
-    ]
     yield
-    [t.cancel() for t in tasks]
 
 
 app = FastAPI(lifespan=lifespan)

@@ -5,36 +5,58 @@ from random import randint
 import rq
 from redis import Redis as RedisSync
 
-from ... import settings
-from ...lib.redis import create_redis_connection
-from ...lib.strategies.scraping import land_state as ls
-from ...lib.utils import get_logger, parse_datetime
+from .. import settings
+from ..lib.redis import create_redis_connection
+from ..lib.strategies.scraping import land_state as ls
+from ..lib.utils import get_logger, parse_datetime
 
 logger = get_logger("app:resource-hunter")
 queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
 
 
-async def loop(land_number: int):
-    while not asyncio.current_task().cancelled():
-        try:
-            state = await fetch_land_state(land_number)
+def enqueue(land_number: int) -> rq.job.Job:
+    if job := queue.fetch_job(f"app:land:{land_number}:job"):
+        if job.get_status() not in [
+            rq.job.JobStatus.FINISHED,
+            rq.job.JobStatus.FAILED,
+            rq.job.JobStatus.SCHEDULED,
+        ]:
+            return job
 
-            if expires_at := parse_datetime(state["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
-                if (sleep_seconds := int((expires_at - datetime.now()).total_seconds())) <= 0:
-                    sleep_seconds = randint(60, 600)
-            else:
-                sleep_seconds = randint(60, 300)
-
-        except Exception as error:
-            logger.error(f"{repr(error)}")
-            sleep_seconds = randint(60, 300)
-
-        logger.info(f"Land {land_number} next sync in {sleep_seconds} seconds")
-        await asyncio.sleep(sleep_seconds)
+    return queue.enqueue(
+        job,
+        land_number,
+        job_id=f"app:land:{land_number}:job",
+        on_success=job_success_handler,
+        on_failure=job_failure_handler,
+    )
 
 
-def worker(land_number: int):
+def enqueue_at(land_number: int, at: datetime) -> rq.job.Job:
+    return queue.enqueue_at(
+        at,
+        job,
+        land_number,
+        job_id=f"app:land:{land_number}:job",
+        on_success=job_success_handler,
+        on_failure=job_failure_handler,
+    )
+
+
+def job(land_number: int):
     return asyncio.run(_worker(land_number))
+
+
+def job_success_handler(job: rq.job.Job, connection, result: ls.CachedLandState, *args, **kwargs):
+    if expires_at := parse_datetime(result["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
+        if expires_at > datetime.now():
+            return enqueue_at(job.args[0], expires_at)
+
+    enqueue_at(job.args[0], datetime.now() + timedelta(seconds=randint(60, 300)))
+
+
+def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
+    enqueue_at(job.args[0], datetime.now() + timedelta(seconds=randint(60, 300)))
 
 
 async def _worker(land_number: int):
@@ -50,23 +72,8 @@ async def _worker(land_number: int):
     return cached_state
 
 
-async def fetch_land_state(land_number: int):
-    jid = f"app:land:{land_number}:job"
-
-    if not (job := queue.fetch_job(jid)):
-        job = queue.enqueue(worker, land_number, job_id=jid)
-    elif job.get_status() in [rq.job.JobStatus.FINISHED, rq.job.JobStatus.FAILED]:
-        job = queue.enqueue(worker, land_number, job_id=jid)
-
-    while True:
-        if job.get_status() == rq.job.JobStatus.FINISHED:
-            break
-        elif job.get_status() == rq.job.JobStatus.FAILED:
-            raise Exception(f"Failed to fetch land state\n{job.exc_info!r}")
-
-        await asyncio.sleep(0.1)
-
-    return job.result
+async def worker(land_number: int):
+    return enqueue(land_number)
 
 
 def get_best_seconds_to_expire(raw_state: dict) -> int:
@@ -134,8 +141,3 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         return randint(60, 300)
 
     return max(15, delta)
-
-
-async def main():
-    tasks = [asyncio.create_task(loop(i + 1)) for i in range(5000)]
-    await asyncio.wait(tasks)
