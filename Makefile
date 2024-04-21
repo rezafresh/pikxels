@@ -11,12 +11,9 @@ lint:
 	@poetry run isort --profile black src
 	@poetry run ruff check src
 start-api:
-	@poetry run uvicorn src.app.api.asgi:app \
-		--host 0.0.0.0 \
-		--port ${API_PORT} \
-		--reload
+	@poetry run python -m src.app.cli.start_api --reload
 start-worker:
-	@poetry run rq worker-pool -n ${APP_CONCURRENCY} -u ${APP_REDIS_URL}
+	@poetry run python -m src.app.cli.start_worker
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
 create-requirements-txt:
@@ -42,6 +39,6 @@ docker-up-services: docker-down
 docker-redis-flushall:
 	@docker compose exec redis redis-cli flushall
 docker-entry-api:
-	@uvicorn src.app.api.asgi:app --host 0.0.0.0 --port 9000
+	@python -m src.app.cli.start_api
 docker-entry-worker:
-	@rq worker-pool -n ${APP_CONCURRENCY} -u ${APP_REDIS_URL}
+	@python -m src.app.cli.start_worker

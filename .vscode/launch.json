@@ -14,8 +14,15 @@
                 "src.app.api.asgi:app",
                 "--port", "9000",
                 "--reload"
-            ],
-            "jinja": true
+            ]
+        },
+        {
+            "name": "worker",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.app.cli.start_worker",
+            "envFile": "${workspaceFolder}/.env",
+            "args": ["--reload"]
         }
     ]
 }
