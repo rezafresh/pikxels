@@ -100,7 +100,7 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         timers.append(min(extract_finish_time(item) for item in resources["grills"]))
 
     # kilns
-    if resources["grills"]:
+    if resources["kilns"]:
         timers.append(min(extract_finish_time(item) for item in resources["kilns"]))
 
     result = datetime.fromtimestamp(min(timers))
