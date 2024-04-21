@@ -30,7 +30,7 @@ docker-up: docker-down
 	@docker compose up --build
 docker-up-detached: docker-down
 	@docker compose up -d --build
-docker-up-detached-log: docker-up-detached
+docker-up-detached-logs: docker-up-detached
 	@docker compose logs api -f
 docker-up-services: docker-down
 	@docker compose up browserless redis
