@@ -2,6 +2,8 @@ import asyncio
 from datetime import datetime, timedelta
 from random import randint
 
+import rq
+from redis import Redis as RedisSync
 from redis.asyncio import Redis
 
 from ... import settings
@@ -11,12 +13,13 @@ from ...lib.utils import get_logger, parse_datetime
 
 logger = get_logger("app:resource-hunter")
 semaphore = asyncio.Semaphore(settings.CONCURRENCY)
+queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
 
 
-async def worker(land_number: int, *, redis: Redis):
+async def loop(land_number: int, *, redis: Redis):
     while not asyncio.current_task().cancelled():
         try:
-            state = await _worker(land_number, redis=redis)
+            state = await fetch_land_state(land_number, redis=redis)
 
             if expires_at := parse_datetime(state["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
                 if (sleep_seconds := int((expires_at - datetime.now()).total_seconds())) <= 0:
@@ -32,22 +35,26 @@ async def worker(land_number: int, *, redis: Redis):
         await asyncio.sleep(sleep_seconds)
 
 
-async def _worker(land_number: int, *, redis: Redis):
+def worker(land_number: int):
+    return asyncio.run(ls.from_browser(land_number))
+
+
+async def fetch_land_state(land_number: int, *, redis: Redis):
     if cached := await ls.from_cache(land_number, redis=redis):
         return cached
 
-    state = await fetch_state_and_cache(land_number, redis=redis)
-    await ls.publish(land_number, state, redis=redis)
-    return state
-
-
-async def fetch_state_and_cache(land_number: int, *, redis: Redis) -> ls.CachedLandState:
     async with semaphore:
-        logger.info(f"Fetching State For Land {land_number}")
-        raw_state = await ls.from_browser(land_number)
+        job = queue.enqueue(worker, land_number)
+
+        while job.get_status() not in [rq.job.JobStatus.FINISHED, rq.job.JobStatus.FAILED]:
+            await asyncio.sleep(1)
+
+        raw_state = job.result
 
     seconds_to_expire = get_best_seconds_to_expire(raw_state)
-    return await ls.to_cache(land_number, raw_state, seconds_to_expire, redis=redis)
+    cached_state = await ls.to_cache(land_number, raw_state, seconds_to_expire, redis=redis)
+    await ls.publish(land_number, cached_state, redis=redis)
+    return cached_state
 
 
 def get_best_seconds_to_expire(raw_state: dict) -> int:
@@ -119,5 +126,5 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
 
 async def main():
     async with create_redis_connection() as redis:
-        tasks = [asyncio.create_task(worker(i + 1, redis=redis)) for i in range(5000)]
+        tasks = [asyncio.create_task(loop(i + 1, redis=redis)) for i in range(5000)]
         await asyncio.wait(tasks)

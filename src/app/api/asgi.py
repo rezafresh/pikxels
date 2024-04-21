@@ -15,11 +15,11 @@ logger = get_logger("app:asgi")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     current_loop = asyncio.get_running_loop()
-    logger.info("Starting Resource Hunter Worker")
-    rs_task = current_loop.create_task(resource_hunter.main(), name="resource-hunter")
+    tasks = [
+        current_loop.create_task(resource_hunter.main(), name="resource-hunter"),
+    ]
     yield
-    logger.info("Stopping Resource Hunter Worker")
-    rs_task.cancel()
+    [t.cancel() for t in tasks]
 
 
 app = FastAPI(lifespan=lifespan)
