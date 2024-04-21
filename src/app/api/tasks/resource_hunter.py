@@ -32,13 +32,11 @@ async def worker(land_number: int, *, redis: Redis):
 
 
 async def _worker(land_number: int, *, redis: Redis):
-    async with get_redis_connection() as redis:
-        if cached := await ls.from_cache(land_number, redis=redis):
-            return cached
+    if cached := await ls.from_cache(land_number, redis=redis):
+        return cached
 
-        state = await get(land_number, semaphore, redis=redis)
-        await ls.publish(land_number, state, redis=redis)
-
+    state = await get(land_number, semaphore, redis=redis)
+    await ls.publish(land_number, state, redis=redis)
     return state
 
 
