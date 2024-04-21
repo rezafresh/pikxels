@@ -4,12 +4,13 @@ from random import randint
 
 from redis.asyncio import Redis
 
+from ... import settings
 from ...lib.redis import get_redis_connection
 from ...lib.strategies.scraping import land_state as ls
 from ...lib.utils import get_logger, parse_datetime
-from ._concurrency import semaphore
 
 logger = get_logger("app:resource-hunter")
+semaphore = asyncio.Semaphore(settings.CONCURRENCY)
 
 
 async def worker(land_number: int, *, redis: Redis):
@@ -35,14 +36,12 @@ async def _worker(land_number: int, *, redis: Redis):
     if cached := await ls.from_cache(land_number, redis=redis):
         return cached
 
-    state = await get(land_number, semaphore, redis=redis)
+    state = await fetch_state_and_cache(land_number, redis=redis)
     await ls.publish(land_number, state, redis=redis)
     return state
 
 
-async def get(
-    land_number: int, semaphore: asyncio.Semaphore, *, redis: Redis
-) -> ls.CachedLandState:
+async def fetch_state_and_cache(land_number: int, *, redis: Redis) -> ls.CachedLandState:
     raw_state = await ls.from_browser(land_number, semaphore)
     seconds_to_expire = get_best_seconds_to_expire(raw_state)
     return await ls.to_cache(land_number, raw_state, seconds_to_expire, redis=redis)
