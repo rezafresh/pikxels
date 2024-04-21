@@ -5,7 +5,7 @@ from random import randint
 from typing import TypedDict
 
 from fastapi import HTTPException
-from playwright.async_api import Page, async_playwright
+from playwright.async_api import Page, ViewportSize, async_playwright
 
 from .... import settings
 from ...redis import get_redis_connection
@@ -62,7 +62,11 @@ async def _from_browser(land_number: int) -> dict:
             settings.PW_WS_ENDPOINT,
             timeout=settings.PW_DEFAULT_TIMEOUT,
         )
-        page = await browser.new_page()
+        page = await browser.new_page(
+            viewport=ViewportSize(width=10, height=10),
+            screen=ViewportSize(width=10, height=10),
+            is_mobile=True,
+        )
         page.set_default_navigation_timeout(settings.PW_DEFAULT_TIMEOUT)
         page.set_default_timeout(settings.PW_DEFAULT_TIMEOUT)
 
