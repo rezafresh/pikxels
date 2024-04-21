@@ -14,15 +14,18 @@ logger = get_logger("app:resource-hunter")
 queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
 
 
-def enqueue(land_number: int) -> rq.job.Job:
+def dispatch_job(land_number: int) -> rq.job.Job:
     if job := queue.fetch_job(f"app:land:{land_number}:job"):
         if job.get_status() not in [
             rq.job.JobStatus.FINISHED,
             rq.job.JobStatus.FAILED,
             rq.job.JobStatus.SCHEDULED,
         ]:
-            return job
+            return None
+    enqueue(land_number)
 
+
+def enqueue(land_number: int) -> rq.job.Job:
     return queue.enqueue(
         job,
         land_number,
@@ -43,10 +46,6 @@ def enqueue_at(land_number: int, at: datetime) -> rq.job.Job:
     )
 
 
-def job(land_number: int):
-    return asyncio.run(_worker(land_number))
-
-
 def job_success_handler(job: rq.job.Job, connection, result: ls.CachedLandState, *args, **kwargs):
     if expires_at := parse_datetime(result["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
         if expires_at > datetime.now():
@@ -59,7 +58,11 @@ def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
     enqueue_at(job.args[0], datetime.now() + timedelta(seconds=randint(60, 300)))
 
 
-async def _worker(land_number: int):
+def job(land_number: int):
+    return asyncio.run(_job(land_number))
+
+
+async def _job(land_number: int):
     async with create_redis_connection() as redis:
         if cached := await ls.from_cache(land_number, redis=redis):
             return cached
@@ -70,10 +73,6 @@ async def _worker(land_number: int):
         await ls.publish(land_number, cached_state, redis=redis)
 
     return cached_state
-
-
-async def worker(land_number: int):
-    return enqueue(land_number)
 
 
 def get_best_seconds_to_expire(raw_state: dict) -> int:

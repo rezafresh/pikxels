@@ -14,6 +14,8 @@ start-api:
 	@poetry run python -m src.app.cli.start_api --reload
 start-worker:
 	@poetry run python -m src.app.cli.start_worker
+start-resource-hunter:
+	@poetry run python -m src.app.cli.start_resource_hunter
 start-rq-info:
 	@poetry run rq info -u ${APP_REDIS_URL}
 ngrok:
@@ -48,3 +50,5 @@ docker-start-redis-cli:
 	@docker compose exec redis redis-cli -a ${REDIS_PASSWORD}
 docker-start-rq-info:
 	@docker compose exec worker rq info -u ${APP_REDIS_URL}
+docker-start-resource-hunter:
+	@docker compose exec worker python -m src.app.cli.start_resource_hunter
