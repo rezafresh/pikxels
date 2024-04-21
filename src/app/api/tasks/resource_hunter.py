@@ -5,7 +5,7 @@ from random import randint
 from redis.asyncio import Redis
 
 from ... import settings
-from ...lib.redis import get_redis_connection
+from ...lib.redis import create_redis_connection
 from ...lib.strategies.scraping import land_state as ls
 from ...lib.utils import get_logger, parse_datetime
 
@@ -118,6 +118,6 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
 
 
 async def main():
-    async with get_redis_connection() as redis:
+    async with create_redis_connection() as redis:
         tasks = [asyncio.create_task(worker(i + 1, redis=redis)) for i in range(5000)]
         await asyncio.wait(tasks)
