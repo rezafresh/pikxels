@@ -78,6 +78,8 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         "trees": [v for _, v in entities.items() if v["entity"].startswith("ent_tree")],
         "windmills": [v for _, v in entities.items() if v["entity"].startswith("ent_windmill")],
         "wineries": [v for _, v in entities.items() if v["entity"].startswith("ent_winery")],
+        "grills": [v for _, v in entities.items() if v["entity"].startswith("ent_landbbq")],
+        "kilns": [v for _, v in entities.items() if v["entity"].startswith("ent_kiln")],
     }
     timers = [tomorrow_as_epoch]
 
@@ -92,6 +94,14 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
     # wineries
     if resources["wineries"]:
         timers.append(min(extract_finish_time(item) for item in resources["wineries"]))
+
+    # grills
+    if resources["grills"]:
+        timers.append(min(extract_finish_time(item) for item in resources["grills"]))
+
+    # kilns
+    if resources["grills"]:
+        timers.append(min(extract_finish_time(item) for item in resources["kilns"]))
 
     result = datetime.fromtimestamp(min(timers))
 
