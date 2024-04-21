@@ -15,12 +15,14 @@ start-api:
 		--host 0.0.0.0 \
 		--port ${API_PORT} \
 		--reload
-start-workers:
+start-worker:
 	@poetry run rq worker-pool -n ${APP_CONCURRENCY} -u ${APP_REDIS_URL}
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
 create-requirements-txt:
-	@-poetry export -q --without=dev -o requirements.txt
+	@if command -v poetry > /dev/null 2>&1; then \
+        poetry export -q --without=dev -o requirements.txt; \
+    fi
 git-push: lint create-requirements-txt
 	@git add .
 	@git commit -m wip

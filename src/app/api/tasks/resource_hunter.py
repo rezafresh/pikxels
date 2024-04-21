@@ -46,7 +46,12 @@ async def fetch_land_state(land_number: int, *, redis: Redis):
     async with semaphore:
         job = queue.enqueue(worker, land_number)
 
-        while job.get_status() not in [rq.job.JobStatus.FINISHED, rq.job.JobStatus.FAILED]:
+        while True:
+            if job.get_status() == rq.job.JobStatus.FINISHED:
+                break
+            elif job.get_status() == rq.job.JobStatus.FAILED:
+                raise Exception(f"Failed to fetch land state\n{job.exc_info!r}")
+
             await asyncio.sleep(1)
 
         raw_state = job.result
