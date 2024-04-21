@@ -42,7 +42,10 @@ async def _worker(land_number: int, *, redis: Redis):
 
 
 async def fetch_state_and_cache(land_number: int, *, redis: Redis) -> ls.CachedLandState:
-    raw_state = await ls.from_browser(land_number, semaphore)
+    async with semaphore:
+        logger.info(f"Fetching State For Land {land_number}")
+        raw_state = await ls.from_browser(land_number)
+
     seconds_to_expire = get_best_seconds_to_expire(raw_state)
     return await ls.to_cache(land_number, raw_state, seconds_to_expire, redis=redis)
 

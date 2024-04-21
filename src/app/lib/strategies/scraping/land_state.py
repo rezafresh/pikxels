@@ -1,5 +1,4 @@
 import json
-from asyncio import Semaphore
 from datetime import datetime, timedelta
 from typing import TypedDict
 
@@ -8,9 +7,7 @@ from playwright.async_api import Page, ViewportSize, async_playwright
 from redis.asyncio import Redis
 
 from .... import settings
-from ...utils import get_logger, retry_until_valid
-
-logger = get_logger("app:land-state")
+from ...utils import retry_until_valid
 
 
 class CachedLandState(TypedDict):
@@ -19,13 +16,7 @@ class CachedLandState(TypedDict):
     state: dict
 
 
-async def from_browser(land_number: int, semaphore: Semaphore) -> dict:
-    async with semaphore:
-        logger.info(f"Fetching state for land {land_number}")
-        return await _from_browser(land_number)
-
-
-async def _from_browser(land_number: int) -> dict:
+async def from_browser(land_number: int) -> dict:
     async with async_playwright() as pw:
         browser = await pw.chromium.connect(
             settings.PW_WS_ENDPOINT,
