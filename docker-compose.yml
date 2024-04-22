@@ -21,6 +21,12 @@ services:
       - 0.0.0.0:36379:6379
     volumes:
       - "./docker/redis:/data"
+  rq-dashboard:
+    build: https://github.com/Parallels/rq-dashboard.git
+    ports:
+      - 127.0.0.1:9181:9181
+    environment:
+      RQ_DASHBOARD_REDIS_URL: ${APP_REDIS_URL}
   resource-hunter:
     build: .
     env_file: .env
