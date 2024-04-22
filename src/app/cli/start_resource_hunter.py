@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from random import randint
 
 import redis
 import rq
@@ -22,29 +21,21 @@ def create_worker_pool() -> rq.worker_pool.WorkerPool:
     return worker_pool
 
 
-def _handler(land_number: int, job: rq.job.Job):
-    if (job_status := job.get_status()) == JobStatus.FINISHED:
-        # print(f"Job {job.id} [{job_status!s}]")
+def enqueue_job(land_number: int):
+    if not (job := rh.queue.fetch_job(f"app:land:{land_number}:job")):
+        jid = rh.enqueue(land_number).id
+        print(f"Enqueueing new job {jid}")
+    elif (job_status := job.get_status()) == JobStatus.FINISHED:
         expires_at: datetime = job.result["expiresAt"]
 
-        if not (delta := int((expires_at - datetime.now()).total_seconds())) <= 0:
-            delta = randint(60, 300)
+        if int((expires_at - datetime.now()).total_seconds()) > 0:
+            return
 
-        print(f"Waiting job {job.id} for {delta} seconds")
-        return rh.enqueue(land_number)
+        print(f"Job {job.id} expired, requeuing")
+        rh.enqueue(land_number)
     elif job_status == JobStatus.FAILED:
         print(f"Retrying failed job {job.id}")
-        return job.requeue(True)
-    return job
-
-
-def handler(land_number: int):
-    if not (job := rh.queue.fetch_job(f"app:land:{land_number}:job")):
-        job = rh.enqueue(land_number)
-        print(f"Enqueueing new job {job.id}")
-        return job
-
-    return _handler(land_number, job)
+        job.requeue(True)
 
 
 def main():
@@ -52,7 +43,8 @@ def main():
 
     while True:
         for i in range(5000):
-            handler(i + 1)
+            enqueue_job(i + 1)
+
         worker_pool.start(burst=True)
 
 
