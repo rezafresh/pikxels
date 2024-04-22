@@ -41,14 +41,16 @@ docker-up-detached-logs: docker-up-detached
 docker-up-services: docker-down
 	@docker compose up browserless redis
 docker-redis-flushall:
-	@docker compose exec redis redis-cli -a ${REDIS_PASSWORD} flushall
+	@docker compose exec redis redis-cli \
+		--no-auth-warning -a ${REDIS_PASSWORD} flushall
+docker-redis-cli:
+	@docker compose exec redis redis-cli \
+		--no-auth-warning -a ${REDIS_PASSWORD}
 docker-entry-api:
 	@python -m src.app.cli.start_api
 docker-entry-worker:
 	@python -m src.app.cli.start_worker
-docker-start-redis-cli:
-	@docker compose exec redis redis-cli -a ${REDIS_PASSWORD}
 docker-start-rq-info:
-	@docker compose exec worker rq info -u ${APP_REDIS_URL}
+	@docker compose exec worker rq info -u redis://:${REDIS_PASSWORD}@localhost:36379
 docker-start-resource-hunter:
 	@docker compose exec worker python -m src.app.cli.start_resource_hunter
