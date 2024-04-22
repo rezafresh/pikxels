@@ -53,7 +53,7 @@ async def _job(land_number: int):
 def job_success_handler(job: rq.job.Job, connection, result: ls.CachedLandState, *args, **kwargs):
     expires_at = result["expiresAt"].astimezone()
     print(f"Land {job.args[0]} next sync at {expires_at!s}.")
-    enqueue_at(job.args[0], result["expiresAt"])
+    enqueue_at(job.args[0], expires_at)
 
 
 def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
