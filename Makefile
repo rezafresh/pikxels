@@ -12,8 +12,6 @@ lint:
 	@poetry run ruff check src
 start-api:
 	@poetry run python -m src.app.cli.start_api --reload
-start-worker:
-	@poetry run python -m src.app.cli.start_worker
 start-resource-hunter:
 	@poetry run python -m src.app.cli.start_resource_hunter
 start-rq-info:
@@ -35,26 +33,25 @@ git-push: lint create-requirements-txt
 clean:
 	@py3clean .
 docker-down:
-	@docker compose down
+	@docker compose --env-file .env.docker down
 docker-up: docker-down create-requirements-txt
-	@docker compose up --build
+	@docker compose --env-file .env.docker up --build
 docker-up-detached: docker-down create-requirements-txt
-	@docker compose up -d --build
+	@docker compose --env-file .env.docker up -d --build
 docker-up-services: docker-down
-	@docker compose up browserless redis
+	@docker compose --env-file .env.docker up browserless redis
 docker-redis-flushall:
-	@docker compose exec redis \
+	@docker compose --env-file .env.docker exec redis \
 		redis-cli --no-auth-warning -a ${REDIS_PASSWORD} flushall
 docker-redis-cli:
-	@docker compose exec redis \
+	@docker compose --env-file .env.docker exec redis \
 		redis-cli --no-auth-warning -a ${REDIS_PASSWORD}
+docker-start-rq-info:
+	@docker compose --env-file .env.docker exec worker \
+		rq info -u ${APP_REDIS_URL}
+docker-up-standalone-worker: docker-down
+	@docker compose --env-file .env.docker up browserless worker
 docker-entry-api:
 	@python -m src.app.cli.start_api
-docker-entry-worker:
-	@python -m src.app.cli.start_worker
 docker-entry-resource-hunter:
 	@python -m src.app.cli.start_resource_hunter
-docker-start-rq-info:
-	@docker compose exec worker rq info -u ${APP_REDIS_URL}
-docker-up-standalone-worker: docker-down
-	@docker compose up browserless worker
