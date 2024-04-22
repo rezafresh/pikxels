@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from random import randint
 
 import rq
@@ -26,7 +26,7 @@ def enqueue(land_number: int) -> rq.job.Job:
 
 def enqueue_at(land_number: int, at: datetime) -> rq.job.Job:
     return queue.enqueue_at(
-        at.astimezone(timezone(offset=timedelta(hours=-3))),
+        at,
         job,
         land_number,
         job_id=f"app:land:{land_number}:job",
@@ -51,13 +51,13 @@ async def _job(land_number: int):
 
 
 def job_success_handler(job: rq.job.Job, connection, result: ls.CachedLandState, *args, **kwargs):
-    expires_at = result["expiresAt"]
+    expires_at = result["expiresAt"].astimezone()
     print(f"Land {job.args[0]} next sync at {expires_at!s}.")
     enqueue_at(job.args[0], expires_at)
 
 
 def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
-    next_attempt = datetime.now() + timedelta(seconds=randint(60, 600))
+    next_attempt = (datetime.now() + timedelta(seconds=randint(60, 600))).astimezone()
     print(f"Failed to fetch land {job.args[0]} state. Next attempt at {next_attempt!s}.")
     enqueue_at(job.args[0], next_attempt)
 
