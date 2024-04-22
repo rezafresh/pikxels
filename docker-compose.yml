@@ -27,6 +27,8 @@ services:
       - 127.0.0.1:9181:9181
     environment:
       RQ_DASHBOARD_REDIS_URL: ${APP_REDIS_URL}
+    depends_on:
+      - redis
   resource-hunter:
     build: .
     env_file: .env
