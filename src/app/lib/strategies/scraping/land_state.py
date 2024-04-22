@@ -41,7 +41,7 @@ async def from_browser(land_number: int) -> dict:
     return json.loads(state_str)
 
 
-async def from_cache(land_number: int, *, redis: Redis) -> CachedLandState:
+async def from_cache(land_number: int, *, redis: Redis) -> CachedLandState | None:
     if cached := await redis.get(f"app:land:{land_number}:state"):
         return json.loads(cached)
 

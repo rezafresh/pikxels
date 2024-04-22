@@ -36,8 +36,6 @@ docker-up: docker-down create-requirements-txt
 	@docker compose up --build
 docker-up-detached: docker-down create-requirements-txt
 	@docker compose up -d --build
-docker-up-detached-logs: docker-up-detached
-	@docker compose logs worker -f
 docker-up-services: docker-down
 	@docker compose up browserless redis
 docker-redis-flushall:

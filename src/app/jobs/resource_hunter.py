@@ -8,35 +8,10 @@ from redis import Redis as RedisSync
 from .. import settings
 from ..lib.redis import create_redis_connection
 from ..lib.strategies.scraping import land_state as ls
-from ..lib.utils import get_logger, parse_datetime
+from ..lib.utils import get_logger
 
 logger = get_logger("app:resource-hunter")
 queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
-
-
-async def get_from_cache(land_number: int) -> ls.CachedLandState:
-    async with create_redis_connection() as redis:
-        if cached := await ls.from_cache(land_number, redis=redis):
-            return cached
-
-    return None
-
-
-def dispatch_job(land_number: int) -> rq.job.Job:
-    if cached := asyncio.run(get_from_cache(land_number)):
-        if expires_at := parse_datetime(cached["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
-            if expires_at > datetime.now():
-                return None
-
-    if job := queue.fetch_job(f"app:land:{land_number}:job"):
-        if job.get_status() not in [
-            rq.job.JobStatus.FINISHED,
-            rq.job.JobStatus.FAILED,
-            rq.job.JobStatus.SCHEDULED,
-        ]:
-            return None
-
-    enqueue(land_number)
 
 
 def enqueue(land_number: int) -> rq.job.Job:
