@@ -44,9 +44,7 @@ docker-redis-flushall:
 	@docker compose exec redis \
 		redis-cli --no-auth-warning -a ${REDIS_PASSWORD} flushall
 docker-start-rq-info:
-	@docker compose exec worker rq info -u ${APP_REDIS_URL}
-docker-up-standalone-worker: docker-down
-	@docker compose up browserless worker
+	@docker compose exec resource-hunter rq info -u ${APP_REDIS_URL}
 docker-entry-api:
 	@python -m src.app.cli.start_api
 docker-entry-resource-hunter:
