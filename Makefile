@@ -51,6 +51,6 @@ docker-entry-api:
 docker-entry-worker:
 	@python -m src.app.cli.start_worker
 docker-start-rq-info:
-	@docker compose exec worker rq info -u redis://:${REDIS_PASSWORD}@localhost:36379
+	@docker compose exec worker rq info -u redis://:${REDIS_PASSWORD}@redis:6379
 docker-start-resource-hunter:
 	@docker compose exec worker python -m src.app.cli.start_resource_hunter
