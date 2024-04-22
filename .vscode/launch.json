@@ -12,7 +12,6 @@
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "src.app.api.asgi:app",
-                "--port", "9000",
                 "--reload"
             ]
         },
@@ -22,7 +21,13 @@
             "request": "launch",
             "module": "src.app.cli.start_worker",
             "envFile": "${workspaceFolder}/.env",
-            "args": ["--reload"]
+        },
+        {
+            "name": "resource_hunter",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.app.cli.start_resource_hunter",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

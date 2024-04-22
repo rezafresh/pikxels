@@ -14,7 +14,20 @@ logger = get_logger("app:resource-hunter")
 queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
 
 
+async def get_from_cache(land_number: int) -> ls.CachedLandState:
+    async with create_redis_connection() as redis:
+        if cached := await ls.from_cache(land_number, redis=redis):
+            return cached
+
+    return None
+
+
 def dispatch_job(land_number: int) -> rq.job.Job:
+    if cached := asyncio.run(get_from_cache(land_number)):
+        if expires_at := parse_datetime(cached["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
+            if expires_at > datetime.now():
+                return None
+
     if job := queue.fetch_job(f"app:land:{land_number}:job"):
         if job.get_status() not in [
             rq.job.JobStatus.FINISHED,
@@ -22,6 +35,7 @@ def dispatch_job(land_number: int) -> rq.job.Job:
             rq.job.JobStatus.SCHEDULED,
         ]:
             return None
+
     enqueue(land_number)
 
 
@@ -46,33 +60,30 @@ def enqueue_at(land_number: int, at: datetime) -> rq.job.Job:
     )
 
 
-def job_success_handler(job: rq.job.Job, connection, result: ls.CachedLandState, *args, **kwargs):
-    if expires_at := parse_datetime(result["expiresAt"], "%Y-%m-%d %H:%M:%S.%f"):
-        if expires_at > datetime.now():
-            return enqueue_at(job.args[0], expires_at)
-
-    enqueue_at(job.args[0], datetime.now() + timedelta(seconds=randint(60, 300)))
-
-
-def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
-    enqueue_at(job.args[0], datetime.now() + timedelta(seconds=randint(60, 300)))
-
-
 def job(land_number: int):
     return asyncio.run(_job(land_number))
 
 
 async def _job(land_number: int):
-    async with create_redis_connection() as redis:
-        if cached := await ls.from_cache(land_number, redis=redis):
-            return cached
+    raw_state = await ls.from_browser(land_number)
+    seconds_to_expire = get_best_seconds_to_expire(raw_state)
 
-        raw_state = await ls.from_browser(land_number)
-        seconds_to_expire = get_best_seconds_to_expire(raw_state)
+    async with create_redis_connection() as redis:
         cached_state = await ls.to_cache(land_number, raw_state, seconds_to_expire, redis=redis)
         await ls.publish(land_number, cached_state, redis=redis)
 
     return cached_state
+
+
+def job_success_handler(job: rq.job.Job, connection, result: ls.CachedLandState, *args, **kwargs):
+    print(f"Land {job.args[0]} next sync at {result['expiresAt']!s}.")
+    enqueue_at(job.args[0], result["expiresAt"])
+
+
+def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
+    next_attempt = datetime.now() + timedelta(seconds=randint(60, 600))
+    print(f"Failed to fetch land {job.args[0]} state. Next attempt at {next_attempt!s}.")
+    enqueue_at(job.args[0], next_attempt)
 
 
 def get_best_seconds_to_expire(raw_state: dict) -> int:
