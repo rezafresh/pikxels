@@ -1,9 +1,8 @@
 import os
+from concurrent.futures import ThreadPoolExecutor, wait
 
 import redis
 import rq
-import rq.logutils
-import rq.worker_pool
 
 
 def main():
@@ -11,10 +10,13 @@ def main():
         raise Exception("The 'APP_REDIS_URL' environment variable isn`t defined")
 
     concurrency = int(os.getenv("APP_CONCURRENCY", 1))
-    worker_pool = rq.worker_pool.WorkerPool(
-        ["default"], connection=redis.Redis.from_url(redis_url), num_workers=concurrency
-    )
-    return worker_pool.start()
+    connection = redis.Redis.from_url(redis_url)
+    workers = [rq.worker.Worker(["default"], connection=connection) for _ in range(concurrency)]
+
+    with ThreadPoolExecutor(concurrency) as executor:
+        tasks = [executor.submit(workers[0].work, with_scheduler=True)]
+        tasks.extend(executor.submit(w.work) for w in workers[1:])
+        wait(tasks)
 
 
 if __name__ == "__main__":
