@@ -33,24 +33,20 @@ git-push: lint create-requirements-txt
 clean:
 	@py3clean .
 docker-down:
-	@docker compose --env-file .env.docker down
+	@docker compose down
 docker-up: docker-down create-requirements-txt
-	@docker compose --env-file .env.docker up --build
+	@docker compose up --build
 docker-up-detached: docker-down create-requirements-txt
-	@docker compose --env-file .env.docker up -d --build
+	@docker compose up -d --build
 docker-up-services: docker-down
-	@docker compose --env-file .env.docker up browserless redis
+	@docker compose up browserless redis
 docker-redis-flushall:
-	@docker compose --env-file .env.docker exec redis \
+	@docker compose exec redis \
 		redis-cli --no-auth-warning -a ${REDIS_PASSWORD} flushall
-docker-redis-cli:
-	@docker compose --env-file .env.docker exec redis \
-		redis-cli --no-auth-warning -a ${REDIS_PASSWORD}
 docker-start-rq-info:
-	@docker compose --env-file .env.docker exec worker \
-		rq info -u ${APP_REDIS_URL}
+	@docker compose exec worker rq info -u ${APP_REDIS_URL}
 docker-up-standalone-worker: docker-down
-	@docker compose --env-file .env.docker up browserless worker
+	@docker compose up browserless worker
 docker-entry-api:
 	@python -m src.app.cli.start_api
 docker-entry-resource-hunter:

@@ -23,14 +23,14 @@ services:
       - "./docker/redis:/data"
   resource-hunter:
     build: .
-    env_file: .env.docker
+    env_file: .env
     command: make docker-entry-resource-hunter
     depends_on:
       - browserless
       - redis
   api:
     build: .
-    env_file: .env.docker
+    env_file: .env
     command: make docker-entry-api
     ports:
       - 127.0.0.1:${API_PORT}:9000
