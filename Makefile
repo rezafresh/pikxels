@@ -56,3 +56,5 @@ docker-start-rq-info:
 docker-start-resource-hunter:
 	@docker compose exec worker \
 		python -m src.app.cli.start_resource_hunter
+docker-up-standalone-worker: docker-down
+	@docker compose up browserless worker
