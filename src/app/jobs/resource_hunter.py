@@ -51,12 +51,13 @@ async def _job(land_number: int):
 
 
 def job_success_handler(job: rq.job.Job, connection, result: ls.CachedLandState, *args, **kwargs):
-    print(f"Land {job.args[0]} next sync at {result['expiresAt']!s}.")
+    expires_at = result["expiresAt"].astimezone()
+    print(f"Land {job.args[0]} next sync at {expires_at!s}.")
     enqueue_at(job.args[0], result["expiresAt"])
 
 
 def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
-    next_attempt = datetime.now() + timedelta(seconds=randint(60, 600))
+    next_attempt = (datetime.now() + timedelta(seconds=randint(60, 600))).astimezone()
     print(f"Failed to fetch land {job.args[0]} state. Next attempt at {next_attempt!s}.")
     enqueue_at(job.args[0], next_attempt)
 
