@@ -51,8 +51,7 @@ docker-entry-api:
 docker-entry-worker:
 	@python -m src.app.cli.start_worker
 docker-start-rq-info:
-	@docker compose exec worker \
-		rq info -u ${APP_REDIS_URL}
+	@docker compose exec worker rq info -u ${APP_REDIS_URL}
 docker-start-resource-hunter:
 	@docker compose exec worker \
 		python -m src.app.cli.start_resource_hunter
