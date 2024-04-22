@@ -52,10 +52,9 @@ docker-entry-api:
 	@python -m src.app.cli.start_api
 docker-entry-worker:
 	@python -m src.app.cli.start_worker
+docker-entry-resource-hunter:
+	@python -m src.app.cli.start_resource_hunter
 docker-start-rq-info:
 	@docker compose exec worker rq info -u ${APP_REDIS_URL}
-docker-start-resource-hunter:
-	@docker compose exec worker \
-		python -m src.app.cli.start_resource_hunter
 docker-up-standalone-worker: docker-down
 	@docker compose up browserless worker
