@@ -18,6 +18,10 @@ start-resource-hunter:
 	@poetry run python -m src.app.cli.start_resource_hunter
 start-rq-info:
 	@poetry run rq info -u ${APP_REDIS_URL}
+start-rq-dashboard:
+	@poetry run rq-dashboard -u ${APP_REDIS_URL}
+start-test:
+	@poetry run python -m tests.test
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
 create-requirements-txt:

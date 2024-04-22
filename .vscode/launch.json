@@ -28,6 +28,13 @@
             "request": "launch",
             "module": "src.app.cli.start_resource_hunter",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "name": "test",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "tests.test",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
