@@ -1,8 +1,8 @@
 import os
-from concurrent.futures import ThreadPoolExecutor, wait
 
 import redis
 import rq
+import rq.worker_pool
 
 
 def main():
@@ -11,12 +11,10 @@ def main():
 
     concurrency = int(os.getenv("APP_CONCURRENCY", 1))
     connection = redis.Redis.from_url(redis_url)
-    workers = [rq.worker.Worker(["default"], connection=connection) for _ in range(concurrency)]
-
-    with ThreadPoolExecutor(concurrency) as executor:
-        tasks = [executor.submit(workers[0].work, with_scheduler=True)]
-        tasks.extend(executor.submit(w.work) for w in workers[1:])
-        wait(tasks)
+    worker_pool = rq.worker_pool.WorkerPool(
+        queues=["default"], connection=connection, num_workers=concurrency
+    )
+    worker_pool.start()
 
 
 if __name__ == "__main__":

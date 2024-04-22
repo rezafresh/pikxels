@@ -5,7 +5,7 @@ from ..jobs import resource_hunter as rh
 
 def dispatch_job(land_number: int) -> rq.job.Job | None:
     if job := rh.queue.fetch_job(f"app:land:{land_number}:job"):
-        if job.get_status() in [rq.job.JobStatus.QUEUED, rq.job.JobStatus.SCHEDULED]:
+        if job.get_status() in [rq.job.JobStatus.QUEUED, rq.job.JobStatus.STARTED]:
             return None
         return job
     return rh.enqueue(land_number)
