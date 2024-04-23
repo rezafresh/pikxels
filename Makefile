@@ -6,7 +6,9 @@ endif
 setup:
 	@poetry lock
 	@poetry install --no-root
-lint:
+clean:
+	@py3clean .
+lint: clean
 	@poetry run black -l 100 src
 	@poetry run isort --profile black src
 	@poetry run ruff check src
@@ -30,8 +32,6 @@ git-push: lint create-requirements-txt
 	@git add .
 	@git commit -m wip
 	@git push
-clean:
-	@py3clean .
 docker-down:
 	@docker compose down
 docker-up: docker-down create-requirements-txt
