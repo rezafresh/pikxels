@@ -47,7 +47,7 @@ docker-up-detached: docker-down create-requirements-txt
 docker-up-services: docker-down
 	@docker compose up browserless redis
 docker-up-worker: docker-down-worker
-	@docker compose -f docker-compose-worker.yml up --build
+	@docker compose -f docker-compose-worker.yml up --build -d
 docker-redis-flushall:
 	@docker compose exec redis \
 		redis-cli --no-auth-warning -a ${REDIS_PASSWORD} flushall
