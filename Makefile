@@ -38,12 +38,16 @@ git-push-main:
 	@git switch dev
 docker-down:
 	@docker compose down
+docker-down-worker:
+	@docker compose -f docker-compose-worker.yml down
 docker-up: docker-down create-requirements-txt
 	@docker compose up --build
 docker-up-detached: docker-down create-requirements-txt
 	@docker compose up -d --build
 docker-up-services: docker-down
 	@docker compose up browserless redis
+docker-up-worker: docker-down-worker
+	@docker compose -f docker-compose-worker.yml up --build
 docker-redis-flushall:
 	@docker compose exec redis \
 		redis-cli --no-auth-warning -a ${REDIS_PASSWORD} flushall
