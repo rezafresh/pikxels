@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pixels-monitor"
+name = "pikxels"
 version = "0.1.0"
 description = ""
 authors = ["Jairo <jairo.araujo.silva@gmail.com>"]
