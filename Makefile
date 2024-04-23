@@ -16,7 +16,7 @@ create-requirements-txt:
     fi
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
-git-push: lint create-requirements-txt
+git-commit: lint create-requirements-txt
 	@git add .
 	@git commit -m wip
 	@git push
@@ -24,7 +24,7 @@ git-push-main:
 	@git rebase dev main
 	@git push
 	@git switch dev
-ghcr-push-image:
+ghcr-push-image: create-requirements-txt
 	@docker build -t pikxels:latest .
 	@docker tag pikxels:latest ghcr.io/pikxels/pikxels:latest
 	@docker push ghcr.io/pikxels/pikxels:latest
