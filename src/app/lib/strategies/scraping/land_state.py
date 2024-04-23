@@ -67,5 +67,6 @@ async def to_cache(land_number: int, raw_state: dict, ex: int, *, redis: Redis) 
         "expiresAt": now + timedelta(seconds=ex),
         "state": raw_state,
     }
-    await redis.set(f"app:land:{land_number}:state", json.dumps(result, default=str), ex=ex)
+    # await redis.set(f"app:land:{land_number}:state", json.dumps(result, default=str), ex=ex)
+    await redis.set(f"app:land:{land_number}:state", json.dumps(result, default=str))
     return result
