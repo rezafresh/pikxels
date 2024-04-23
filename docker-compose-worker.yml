@@ -1,0 +1,16 @@
+services:
+  browserless:
+    image: ghcr.io/browserless/chrome:v2.6.1
+    environment:
+      TZ: America/Sao_Paulo
+      CONCURRENT: ${BROWSERLESS_CONCURRENT}
+      TIMEOUT: ${BROWSERLESS_TIMEOUT}
+      QUEUED: ${BROWSERLESS_QUEUED}
+    ports:
+      - 127.0.0.1:33000:3000
+  worker:
+    build: .
+    env_file: .env
+    command: make docker-entry-worker
+    depends_on:
+      - browserless

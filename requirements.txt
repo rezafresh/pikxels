@@ -178,9 +178,9 @@ pydantic==2.7.1 ; python_version >= "3.10" and python_version < "4.0" \
 pyee==11.1.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:5d346a7d0f861a4b2e6c47960295bd895f816725b27d656181947346be98d7c1 \
     --hash=sha256:b53af98f6990c810edd9b56b87791021a8f54fd13db4edd1142438d44ba2263f
-redis==5.0.3 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:4973bae7444c0fbed64a06b87446f79361cb7e4ec1538c022d696ed7a5015580 \
-    --hash=sha256:5da9b8fe9e1254293756c16c008e8620b3d15fcc6dde6babde9541850e72a32d
+redis==5.0.4 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:7adc2835c7a9b5033b7ad8f8918d09b7344188228809c98df07af226d39dec91 \
+    --hash=sha256:ec31f2ed9675cc54c21ba854cfe0462e6faf1d83c8ce5944709db8a4700b9c61
 rq==1.16.1 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:273de33f10bb9f18cd1e8ccc0a4e8dba2b8eb86a6ab2a91ae674f99bd68025f1 \
     --hash=sha256:d9a6314bc759a743b4a5d89aa467eaa3a31dbbc0a34bcd0ee82e8852d9ec166d

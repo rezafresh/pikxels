@@ -53,3 +53,5 @@ docker-entry-api:
 	@python -m src.app.cli.start_api
 docker-entry-resource-hunter:
 	@python -m src.app.cli.start_resource_hunter
+docker-entry-worker:
+	@python -m src.app.cli.start_worker
