@@ -37,7 +37,8 @@ def _main():
     concurrency = int(os.getenv("APP_CONCURRENCY", 1))
     connection = redis.Redis.from_url(redis_url)
     workers = [
-        rq.worker.Worker(queues=["default"], connection=connection) for _ in range(concurrency)
+        rq.worker.Worker(queues=["default"], name=f"worker-{_}", connection=connection)
+        for _ in range(concurrency)
     ]
 
     while True:
