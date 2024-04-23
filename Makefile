@@ -32,6 +32,10 @@ git-push: lint create-requirements-txt
 	@git add .
 	@git commit -m wip
 	@git push
+git-push-main:
+	@git rebase dev main
+	@git push
+	@git switch dev
 docker-down:
 	@docker compose down
 docker-up: docker-down create-requirements-txt
