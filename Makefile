@@ -1,5 +1,7 @@
-include .env
-export
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
 
 setup:
 	@poetry lock
@@ -16,11 +18,11 @@ create-requirements-txt:
     fi
 ngrok:
 	ssh -R 443:localhost:${API_PORT} v2@connect.ngrok-agent.com http
-git-commit: lint create-requirements-txt
+git-push: lint create-requirements-txt
 	@git add .
 	@git commit -m wip
 	@git push
-git-push-main:
+git-rebase-main:
 	@git rebase dev main
 	@git push
 	@git switch dev
