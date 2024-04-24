@@ -1,10 +1,10 @@
 import os
 from datetime import datetime
-from multiprocessing import Process
 from time import sleep
 
 import redis
 import rq
+import rq.registry
 from rq.job import JobStatus
 
 from ..jobs import resource_hunter as rh
@@ -34,25 +34,19 @@ def _main():
     if not (redis_url := os.getenv("APP_REDIS_URL")):
         raise Exception("The 'APP_REDIS_URL' environment variable isn`t defined")
 
-    concurrency = int(os.getenv("APP_CONCURRENCY", 1))
     connection = redis.Redis.from_url(redis_url)
-    workers = [
-        rq.worker.Worker(queues=["default"], connection=connection) for _ in range(concurrency)
-    ]
+    queued_registry = rq.registry.StartedJobRegistry(connection=connection)
 
     while True:
-        enqueued_jobs = [*filter(bool, [enqueue_job(i + 1) for i in range(MAX_LANDS_TO_SCAN)])]
+        sleep(2)
 
-        if not enqueued_jobs:
-            sleep(5)
+        if queued_registry.count > 0:
+            print(f"There is {queued_registry.count} jobs to handle left")
             continue
 
-        processes = [
-            Process(target=w.work, args=(True,), daemon=True)
-            for w in workers[: min(concurrency, len(enqueued_jobs))]
-        ]
-        [p.start() for p in processes]
-        [p.join() for p in processes]
+        print("Searching for Resources ...")
+        enqueued_jobs = [*filter(bool, [enqueue_job(i + 1) for i in range(MAX_LANDS_TO_SCAN)])]
+        print(f"Found {len(enqueued_jobs)}")
 
 
 def main():
