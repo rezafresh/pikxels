@@ -32,7 +32,7 @@ def main():
         sleep(2)
 
         if rh.queue.count > 0:
-            print(f"There is {rh.queue.count} jobs to handle left")
+            print(f"There is {rh.queue.count} jobs left to handle")
             continue
 
         print("Searching for Resources ...")

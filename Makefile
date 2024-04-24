@@ -30,6 +30,8 @@ ghcr-push-image: create-requirements-txt
 	@docker build -t pikxels:latest .
 	@docker tag pikxels:latest ghcr.io/pikxels/pikxels:latest
 	@docker push ghcr.io/pikxels/pikxels:latest
+git-push-publish: git-push ghcr-push-image
+	@echo "Git push and Image Publish Completed"
 start-docker-services: docker-down
 	@docker compose up browserless redis
 start-api:
