@@ -36,13 +36,12 @@ services:
     depends_on:
       - redis
   worker:
-    resource-hunter:
-      build: .
-      env_file: .env
-      command: make docker-entry-worker
-      depends_on:
-        - browserless
-        - redis
+    build: .
+    env_file: .env
+    command: make docker-entry-worker
+    depends_on:
+      - browserless
+      - redis
   api:
     build: .
     env_file: .env
