@@ -37,16 +37,19 @@ def _main():
     connection = redis.Redis.from_url(redis_url)
     queued_registry = rq.registry.StartedJobRegistry(connection=connection)
 
-    while True:
-        sleep(2)
+    try:
+        while True:
+            sleep(2)
 
-        if queued_registry.count > 0:
-            print(f"There is {queued_registry.count} jobs to handle left")
-            continue
+            if queued_registry.count > 0:
+                print(f"There is {queued_registry.count} jobs to handle left")
+                continue
 
-        print("Searching for Resources ...")
-        enqueued_jobs = [*filter(bool, [enqueue_job(i + 1) for i in range(MAX_LANDS_TO_SCAN)])]
-        print(f"Found {len(enqueued_jobs)}")
+            print("Searching for Resources ...")
+            enqueued_jobs = [*filter(bool, [enqueue_job(i + 1) for i in range(MAX_LANDS_TO_SCAN)])]
+            print(f"Found {len(enqueued_jobs)}")
+    except Exception as error:
+        print(repr(error))
 
 
 def main():
