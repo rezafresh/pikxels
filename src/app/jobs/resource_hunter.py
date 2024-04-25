@@ -91,16 +91,16 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         timers.append(min(extract_finish_time(item) for item in resources["windmills"]))
 
     # wineries
-    if resources["wineries"]:
-        timers.append(min(extract_finish_time(item) for item in resources["wineries"]))
+    # if resources["wineries"]:
+    #     timers.append(min(extract_finish_time(item) for item in resources["wineries"]))
 
     # grills
-    if resources["grills"]:
-        timers.append(min(extract_finish_time(item) for item in resources["grills"]))
+    # if resources["grills"]:
+    #     timers.append(min(extract_finish_time(item) for item in resources["grills"]))
 
     # kilns
-    if resources["kilns"]:
-        timers.append(min(extract_finish_time(item) for item in resources["kilns"]))
+    # if resources["kilns"]:
+    #     timers.append(min(extract_finish_time(item) for item in resources["kilns"]))
 
     result = datetime.fromtimestamp(min(timers))
 

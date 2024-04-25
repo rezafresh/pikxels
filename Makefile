@@ -22,7 +22,7 @@ git-push: lint create-requirements-txt
 	@git add .
 	@git commit -m wip
 	@git push
-git-rebase-main:
+git-update-main:
 	@git rebase dev main
 	@git push
 	@git switch dev
