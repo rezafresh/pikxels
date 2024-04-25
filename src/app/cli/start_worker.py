@@ -3,6 +3,14 @@ from multiprocessing import Process
 
 import redis
 import rq
+import sentry_sdk
+
+if WORKER_SENTRY_DSN := os.getenv("WORKER_SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=WORKER_SENTRY_DSN,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
 
 
 def _main():

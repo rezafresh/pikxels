@@ -1,13 +1,23 @@
+import os
 from datetime import datetime
 from time import sleep
 
 import rq
 import rq.registry
+import sentry_sdk
 from rq.job import JobStatus
 
 from ..jobs import resource_hunter as rh
 
 MAX_LANDS_TO_SCAN = 5000
+
+
+if RH_SENTRY_DSN := os.getenv("RH_SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=RH_SENTRY_DSN,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
 
 
 def enqueue_job(land_number: int) -> rq.job.Job | None:

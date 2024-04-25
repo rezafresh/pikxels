@@ -1,7 +1,15 @@
 import argparse
 import os
 
+import sentry_sdk
 import uvicorn
+
+if API_SENTRY_DSN := os.getenv("API_SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=API_SENTRY_DSN,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
 
 
 def parse_args() -> argparse.Namespace:
