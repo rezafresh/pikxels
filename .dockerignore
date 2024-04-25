@@ -1,9 +1,9 @@
+/.env
+/.env.docker
 /.ruff_cache
 /.vscode
 /docs
 /logs
 /tests
-/.env
-/.env.docker
 /.git
 /web

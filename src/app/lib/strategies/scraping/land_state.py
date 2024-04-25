@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 from typing import TypedDict
 
 from fastapi import HTTPException
-from playwright.async_api import Page, ViewportSize, async_playwright
+from playwright.async_api import Page, ProxySettings, ViewportSize, async_playwright
 from redis.asyncio import Redis
 
 from .... import settings
+from ...providers.webshare import get_available_proxy
 from ...utils import retry_until_valid
 
 
@@ -16,7 +17,7 @@ class CachedLandState(TypedDict):
     state: dict
 
 
-async def from_browser(land_number: int) -> dict:
+async def from_browser(land_number: int, *, proxy: ProxySettings = None) -> dict:
     async with async_playwright() as pw:
         browser = await pw.chromium.connect(
             settings.PW_WS_ENDPOINT,
@@ -26,12 +27,17 @@ async def from_browser(land_number: int) -> dict:
             viewport=ViewportSize(width=10, height=10),
             screen=ViewportSize(width=10, height=10),
             is_mobile=True,
+            proxy=proxy,
         )
         page.set_default_navigation_timeout(settings.PW_DEFAULT_TIMEOUT)
         page.set_default_timeout(settings.PW_DEFAULT_TIMEOUT)
 
-        if not (await page.goto(f"https://play.pixels.xyz/pixels/share/{land_number}")).ok:
-            raise HTTPException(422, "An error has ocurred while navigating to the land")
+        if not (
+            response := await page.goto(f"https://play.pixels.xyz/pixels/share/{land_number}")
+        ).ok:
+            raise HTTPException(
+                422, f"Failed to navigate to the land. [http-code {response.status}]"
+            )
 
         if (state_str := await phaser_land_state_getter(page)) is None:
             raise HTTPException(422, "Could not retrieve the land state")

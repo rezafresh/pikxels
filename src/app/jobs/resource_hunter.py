@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from random import randint
 
 import rq
+from playwright.async_api import ProxySettings
 from redis import Redis as RedisSync
 
 from .. import settings
@@ -14,22 +15,23 @@ logger = get_logger("app:resource-hunter")
 queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
 
 
-def enqueue(land_number: int) -> rq.job.Job:
+def enqueue(land_number: int, *, proxy: ProxySettings = None) -> rq.job.Job:
     return queue.enqueue(
         job,
         land_number,
+        proxy=proxy,
         job_id=f"app:land:{land_number}:job",
         on_success=job_success_handler,
         on_failure=job_failure_handler,
     )
 
 
-def job(land_number: int):
-    return asyncio.run(_job(land_number))
+def job(land_number: int, *, proxy: ProxySettings = None):
+    return asyncio.run(_job(land_number, proxy=proxy))
 
 
-async def _job(land_number: int):
-    raw_state = await ls.from_browser(land_number)
+async def _job(land_number: int, *, proxy: ProxySettings = None):
+    raw_state = await ls.from_browser(land_number, proxy=proxy)
     seconds_to_expire = get_best_seconds_to_expire(raw_state)
 
     async with create_redis_connection() as redis:

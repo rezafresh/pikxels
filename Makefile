@@ -34,19 +34,19 @@ git-push-publish: git-push ghcr-push-image
 	@echo "Git push and image publish completed"
 start-docker-services: docker-down
 	@docker compose up browserless redis
-start-api:
-	@poetry run python -m src.app.cli.start_api --reload
-start-resource-hunter:
-	@poetry run python -m src.app.cli.start_resource_hunter
 start-rq-info:
 	@poetry run rq info -u ${APP_REDIS_URL}
-start-rq-dashboard:
-	@poetry run rq-dashboard -u ${APP_REDIS_URL}
-start-test:
-	@poetry run python -m tests.test
+start-worker:
+	@poetry run python -m src.app.cli.start_worker
+start-resource-hunter:
+	@poetry run python -m src.app.cli.start_resource_hunter
+start-api:
+	@poetry run python -m src.app.cli.start_api --reload
 docker-down:
 	@docker compose down
 docker-up: docker-down create-requirements-txt
+	@docker compose up --build
+docker-up-detached: docker-down create-requirements-txt
 	@docker compose up -d --build
 docker-redis-flushall:
 	@docker compose exec redis \

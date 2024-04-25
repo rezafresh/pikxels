@@ -8,6 +8,7 @@ import sentry_sdk
 from rq.job import JobStatus
 
 from ..jobs import resource_hunter as rh
+from ..lib.providers.webshare import get_available_proxy
 
 MAX_LANDS_TO_SCAN = 5000
 
@@ -22,7 +23,7 @@ if RH_SENTRY_DSN := os.getenv("RH_SENTRY_DSN"):
 
 def enqueue_job(land_number: int) -> rq.job.Job | None:
     if not (job := rh.queue.fetch_job(f"app:land:{land_number}:job")):
-        job = rh.enqueue(land_number)
+        job = rh.enqueue(land_number, proxy=next(get_available_proxy))
         return job
     elif (job_status := job.get_status()) == JobStatus.FINISHED:
         expires_at: datetime = job.result["expiresAt"]
@@ -30,9 +31,9 @@ def enqueue_job(land_number: int) -> rq.job.Job | None:
         if int((expires_at - datetime.now()).total_seconds()) > 0:
             return None
 
-        return rh.enqueue(land_number)
+        return rh.enqueue(land_number, proxy=next(get_available_proxy))
     elif job_status == JobStatus.FAILED:
-        return job.requeue(True)
+        return rh.enqueue(land_number, proxy=next(get_available_proxy))
 
 
 def main():
