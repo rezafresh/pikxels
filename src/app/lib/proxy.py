@@ -15,8 +15,6 @@ def create_proxy_yielder():
                     username=proxy["username"],
                     password=proxy["password"],
                 )
-            else:
-                yield None
 
     _yielder = yielder()
     return lambda: next(_yielder)
