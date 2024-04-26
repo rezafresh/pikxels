@@ -7,7 +7,6 @@ from playwright.async_api import Page, ProxySettings, ViewportSize, async_playwr
 from redis.asyncio import Redis
 
 from .... import settings
-from ...providers.webshare import get_available_proxy
 from ...utils import retry_until_valid
 
 

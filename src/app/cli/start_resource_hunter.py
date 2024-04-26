@@ -6,24 +6,31 @@ import rq
 import rq.registry
 import sentry_sdk
 from rq.job import JobStatus
+from playwright.async_api import ProxySettings
 
+from .. import settings
 from ..jobs import resource_hunter as rh
-from ..lib.providers.webshare import get_available_proxy
+from ..lib.proxy import get_available_proxy
+from ..lib.utils import get_logger
 
+logger = get_logger("app:resource-hunter")
 MAX_LANDS_TO_SCAN = 5000
 
 
-if RH_SENTRY_DSN := os.getenv("RH_SENTRY_DSN"):
-    sentry_sdk.init(
-        dsn=RH_SENTRY_DSN,
-        traces_sample_rate=1.0,
-        profiles_sample_rate=1.0,
-    )
+def get_proxy():
+    if not settings.PW_PROXY_ENABLED:
+        return None
+
+    try:
+        return get_available_proxy()
+    except Exception as error:
+        logger.error(repr(error))
+        return None
 
 
-def enqueue_job(land_number: int) -> rq.job.Job | None:
+def enqueue_job(land_number: int, *, proxy: ProxySettings = None) -> rq.job.Job | None:
     if not (job := rh.queue.fetch_job(f"app:land:{land_number}:job")):
-        job = rh.enqueue(land_number, proxy=next(get_available_proxy))
+        job = rh.enqueue(land_number, proxy=proxy)
         return job
     elif (job_status := job.get_status()) == JobStatus.FINISHED:
         expires_at: datetime = job.result["expiresAt"]
@@ -31,24 +38,43 @@ def enqueue_job(land_number: int) -> rq.job.Job | None:
         if int((expires_at - datetime.now()).total_seconds()) > 0:
             return None
 
-        return rh.enqueue(land_number, proxy=next(get_available_proxy))
+        return rh.enqueue(land_number, proxy=proxy)
     elif job_status == JobStatus.FAILED:
-        return rh.enqueue(land_number, proxy=next(get_available_proxy))
+        return rh.enqueue(land_number, proxy=proxy)
 
 
-def main():
-    print("Starting Resource Hunter Loop")
-
+def _main():
     while True:
         sleep(2)
 
         if rh.queue.count > 0:
-            print(f"There is {rh.queue.count} jobs left to handle")
+            logger.info(f"There is {rh.queue.count} jobs left to handle")
             continue
 
-        print("Searching for Resources ...")
-        enqueued_jobs = [*filter(bool, [enqueue_job(i + 1) for i in range(MAX_LANDS_TO_SCAN)])]
-        print(f"Found {len(enqueued_jobs)}")
+        logger.info("Searching for Resources ...")
+        enqueued_jobs = [*filter(bool, [
+            enqueue_job(i + 1, proxy=get_proxy()) for i in range(MAX_LANDS_TO_SCAN)
+        ])]
+        logger.info(f"Found {len(enqueued_jobs)}")
+
+
+def main():
+    logger.info("Starting Resource Hunter Loop")
+
+    if RH_SENTRY_DSN := os.getenv("RH_SENTRY_DSN"):
+        sentry_sdk.init(
+            dsn=RH_SENTRY_DSN,
+            traces_sample_rate=1.0,
+            profiles_sample_rate=1.0,
+        )
+
+    if settings.PW_PROXY_ENABLED:
+        if not settings.WEBSHARE_TOKEN:
+            raise Exception(
+                "Proxy use is enable, but APP_WEBSHARE_TOKEN environment variable is empty"
+            )
+
+    _main()
 
 
 if __name__ == "__main__":

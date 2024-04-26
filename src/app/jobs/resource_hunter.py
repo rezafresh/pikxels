@@ -9,9 +9,7 @@ from redis import Redis as RedisSync
 from .. import settings
 from ..lib.redis import create_redis_connection
 from ..lib.strategies.scraping import land_state as ls
-from ..lib.utils import get_logger
 
-logger = get_logger("app:resource-hunter")
 queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
 
 

@@ -4,9 +4,6 @@ from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 
 from ..lib.redis import create_redis_connection
 from ..lib.strategies.scraping import land_state as ls
-from ..lib.utils import get_logger
-
-logger = get_logger("app:api:controllers")
 
 
 async def get_land_state(land_number: int):
@@ -29,8 +26,6 @@ async def _stream_lands_states(websocket: WebSocket):
 
     while (await websocket.receive_text()) != "1":
         continue
-
-    logger.info(f"Sending land states data to client {websocket.client.host} via ws")
 
     async with create_redis_connection() as redis:
         for i in range(5000):

@@ -44,8 +44,8 @@ def parse_datetime(dt: str | datetime | None, dt_fmt: str = "%Y-%m-%d %H:%M:%S")
 
 
 def get_logger(name: str) -> logging.Logger:
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    logger.addHandler(_ := logging.StreamHandler())
+    result = logging.getLogger(name)
+    result.setLevel(logging.INFO)
+    result.addHandler(_ := logging.StreamHandler())
     _.setFormatter(logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s"))
-    return logger
+    return result

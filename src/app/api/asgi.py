@@ -4,10 +4,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from ..lib.utils import get_logger
 from .router import router
-
-logger = get_logger("app:asgi")
 
 
 @asynccontextmanager
