@@ -5,27 +5,16 @@ from time import sleep
 import rq
 import rq.registry
 import sentry_sdk
-from rq.job import JobStatus
 from playwright.async_api import ProxySettings
+from rq.job import JobStatus
 
 from .. import settings
 from ..jobs import resource_hunter as rh
-from ..lib.proxy import get_available_proxy
+from ..lib.proxy import create_proxy_yielder
 from ..lib.utils import get_logger
 
 logger = get_logger("app:resource-hunter")
 MAX_LANDS_TO_SCAN = 5000
-
-
-def get_proxy():
-    if not settings.PW_PROXY_ENABLED:
-        return None
-
-    try:
-        return get_available_proxy()
-    except Exception as error:
-        logger.error(repr(error))
-        return None
 
 
 def enqueue_job(land_number: int, *, proxy: ProxySettings = None) -> rq.job.Job | None:
@@ -51,10 +40,15 @@ def _main():
             logger.info(f"There is {rh.queue.count} jobs left to handle")
             continue
 
+        if settings.PW_PROXY_ENABLED:
+            get_proxy = create_proxy_yielder()
+        else:
+            get_proxy = lambda: None  # noqa
+
         logger.info("Searching for Resources ...")
-        enqueued_jobs = [*filter(bool, [
-            enqueue_job(i + 1, proxy=get_proxy()) for i in range(MAX_LANDS_TO_SCAN)
-        ])]
+        enqueued_jobs = [
+            *filter(bool, [enqueue_job(i + 1, proxy=get_proxy()) for i in range(MAX_LANDS_TO_SCAN)])
+        ]
         logger.info(f"Found {len(enqueued_jobs)}")
 
 
@@ -73,6 +67,7 @@ def main():
             raise Exception(
                 "Proxy use is enable, but APP_WEBSHARE_TOKEN environment variable is empty"
             )
+        logger.info("Proxy is enabled")
 
     _main()
 
