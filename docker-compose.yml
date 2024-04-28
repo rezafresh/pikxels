@@ -56,3 +56,11 @@ services:
       - ${API_DOCKER_PORT}:${API_PORT}
     depends_on:
       - redis
+  discord-bot:
+    build: .
+    env_file:
+      - .env
+      - .env.docker
+    command: make docker-entry-discord-bot
+    depends_on:
+      - browserless

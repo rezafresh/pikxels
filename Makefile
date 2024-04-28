@@ -59,3 +59,5 @@ docker-entry-resource-hunter:
 	@python -m src.app.cli.start_resource_hunter
 docker-entry-worker:
 	@python -m src.app.cli.start_worker
+docker-entry-discord-bot:
+	@python -m src.app.cli.start_discord_bot

@@ -30,6 +30,13 @@
             "envFile": "${workspaceFolder}/.env"
         },
         {
+            "name": "discord_bot",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.app.cli.start_discord_bot",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
             "name": "test",
             "type": "debugpy",
             "request": "launch",

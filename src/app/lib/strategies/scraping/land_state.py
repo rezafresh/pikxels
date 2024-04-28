@@ -16,6 +16,51 @@ class CachedLandState(TypedDict):
     state: dict
 
 
+LandEntityPosition = TypedDict("LandEntityPosition", {x: int, y: int})
+
+class ParsedLandTree(TypedDict):
+    mid: str
+    state: str
+    position: LandEntityPosition
+    utcRefresh: datetime
+    chops: int
+    lastTimer: datetime
+    lastChop: datetime
+
+
+class LandStateParser:
+    def __init__(self, raw_state: dict) -> None:
+        self._raw_state = raw_state
+
+    def _parse_tree(self, raw_tree: dict) -> ParsedLandTree:
+        generic: dict = raw_tree["generic"]
+
+        if utc_refresh := generic.get("utcRefresh"):
+            utc_refresh = datetime.fromtimestamp(utc_refresh // 1000)
+
+        statics = { _["name"]: _["value"] for _ in generic["statics"]}
+        statics["chops"] = int(statics.get("chops", 0))
+
+        for fld in ["lastChop", "lastTimer"]:
+            if _ := int(statics.get(fld, 0)):
+                statics[fld] = datetime.fromtimestamp(_ // 1000)
+
+        return {
+            "mid": raw_tree["mid"],
+            "state": raw_tree["generic"]["state"],
+            "position": raw_tree["position"],
+            "utcRefresh": utc_refresh,
+            **statics
+        }
+
+    @property
+    def trees(self) -> list[ParsedLandTree]:
+        entities: dict = self["entities"]
+        trees = [_ for _ in entities.values() if _["entity"].startswith("ent_tree")]
+        return [*map(self._parse_tree, trees)]
+
+
+
 async def from_browser(land_number: int, *, proxy: ProxySettings = None) -> dict:
     async with async_playwright() as pw:
         browser = await pw.chromium.connect(
