@@ -44,7 +44,7 @@ def prepare_resources(
 def format_resources_message(resources: list[ls.ParsedLandTree | ls.ParsedLandIndustry]) -> str:
     def get_description(item: ls.ParsedLandTree | ls.ParsedLandIndustry, availability: str) -> str:
         if item["entity"].startswith("ent_tree"):
-            description = "🌲 Tree"
+            description = f"🌲 Tree [**{item['state']}**]"
         elif item["entity"].startswith("ent_windmill"):
             description = "🌀 WindMill"
         elif item["entity"].startswith("ent_landbbq"):
