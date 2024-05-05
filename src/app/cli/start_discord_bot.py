@@ -92,7 +92,7 @@ async def send_land_available_resources(
                     "**There is no data for the requested land**"
                 )
 
-        parsed_state = ls.parse(land_number, cached_state)
+        parsed_state = ls.parse(land_number, cached_state["state"])
 
         if resources := prepare_resources(parsed_state, -120, threshold):
             message = format_resources_message(resources)
