@@ -52,7 +52,8 @@ def job_failure_handler(job: rq.job.Job, connection, type, value, traceback):
 def get_best_seconds_to_expire(raw_state: dict) -> int:
     if raw_state["permissions"]["use"][0] != "ANY":
         # Land is Blocked
-        return 86400
+        # try again between 3 and 5 days
+        return randint(259200, 432000)
 
     now = datetime.now()
     now_as_epoch = int(now.timestamp())
@@ -91,16 +92,16 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
         timers.append(min(extract_finish_time(item) for item in resources["windmills"]))
 
     # wineries
-    # if resources["wineries"]:
-    #     timers.append(min(extract_finish_time(item) for item in resources["wineries"]))
+    if resources["wineries"]:
+        timers.append(min(extract_finish_time(item) for item in resources["wineries"]))
 
     # grills
-    # if resources["grills"]:
-    #     timers.append(min(extract_finish_time(item) for item in resources["grills"]))
+    if resources["grills"]:
+        timers.append(min(extract_finish_time(item) for item in resources["grills"]))
 
     # kilns
-    # if resources["kilns"]:
-    #     timers.append(min(extract_finish_time(item) for item in resources["kilns"]))
+    if resources["kilns"]:
+        timers.append(min(extract_finish_time(item) for item in resources["kilns"]))
 
     result = datetime.fromtimestamp(min(timers))
 
