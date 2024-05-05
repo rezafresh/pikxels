@@ -27,9 +27,9 @@ git-update-main:
 	@git push
 	@git switch dev
 ghcr-push-image: create-requirements-txt
-	@docker build -t pikxels:latest .
-	@docker tag pikxels:latest ghcr.io/pikxels/pikxels:latest
-	@docker push ghcr.io/pikxels/pikxels:latest
+	@docker build -t pikxels:"$${TAG:-dev}" .
+	@docker tag pikxels:"$${TAG:-dev}" ghcr.io/pikxels/pikxels:"$${TAG:-dev}"
+	@docker push ghcr.io/pikxels/pikxels:"$${TAG:-dev}"
 git-push-publish: git-push ghcr-push-image
 	@echo "Git push and image publish completed"
 start-docker-services: docker-down

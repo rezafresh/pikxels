@@ -5,7 +5,9 @@ from discord import app_commands
 
 from .. import settings
 from ..lib.strategies.scraping import land_state as ls
+from ..lib.utils import get_logger
 
+logger = get_logger("app:discord-bot")
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
@@ -97,12 +99,13 @@ async def send_land_available_resources(
         else:
             await interaction.followup.send("**There is no data for the requested land**")
     except Exception as error:
+        logger.error(repr(error))
         await interaction.followup.send(repr(error))
 
 
 @client.event
 async def on_ready():
-    print(f"We have logged in as {client.user}")
+    logger.info(f"We have logged in as {client.user}")
     tree.copy_global_to(guild=guild)
     await tree.sync(guild=guild)
 
