@@ -4,6 +4,7 @@ import discord
 from discord import app_commands
 
 from .. import settings
+from ..lib.redis import create_redis_connection
 from ..lib.strategies.scraping import land_state as ls
 from ..lib.utils import get_logger
 
@@ -85,19 +86,21 @@ async def send_land_available_resources(
             f"**Fetching land {land_number} resources availables in the next {threshold} seconds**"
         )
 
-        if raw_state := await ls.from_browser(land_number):
-            parsed_state = ls.parse(land_number, raw_state)
-
-            if resources := prepare_resources(parsed_state, -120, threshold):
-                message = format_resources_message(resources)
-                # message = f"{interaction.user.mention}\n" + message
-                await interaction.followup.send(message)
-            else:
-                await interaction.followup.send(
-                    f"**There is no resource available in the next {threshold} seconds**"
+        async with create_redis_connection() as redis:
+            if not (cached_state := await ls.from_cache(land_number, redis=redis)):
+                return await interaction.followup.send(
+                    "**There is no data for the requested land**"
                 )
+
+        parsed_state = ls.parse(land_number, cached_state)
+
+        if resources := prepare_resources(parsed_state, -120, threshold):
+            message = format_resources_message(resources)
+            await interaction.followup.send(message)
         else:
-            await interaction.followup.send("**There is no data for the requested land**")
+            await interaction.followup.send(
+                f"**There is no resource available in the next {threshold} seconds**"
+            )
     except Exception as error:
         logger.error(repr(error))
         await interaction.followup.send(repr(error))
