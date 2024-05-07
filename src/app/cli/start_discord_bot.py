@@ -127,17 +127,20 @@ async def send_land_updates_loop(channel_wh: str):
         await ps.subscribe("app:lands:states:channel")
 
         while True:
-            if not (message := await ps.get_message(timeout=None)):
-                continue
+            try:
+                if not (message := await ps.get_message(timeout=None)):
+                    continue
 
-            state = json.loads(message["data"])
-            parsed = filter_resources(ls.parse(state["state"]), -120, 180)
+                state = json.loads(message["data"])
+                parsed = filter_resources(ls.parse(state["state"]), -120, 180)
 
-            if parsed["is_blocked"]:
-                continue
+                if parsed["is_blocked"]:
+                    continue
 
-            if fmtd_message := format_land_resources_message(parsed):
-                httpx.post(channel_wh, json={"content": fmtd_message})
+                if fmtd_message := format_land_resources_message(parsed):
+                    httpx.post(channel_wh, json={"content": fmtd_message})
+            except Exception as error:
+                logger.error(f"send_land_updates_loop: {error!r}")
 
 
 @client.event
