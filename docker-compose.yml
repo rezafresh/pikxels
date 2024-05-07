@@ -63,4 +63,4 @@ services:
       - .env.docker
     command: make docker-entry-discord-bot
     depends_on:
-      - browserless
+      - redis
