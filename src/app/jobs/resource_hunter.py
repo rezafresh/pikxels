@@ -7,8 +7,8 @@ from playwright.async_api import ProxySettings
 from redis import Redis as RedisSync
 
 from .. import settings
+from ..lib.pixels import land_state as ls
 from ..lib.redis import create_redis_connection
-from ..lib.strategies.scraping import land_state as ls
 
 queue = rq.Queue(connection=RedisSync.from_url(settings.REDIS_URL))
 

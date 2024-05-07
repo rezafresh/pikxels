@@ -2,8 +2,8 @@ import json
 
 from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 
+from ..lib.pixels import land_state as ls
 from ..lib.redis import create_redis_connection
-from ..lib.strategies.scraping import land_state as ls
 
 
 async def get_land_state(land_number: int):
