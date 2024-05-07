@@ -102,7 +102,7 @@ async def send_land_available_resources(interaction: discord.Interaction, land_n
         message = format_land_resources_message(parsed_state)
         message = (
             f"> Created => **{cached_state['createdAt']}**\n"
-            f"> Expires => **{cached_state['expiresAt']}**\n"
+            f"> Expires => **{cached_state['expiresAt']}**\n\n"
         ) + message
         await interaction.followup.send(message)
     except Exception as error:
