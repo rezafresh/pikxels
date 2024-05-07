@@ -20,7 +20,8 @@ services:
     ports:
       - ${REDIS_DOCKER_PORT}:6379
     volumes:
-      - "./docker/redis:/data"
+      # - "./docker/redis:/data"
+      - "../pikxels-api/docker/redis:/data"
   rq-dashboard:
     build: https://github.com/Parallels/rq-dashboard.git
     ports:

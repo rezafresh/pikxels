@@ -173,9 +173,9 @@ class LandStateParser:
         return [*map(cls.parse_industry, industries)]
 
     @classmethod
-    def parse(cls, land_number: int, raw_state: dict) -> ParsedLandState:
+    def parse(cls, raw_state: dict) -> ParsedLandState:
         return {
-            "land_number": land_number,
+            "land_number": int(raw_state["nft"]["tokenId"]),
             "is_blocked": raw_state["permissions"]["use"][0] != "ANY",
             "trees": cls.parse_trees(raw_state),
             "windmills": cls.parse_industries(raw_state, "ent_windmill"),
@@ -185,5 +185,5 @@ class LandStateParser:
         }
 
 
-def parse(land_number: int, raw_state: dict) -> ParsedLandState:
-    return LandStateParser.parse(land_number, raw_state)
+def parse(raw_state: dict) -> ParsedLandState:
+    return LandStateParser.parse(raw_state)

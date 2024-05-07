@@ -1,6 +1,10 @@
+import asyncio
+import json
 from datetime import datetime
+from typing import Iterable
 
 import discord
+import httpx
 from discord import app_commands
 
 from .. import settings
@@ -14,59 +18,73 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 guild = discord.Object(id=1228360466405920850)
-channel = discord.Object(id=1233643605650964521)
+LandResource = ls.ParsedLandTree | ls.ParsedLandIndustry
 
 
-def prepare_resources(
-    parsed_state: ls.ParsedLandState, lower_bound_seconds: int, higher_bound_seconds: int
-) -> list[ls.ParsedLandTree | ls.ParsedLandIndustry]:
+def filter_resources(
+    parsed_state: ls.ParsedLandState, lb_secs: int, hb_secs: int
+) -> ls.ParsedLandState:
     now = datetime.now()
 
-    def get_ent_finish_time(item: ls.ParsedLandTree | ls.ParsedLandIndustry) -> datetime:
+    def get_ent_finish_time(item: LandResource) -> datetime:
         return item.get("utcRefresh") or item.get("finishTime") or now
 
-    def predicate(item: ls.ParsedLandTree | ls.ParsedLandIndustry) -> bool:
+    def predicate(item: LandResource) -> bool:
         if not (dt := get_ent_finish_time(item)):
             return True
         delta = (dt - now).total_seconds()
-        return lower_bound_seconds < delta < higher_bound_seconds
+        return lb_secs < delta < hb_secs
 
-    resources = [
-        *filter(predicate, parsed_state["trees"]),
-        *filter(predicate, parsed_state["grills"]),
-        *filter(predicate, parsed_state["kilns"]),
-        *filter(predicate, parsed_state["windmills"]),
-        *filter(predicate, parsed_state["wineries"]),
-    ]
-    return sorted(resources, key=get_ent_finish_time)
+    def filter_and_sort(it: Iterable):
+        return sorted([*filter(predicate, it)], key=get_ent_finish_time)
+
+    result: ls.ParsedLandState = {
+        **parsed_state,
+        "trees": filter_and_sort(parsed_state["trees"]),
+        "grills": filter_and_sort(parsed_state["grills"]),
+        "kilns": filter_and_sort(parsed_state["kilns"]),
+        "windmills": filter_and_sort(parsed_state["windmills"]),
+        "wineries": filter_and_sort(parsed_state["wineries"]),
+    }
+    return result
 
 
-def format_resources_message(resources: list[ls.ParsedLandTree | ls.ParsedLandIndustry]) -> str:
-    def get_description(item: ls.ParsedLandTree | ls.ParsedLandIndustry, availability: str) -> str:
+def format_land_resources_message(parsed_state: ls.ParsedLandState) -> str:
+    result = ""
+
+    if parsed_state["is_blocked"]:
+        result += f"**#{parsed_state['land_number']}** is Blocked\n"
+
+    def get_description(item: LandResource) -> str:
         if item["entity"].startswith("ent_tree"):
-            description = f"🌲 Tree [**{item['state']}**]"
+            return f"🌲 Tree [**{item['state']}**]"
         elif item["entity"].startswith("ent_windmill"):
-            description = "🌀 WindMill"
+            return "🌀 WindMill"
         elif item["entity"].startswith("ent_landbbq"):
-            description = "🍖 Grill"
+            return "🍖 Grill"
         elif item["entity"].startswith("ent_kiln"):
-            description = "🪨 Kiln"
+            return "🪨 Kiln"
         elif item["entity"].startswith("ent_winery"):
-            description = "🍇 Winery"
+            return "🍇 Winery"
         else:
-            description = f"🤷‍♂️ {item['entity']}"
+            return f"🤷‍♂️ {item['entity']}"
 
-        return f"{description} {availability}"
-
-    def make_message(item: ls.ParsedLandTree | ls.ParsedLandIndustry) -> str:
-        if dt := item.get("utcRefresh") or item.get("finishTime"):
-            availability = f"<t:{int(dt.timestamp())}:R> "
+    def make_message(resource: LandResource) -> str:
+        if dt := resource.get("utcRefresh") or resource.get("finishTime"):
+            availability = f"<t:{int(dt.timestamp())}:R>"
         else:
             availability = "**Available**"
 
-        return get_description(item, availability)
+        return f"**#{parsed_state['land_number']}** {get_description(resource)} {availability}"
 
-    result = "\n".join(make_message(_) for _ in resources)
+    resources = [
+        *parsed_state["trees"],
+        *parsed_state["grills"],
+        *parsed_state["windmills"],
+        *parsed_state["wineries"],
+        *parsed_state["kilns"],
+    ]
+    result += "\n".join(map(make_message, resources))
     return result
 
 
@@ -74,7 +92,7 @@ def format_resources_message(resources: list[ls.ParsedLandTree | ls.ParsedLandIn
 async def send_land_available_resources(
     interaction: discord.Interaction, land_number: int, threshold: int = 600
 ):
-    if interaction.channel.id != channel.id:
+    if interaction.channel.id != 1233643605650964521:
         return await interaction.response.send_message(
             "**I dont have permission to use this channel :/**"
         )
@@ -92,11 +110,8 @@ async def send_land_available_resources(
                     "**There is no data for the requested land**"
                 )
 
-        parsed_state = ls.parse(land_number, cached_state["state"])
-
-        if resources := prepare_resources(parsed_state, -120, threshold):
-            message = format_resources_message(resources)
-            await interaction.followup.send(message)
+        if parsed_state := ls.parse(cached_state["state"]):
+            await interaction.followup.send(format_land_resources_message(parsed_state))
         else:
             await interaction.followup.send(
                 f"**There is no resource available in the next {threshold} seconds**"
@@ -106,11 +121,33 @@ async def send_land_available_resources(
         await interaction.followup.send(repr(error))
 
 
+async def send_land_updates_loop(channel_wh: str):
+    async with create_redis_connection() as redis:
+        ps = redis.pubsub(ignore_subscribe_messages=True)
+        await ps.subscribe("app:lands:states:channel")
+
+        while True:
+            if not (message := await ps.get_message(timeout=None)):
+                continue
+
+            state = json.loads(message["data"])
+            parsed = filter_resources(ls.parse(state["state"]), -120, 180)
+
+            if parsed["is_blocked"]:
+                continue
+
+            if fmtd_message := format_land_resources_message(parsed):
+                httpx.post(channel_wh, json={"content": fmtd_message})
+
+
 @client.event
 async def on_ready():
     logger.info(f"We have logged in as {client.user}")
     tree.copy_global_to(guild=guild)
     await tree.sync(guild=guild)
+
+    if settings.DISCORD_BOT_TRACK_CHANNEL_WH:
+        asyncio.create_task(send_land_updates_loop(settings.DISCORD_BOT_TRACK_CHANNEL_WH))
 
 
 def main():
