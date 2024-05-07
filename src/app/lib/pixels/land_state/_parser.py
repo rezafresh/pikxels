@@ -21,6 +21,7 @@ class ParsedLandTree(TypedDict):
     mid: str
     entity: str
     position: LandEntityPosition
+    current: int
     state: str
     utcRefresh: datetime
     chops: int
@@ -37,9 +38,6 @@ class ParsedLandIndustry(TypedDict):
     inUseBy: str
     finishTime: datetime
     firedUntil: datetime
-
-
-LandResource = ParsedLandTree | ParsedLandIndustry
 
 
 class LandStateParser:
@@ -64,6 +62,7 @@ class LandStateParser:
             "entity": raw_tree["entity"],
             "position": raw_tree["position"],
             "state": raw_tree["generic"]["state"],
+            "current": raw_tree["generic"]["current"],
             "utcRefresh": utc_refresh,
             **statics,
         }

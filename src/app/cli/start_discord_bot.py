@@ -1,7 +1,7 @@
 import asyncio
 import json
 from datetime import datetime
-from typing import Iterable
+from typing import Iterable, TypedDict
 
 import discord
 from discord import app_commands
@@ -20,6 +20,11 @@ client = discord.Client(intents=intents)
 cmd_tree = app_commands.CommandTree(client)
 guild = discord.Object(id=1228360466405920850)
 http = AsyncClient()
+
+
+class FormatedLandResources(TypedDict):
+    trees: list[ls.ParsedLandTree]
+    indutries: list[ls.ParsedLandIndustry]
 
 
 def filter_resources(
@@ -41,7 +46,7 @@ def filter_resources(
 
     result: ls.ParsedLandState = {
         **parsed_state,
-        "trees": filter_and_sort(parsed_state["trees"]),
+        "trees": filter_and_sort(filter(lambda _: _.get("current", 4) >= 4, parsed_state["trees"])),
         "grills": filter_and_sort(parsed_state["grills"]),
         "kilns": filter_and_sort(parsed_state["kilns"]),
         "windmills": filter_and_sort(parsed_state["windmills"]),
@@ -50,7 +55,7 @@ def filter_resources(
     return result
 
 
-def format_land_resources_message(parsed_state: ls.ParsedLandState) -> str:
+def format_land_resources_message(parsed_state: ls.ParsedLandState) -> FormatedLandResources:
     def make_message(resource: ls.LandResource) -> str:
         if resource["entity"].startswith("ent_tree"):
             description = f"🌲 Tree [**{resource['state']}**]"
@@ -72,14 +77,20 @@ def format_land_resources_message(parsed_state: ls.ParsedLandState) -> str:
 
         return f"**#{parsed_state['land_number']}** {description} {availability}"
 
-    resources = [
-        *parsed_state["trees"],
-        *parsed_state["grills"],
-        *parsed_state["windmills"],
-        *parsed_state["wineries"],
-        *parsed_state["kilns"],
-    ]
-    return "\n".join(map(make_message, resources))
+    return {
+        "trees": "\n".join(map(make_message, parsed_state["trees"])),
+        "indutries": "\n".join(
+            map(
+                make_message,
+                [
+                    *parsed_state["grills"],
+                    *parsed_state["windmills"],
+                    *parsed_state["wineries"],
+                    *parsed_state["kilns"],
+                ],
+            )
+        ),
+    }
 
 
 @cmd_tree.command(name="resources")
@@ -99,11 +110,12 @@ async def send_land_available_resources(interaction: discord.Interaction, land_n
                 )
 
         parsed_state = ls.parse(cached_state["state"])
-        message = format_land_resources_message(parsed_state)
+        lr_message = format_land_resources_message(parsed_state)
         message = (
             f"> Created => **{cached_state['createdAt']}**\n"
             f"> Expires => **{cached_state['expiresAt']}**\n\n"
-        ) + message
+            f"{lr_message['trees']}\n{lr_message['industires']}"
+        )
         await interaction.followup.send(message)
     except Exception as error:
         logger.error(repr(error))
@@ -122,13 +134,24 @@ async def _listen_for_land_updates(ps: PubSub):
     elif not (fmtd_message := format_land_resources_message(parsed)):
         return
 
-    await http.post(settings.DISCORD_BOT_TRACK_CHANNEL_WH, json={"content": fmtd_message})
+    await http.post(
+        settings.DISCORD_BOT_TRACK_TREES_CHANNEL_WH, json={"content": fmtd_message["trees"]}
+    )
+    await http.post(
+        settings.DISCORD_BOT_TRACK_INDUSTRIES_CHANNEL_WH,
+        json={"content": fmtd_message["indutries"]},
+    )
 
 
 async def listen_for_land_updates():
-    if not settings.DISCORD_BOT_TRACK_CHANNEL_WH:
+    if not settings.DISCORD_BOT_TRACK_TREES_CHANNEL_WH:
         return logger.warning(
-            "The APP_DISCORD_BOT_TRACK_CHANNEL_WH env variable is not defined."
+            "The APP_DISCORD_BOT_TRACK_TREES_CHANNEL_WH env variable is not defined."
+            "The 'listen for land updates' feature will be disabled."
+        )
+    elif not settings.DISCORD_BOT_TRACK_INDUSTRIES_CHANNEL_WH:
+        return logger.warning(
+            "The APP_DISCORD_BOT_TRACK_INDUSTRIES_CHANNEL_WH env variable is not defined."
             "The 'listen for land updates' feature will be disabled."
         )
 
