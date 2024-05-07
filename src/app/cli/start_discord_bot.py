@@ -139,6 +139,8 @@ async def send_land_updates_loop(channel_wh: str):
 
                 if fmtd_message := format_land_resources_message(parsed):
                     httpx.post(channel_wh, json={"content": fmtd_message})
+            except asyncio.CancelledError:
+                break
             except Exception as error:
                 logger.error(f"send_land_updates_loop: {error!r}")
 
@@ -150,7 +152,8 @@ async def on_ready():
     await tree.sync(guild=guild)
 
     if settings.DISCORD_BOT_TRACK_CHANNEL_WH:
-        asyncio.create_task(send_land_updates_loop(settings.DISCORD_BOT_TRACK_CHANNEL_WH))
+        task = asyncio.create_task(send_land_updates_loop(settings.DISCORD_BOT_TRACK_CHANNEL_WH))
+        task.cancel
 
 
 def main():
