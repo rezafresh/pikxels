@@ -9,11 +9,11 @@
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
-            "envFile": "${workspaceFolder}/.env",
             "args": [
                 "src.app.api.asgi:app",
                 "--reload"
-            ]
+            ],
+            "envFile": "${workspaceFolder}/.env",
         },
         {
             "name": "worker",
