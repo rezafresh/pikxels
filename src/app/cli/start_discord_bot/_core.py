@@ -95,13 +95,12 @@ class Client(discord.Client):
                     keys = await redis.keys("app:land:*:state")
                     land_numbers = [int(re.search("\d+", _).group(0)) for _ in keys]
                     states = [
-                        filter_resources(
-                            ls.parse((await ls.from_cache(_, redis=redis))["state"]), 60, 180
-                        )
+                        ls.parse((await ls.from_cache(_, redis=redis))["state"])
                         for _ in land_numbers
                     ]
                     for state in states:
-                        if not (fmtd_message := format_land_resources_message(state)):
+                        _state = filter_resources(state, 60, 180)
+                        if not (fmtd_message := format_land_resources_message(_state)):
                             continue
                         if fmtd_message["trees"]:
                             await self._trees_tracker_channel.send(fmtd_message["trees"])
