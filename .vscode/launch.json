@@ -6,6 +6,7 @@
     "configurations": [
         {
             "name": "api",
+            "consoleName": "api",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
@@ -17,6 +18,7 @@
         },
         {
             "name": "worker",
+            "consoleName": "worker",
             "type": "debugpy",
             "request": "launch",
             "module": "src.app.cli.start_worker",
@@ -24,6 +26,7 @@
         },
         {
             "name": "resource_hunter",
+            "consoleName": "resource_hunter",
             "type": "debugpy",
             "request": "launch",
             "module": "src.app.cli.start_resource_hunter",
@@ -31,6 +34,7 @@
         },
         {
             "name": "discord_bot",
+            "consoleName": "discord_bot",
             "type": "debugpy",
             "request": "launch",
             "module": "src.app.cli.start_discord_bot",
@@ -38,10 +42,19 @@
         },
         {
             "name": "test",
+            "consoleName": "test",
             "type": "debugpy",
             "request": "launch",
             "module": "tests.test",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+        }
+    ],
+    "compounds": [
+        {
+            "name": "all",
+            "configurations": ["api","resource_hunter","worker","discord_bot"],
+            "stopAll": true,
+            "preLaunchTask": "start-docker-services-detached"
         }
     ]
 }

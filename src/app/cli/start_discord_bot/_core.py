@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 
 import discord
 from discord import app_commands
@@ -10,19 +11,7 @@ from ...lib.redis import create_redis_connection
 from ...lib.utils import get_logger
 from ._utils import filter_resources, format_land_resources_message
 
-# import re
-
-
-
 logger = get_logger("app:discord-bot")
-
-
-# async def send_from_cache():
-#     async with create_redis_connection() as redis:
-#         while True:
-#             keys = await redis.keys("app:land:*:state")
-#             land_numbers = [int(re.search("\d+", _).group(0)) for _ in keys]
-#             states = [ls.parse(await ls.from_cache(_, redis=redis)) for _ in land_numbers]
 
 
 class Client(discord.Client):
@@ -44,7 +33,8 @@ class Client(discord.Client):
         self._cmd_tree.command(name="resources")(self.send_land_available_resources)
         self._cmd_tree.copy_global_to(guild=self._guild)
         await self._cmd_tree.sync(guild=self._guild)
-        asyncio.create_task(self.listen_for_land_updates())
+        # asyncio.create_task(self.listen_for_land_updates())
+        asyncio.create_task(self.send_from_cache())
 
     async def send_land_available_resources(interaction: discord.Interaction, land_number: int):
         try:
@@ -97,6 +87,31 @@ class Client(discord.Client):
                     break
                 except Exception as error:
                     logger.error(f"listen_for_land_updates: {error!r}")
+
+    async def send_from_cache(self):
+        async with create_redis_connection() as redis:
+            while True:
+                try:
+                    keys = await redis.keys("app:land:*:state")
+                    land_numbers = [int(re.search("\d+", _).group(0)) for _ in keys]
+                    states = [
+                        filter_resources(
+                            ls.parse((await ls.from_cache(_, redis=redis))["state"]), 60, 180
+                        )
+                        for _ in land_numbers
+                    ]
+                    for state in states:
+                        if not (fmtd_message := format_land_resources_message(state)):
+                            continue
+                        if fmtd_message["trees"]:
+                            await self._trees_tracker_channel.send(fmtd_message["trees"])
+                        if fmtd_message["indutries"]:
+                            await self._industries_tracker_channel.send(fmtd_message["indutries"])
+                    await asyncio.sleep(120)
+                except asyncio.CancelledError:
+                    break
+                except Exception as error:
+                    logger.error(f"send_from_cache: {error!r}")
 
 
 def create_discord_client() -> discord.Client:
