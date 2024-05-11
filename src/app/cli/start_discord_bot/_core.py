@@ -99,14 +99,14 @@ class Client(discord.Client):
                         for _ in land_numbers
                     ]
                     for state in states:
-                        _state = filter_resources(state, 60, 180)
+                        _state = filter_resources(state, 30, 180)
                         if not (fmtd_message := format_land_resources_message(_state)):
                             continue
                         if fmtd_message["trees"]:
                             await self._trees_tracker_channel.send(fmtd_message["trees"])
                         if fmtd_message["indutries"]:
                             await self._industries_tracker_channel.send(fmtd_message["indutries"])
-                    await asyncio.sleep(120)
+                    await asyncio.sleep(150)
                 except asyncio.CancelledError:
                     break
                 except Exception as error:
