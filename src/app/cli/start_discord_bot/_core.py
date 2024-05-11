@@ -93,7 +93,7 @@ class Client(discord.Client):
             while True:
                 try:
                     keys = await redis.keys("app:land:*:state")
-                    land_numbers = [int(re.search("\d+", _).group(0)) for _ in keys]
+                    land_numbers = sorted([int(re.search("\d+", _).group(0)) for _ in keys])
                     states = [
                         ls.parse((await ls.from_cache(_, redis=redis))["state"])
                         for _ in land_numbers
