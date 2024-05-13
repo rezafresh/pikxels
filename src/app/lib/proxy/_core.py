@@ -1,6 +1,6 @@
 from playwright.async_api import ProxySettings
 
-from .providers import webshare
+from . import _webshare as webshare
 
 
 def create_proxy_yielder():

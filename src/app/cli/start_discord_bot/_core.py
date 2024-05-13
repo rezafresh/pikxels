@@ -1,5 +1,4 @@
 import asyncio
-import json
 import re
 
 import discord
@@ -33,8 +32,7 @@ class Client(discord.Client):
         self._cmd_tree.command(name="resources")(self.send_land_available_resources)
         self._cmd_tree.copy_global_to(guild=self._guild)
         await self._cmd_tree.sync(guild=self._guild)
-        # asyncio.create_task(self.listen_for_land_updates())
-        asyncio.create_task(self.send_from_cache())
+        asyncio.create_task(self.resource_watcher())
 
     async def send_land_available_resources(interaction: discord.Interaction, land_number: int):
         try:
@@ -50,7 +48,7 @@ class Client(discord.Client):
             lr_message = format_land_resources_message(parsed_state)
             message = (
                 f"> Created => **{cached_state['createdAt']}**\n"
-                f"> Expires => **{cached_state['expiresAt']}**\n\n"
+                f"> Expires => **{cached_state['expiresAt']}**\n"
                 f"{lr_message['trees']}\n{lr_message['indutries']}"
             )
             await interaction.followup.send(message)
@@ -58,37 +56,7 @@ class Client(discord.Client):
             logger.error(repr(error))
             await interaction.followup.send(repr(error))
 
-    async def listen_for_land_updates(self):
-        logger.info("The 'listen for land updates' feature is running")
-
-        async with create_redis_connection() as redis:
-            ps = redis.pubsub(ignore_subscribe_messages=True)
-            await ps.subscribe("app:lands:states:channel")
-
-            while True:
-                try:
-                    if not (message := await ps.get_message(timeout=None)):
-                        continue
-
-                    state = json.loads(message["data"])
-                    parsed = filter_resources(ls.parse(state["state"]), -120, 180)
-
-                    if parsed["is_blocked"]:
-                        continue
-                    elif not (fmtd_message := format_land_resources_message(parsed)):
-                        continue
-
-                    if fmtd_message["trees"]:
-                        await self._trees_tracker_channel.send(fmtd_message["trees"])
-
-                    if fmtd_message["indutries"]:
-                        await self._industries_tracker_channel.send(fmtd_message["indutries"])
-                except asyncio.CancelledError:
-                    break
-                except Exception as error:
-                    logger.error(f"listen_for_land_updates: {error!r}")
-
-    async def send_from_cache(self):
+    async def resource_watcher(self):
         async with create_redis_connection() as redis:
             while True:
                 try:
@@ -98,14 +66,22 @@ class Client(discord.Client):
                         ls.parse((await ls.from_cache(_, redis=redis))["state"])
                         for _ in land_numbers
                     ]
+
                     for state in states:
+                        if state["is_blocked"]:
+                            continue
+
                         _state = filter_resources(state, 30, 180)
+
                         if not (fmtd_message := format_land_resources_message(_state)):
                             continue
+
                         if fmtd_message["trees"]:
                             await self._trees_tracker_channel.send(fmtd_message["trees"])
+
                         if fmtd_message["indutries"]:
                             await self._industries_tracker_channel.send(fmtd_message["indutries"])
+
                     await asyncio.sleep(150)
                 except asyncio.CancelledError:
                     break
