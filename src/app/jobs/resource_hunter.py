@@ -59,9 +59,13 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
     now_as_epoch = int(now.timestamp())
     tomorrow_as_epoch = int((now + timedelta(days=1)).timestamp())
 
-    def extract_utc_refresh(t: dict) -> int:
-        if utc_refresh := t["generic"].get("utcRefresh"):
-            return utc_refresh // 1000
+    def calc_next_respawn(t: dict) -> int:
+        statics: list[dict] = t["generic"]["statics"]
+
+        if last_chop := [_ for _ in statics if _["name"] == "lastChop"][0].get("value"):
+            result = datetime.fromtimestamp(int(last_chop) // 1000)
+            result += timedelta(hours=7, minutes=15)
+            return result.timestamp()
 
         return now_as_epoch
 
@@ -85,7 +89,7 @@ def get_best_seconds_to_expire(raw_state: dict) -> int:
 
     # trees
     if resources["trees"]:
-        timers.append(max(extract_utc_refresh(t) for t in resources["trees"]))
+        timers.append(max(calc_next_respawn(t) for t in resources["trees"]))
 
     # windmills
     if resources["windmills"]:

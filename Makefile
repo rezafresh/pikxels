@@ -33,9 +33,9 @@ ghcr-push-image: create-requirements-txt
 git-push-publish: git-push ghcr-push-image
 	@echo "Git push and image publish completed"
 start-docker-services: docker-down
-	@docker compose up browserless redis
+	@docker compose up browserless redis rq-dashboard
 start-docker-services-detached: docker-down
-	@docker compose up browserless redis -d
+	@docker compose up browserless redis rq-dashboard -d
 start-rq-info:
 	@poetry run rq info -u ${APP_REDIS_URL}
 start-worker:
