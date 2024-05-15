@@ -59,13 +59,12 @@ async def to_cache(land_number: int, raw_state: dict, ex: int, *, redis: Redis) 
         "expiresAt": now + timedelta(seconds=ex),
         "state": raw_state,
     }
-    # await redis.set(f"app:land:{land_number}:state", json.dumps(result, default=str), ex=ex)
     await redis.set(f"app:land:{land_number}:state", json.dumps(result, default=str))
     return result
 
 
 @retry_until_valid(tries=settings.PW_DEFAULT_TIMEOUT // 1000)
-async def phaser_land_state_getter(page: Page):
+async def phaser_land_state_getter(page: Page) -> str:
     return await page.evaluate(
         "JSON.stringify(Phaser.Display.Canvas.CanvasPool.pool[0].parent.game.scene.scenes[1].stateManager.room.state)",
     )

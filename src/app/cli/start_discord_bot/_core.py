@@ -1,5 +1,6 @@
 import asyncio
 import re
+from datetime import timedelta
 
 import discord
 from discord import app_commands
@@ -70,6 +71,9 @@ class Client(discord.Client):
                     for state in states:
                         if state["is_blocked"]:
                             continue
+
+                        for tree in state["trees"]:
+                            tree["utcRefresh"] = tree["lastChop"] + timedelta(hours=7, minutes=15)
 
                         _state = filter_resources(state, 30, 180)
 
